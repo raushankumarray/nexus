@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -65,7 +64,7 @@ export function Services() {
       <div className="absolute bottom-1/4 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px]" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-24">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-24 animate-in fade-in slide-in-from-bottom duration-1000 ease-out">
           <div className="max-w-3xl space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-bold uppercase tracking-wider">
               <Sparkles className="w-4 h-4" />
@@ -87,8 +86,9 @@ export function Services() {
           {services.map((service, index) => (
             <Card 
               key={index} 
+              style={{ animationDelay: `${index * 100}ms` }}
               className={cn(
-                "group relative border-2 transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 rounded-[3rem] overflow-hidden bg-white",
+                "group relative border-2 transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 rounded-[3rem] overflow-hidden bg-white animate-in fade-in slide-in-from-bottom fill-mode-both",
                 service.accent
               )}
             >

@@ -42,7 +42,8 @@ export function WhoWeAre() {
       
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
-          <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
+          {/* Left Column: Sliding in from the Left */}
+          <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000 ease-out">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border shadow-sm text-primary text-sm font-bold uppercase tracking-wider">
                 <Rocket className="w-4 h-4" />
@@ -70,7 +71,8 @@ export function WhoWeAre() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-right duration-700">
+          {/* Right Column: Sliding in from the Right */}
+          <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-right duration-1000 ease-out delay-200">
             <Card className="border-none shadow-2xl bg-white rounded-[2.5rem] p-4 transition-all hover:translate-x-2">
               <CardHeader className="flex flex-row items-center gap-6 space-y-0">
                 <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary">
@@ -102,7 +104,7 @@ export function WhoWeAre() {
         </div>
 
         <div className="space-y-20">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
+          <div className="text-center space-y-4 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 ease-out">
             <h2 className="text-5xl font-headline font-bold">Our Core <span className="text-primary">Values</span></h2>
             <p className="text-muted-foreground text-lg">The principles that guide our engineering excellence and client partnerships.</p>
             <div className="w-24 h-1.5 bg-primary mx-auto rounded-full" />
@@ -112,7 +114,8 @@ export function WhoWeAre() {
             {values.map((value, idx) => (
               <div 
                 key={idx} 
-                className="group p-10 bg-white rounded-[3rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-primary/20 hover:-translate-y-3"
+                style={{ animationDelay: `${idx * 150}ms` }}
+                className="group p-10 bg-white rounded-[3rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-primary/20 hover:-translate-y-3 animate-in fade-in slide-in-from-bottom fill-mode-both"
               >
                 <div className={`w-16 h-16 rounded-[2rem] ${value.bg} ${value.color} flex items-center justify-center mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}>
                   <value.icon className="w-8 h-8" />
