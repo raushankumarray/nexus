@@ -5,14 +5,13 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/app/lib/placeholder-images";
-import { ExternalLink, Plus } from "lucide-react";
+import { ExternalLink, Plus, Sparkles } from "lucide-react";
 
 const categories = ["All", "Software", "Fintech", "AI", "Cloud"];
 
 export function Portfolio() {
   const [activeTab, setActiveTab] = useState("All");
 
-  // Moved projects inside the component to prevent top-level execution errors
   const projects = useMemo(() => [
     {
       id: 1,
@@ -49,13 +48,19 @@ export function Portfolio() {
     : projects.filter(p => p.category === activeTab);
 
   return (
-    <section id="portfolio" className="py-24 bg-background">
+    <section id="portfolio" className="py-20 bg-background relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -z-10" />
+      
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-12 animate-in fade-in slide-in-from-bottom duration-700">
           <div className="max-w-2xl space-y-4">
-            <h2 className="text-4xl font-headline font-bold">Showcasing Our <span className="text-accent italic">Impact</span></h2>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" />
+              Products Overview
+            </div>
+            <h2 className="text-4xl md:text-5xl font-headline font-bold">Showcasing Our <span className="text-accent italic">Impact</span></h2>
             <p className="text-muted-foreground text-lg">
-              A curated selection of high-complexity projects where engineering meets creativity.
+              A curated selection of high-complexity products where engineering meets creativity.
             </p>
           </div>
           
@@ -77,7 +82,8 @@ export function Portfolio() {
           {filteredProjects.map((project, idx) => (
             <div 
               key={project.id} 
-              className={`group relative overflow-hidden rounded-[2.5rem] bg-muted animate-in fade-in slide-in-from-bottom duration-500 delay-${idx * 100}`}
+              className="group relative overflow-hidden rounded-[2.5rem] bg-muted animate-in fade-in slide-in-from-bottom duration-700 fill-mode-both"
+              style={{ animationDelay: `${idx * 150}ms` }}
             >
               <div className="aspect-[16/10] relative overflow-hidden">
                 <Image
@@ -108,8 +114,7 @@ export function Portfolio() {
                 </div>
               </div>
 
-              {/* Hover indicator icon */}
-              <div className="absolute top-6 right-6 w-12 h-12 bg-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100">
+              <div className="absolute top-6 right-6 w-12 h-12 bg-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100 shadow-xl">
                 <Plus className="text-white w-6 h-6" />
               </div>
             </div>
