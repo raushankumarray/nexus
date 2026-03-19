@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
+    <section className="relative min-h-[85vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-0 w-[80%] h-full bg-primary/5 -skew-x-12 translate-x-1/4 pointer-events-none" />
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
@@ -25,7 +25,7 @@ export function Hero() {
           </h1>
           
           <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-            At NPB Media, we help businesses transform their ideas into scalable digital solutions. Our team specializes in developing innovative software, modern web platforms, and high-performance applications.
+            At NPB Media, we help businesses transform their ideas into scalable digital solutions. Our team specializes in developing innovative software and modern platforms.
           </p>
           
           <div className="flex flex-wrap gap-4 pt-2">
@@ -68,7 +68,7 @@ export function Hero() {
               <div className="space-y-3 relative z-10">
                 <h3 className="text-3xl font-headline font-bold">Our Edge</h3>
                 <p className="text-slate-400 text-base leading-relaxed">
-                  We combine creativity, technology, and strategy to deliver solutions that drive real results for startups and enterprises globally.
+                  We combine creativity, technology, and strategy to deliver solutions that drive real results.
                 </p>
               </div>
               
