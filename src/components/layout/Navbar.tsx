@@ -22,11 +22,11 @@ export function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
-    { name: "Technology", href: "/#tech-stack" },
-    { name: "Products", href: "/#portfolio" },
-    { name: "Career", href: "/#careers" },
-    { name: "About Us", href: "/#who-we-are" },
-    { name: "Contact Us", href: "/#contact" },
+    { name: "Technology", href: "/technology" },
+    { name: "Products", href: "/products" },
+    { name: "Career", href: "/career" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   return (
@@ -81,7 +81,10 @@ export function Navbar() {
               key={link.name}
               href={link.href}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="text-lg font-medium py-2 border-b"
+              className={cn(
+                "text-lg font-medium py-2 border-b transition-colors",
+                pathname === link.href && "text-primary border-primary"
+              )}
             >
               {link.name}
             </Link>
