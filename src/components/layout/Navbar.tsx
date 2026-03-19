@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Rocket } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
@@ -21,10 +20,13 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
+    { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
-    { name: "Portfolio", href: "/#portfolio" },
-    { name: "AI Tools", href: "/#ai-tools" },
-    { name: "Contact", href: "/#contact" },
+    { name: "Technology", href: "/#tech-stack" },
+    { name: "Products", href: "/#portfolio" },
+    { name: "Career", href: "/#careers" },
+    { name: "About Us", href: "/#who-we-are" },
+    { name: "Contact Us", href: "/#contact" },
   ];
 
   return (
@@ -47,24 +49,19 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
               className={cn(
-                "text-sm font-medium hover:text-primary transition-colors",
+                "text-sm font-medium hover:text-primary transition-colors whitespace-nowrap",
                 pathname === link.href && "text-primary"
               )}
             >
               {link.name}
             </Link>
           ))}
-          <Link href="/#contact">
-            <Button className="font-headline rounded-full px-6 shadow-lg shadow-primary/20">
-              Get Started
-            </Button>
-          </Link>
         </div>
 
         {/* Mobile Nav Toggle */}
@@ -89,9 +86,6 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Link href="/#contact" onClick={() => setIsMobileMenuOpen(false)}>
-            <Button className="w-full mt-2 font-headline">Get Started</Button>
-          </Link>
         </div>
       )}
     </nav>
