@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Code2, Globe, Smartphone, Building2, Cloud, Network, ArrowRight } from "lucide-react";
+import { Code2, Globe, Smartphone, Building2, Cloud, Network, ArrowRight, Zap } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -52,47 +52,59 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="py-24 bg-white">
+    <section id="services" className="py-32 bg-white relative">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
-          <h4 className="text-primary font-bold tracking-widest uppercase text-sm">Our Expertise</h4>
-          <h2 className="text-4xl md:text-5xl font-headline font-bold">Our <span className="text-primary italic">Services</span></h2>
-          <p className="text-muted-foreground text-lg">
-            We deliver powerful solutions that combine creativity, technology, and strategy to drive real results.
-          </p>
+        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-24">
+          <div className="max-w-3xl space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-sm font-bold uppercase tracking-wider">
+              <Zap className="w-4 h-4" />
+              Our Expertise
+            </div>
+            <h2 className="text-5xl md:text-6xl font-headline font-bold">Our <span className="text-primary italic">Services</span></h2>
+            <p className="text-muted-foreground text-xl leading-relaxed">
+              We deliver powerful solutions that combine creativity, technology, and strategy to drive real results.
+            </p>
+          </div>
+          <div className="w-full md:w-auto">
+            <div className="h-1 w-32 bg-primary rounded-full mb-4 hidden md:block" />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {services.map((service, index) => (
             <Card 
               key={index} 
               className={cn(
-                "group relative border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 rounded-[2.5rem] overflow-hidden",
+                "group relative border-2 transition-all duration-500 hover:shadow-2xl hover:-translate-y-4 rounded-[3rem] overflow-hidden bg-white",
                 service.accent
               )}
             >
-              <CardHeader className="space-y-6 p-8">
+              <CardHeader className="space-y-8 p-10">
                 <div className={cn(
-                  "w-16 h-16 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300 shadow-lg shadow-black/5",
+                  "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-xl",
                   service.color
                 )}>
-                  <service.icon className="text-white w-8 h-8" />
+                  <service.icon className="text-white w-10 h-10" />
                 </div>
-                <div className="space-y-3">
-                  <CardTitle className="text-2xl font-headline font-bold">{service.title}</CardTitle>
-                  <CardDescription className="text-base leading-relaxed text-muted-foreground">
+                <div className="space-y-4">
+                  <CardTitle className="text-3xl font-headline font-bold group-hover:text-primary transition-colors">{service.title}</CardTitle>
+                  <CardDescription className="text-lg leading-relaxed text-muted-foreground/80">
                     {service.description}
                   </CardDescription>
                 </div>
               </CardHeader>
-              <div className="px-8 pb-8">
-                <button className="text-sm font-bold text-primary flex items-center gap-2 group/btn">
+              <div className="px-10 pb-10">
+                <button className="text-base font-bold text-primary flex items-center gap-2 group/btn hover:underline underline-offset-8">
                   Learn More 
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover/btn:translate-x-2" />
                 </button>
               </div>
               
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10 transition-all group-hover:scale-150" />
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-bl-[5rem] -z-10 transition-all duration-700 group-hover:scale-125 group-hover:bg-primary/10" />
+              <div className="absolute bottom-4 right-4 w-12 h-12 bg-muted/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+                <Zap className="w-5 h-5 text-primary" />
+              </div>
             </Card>
           ))}
         </div>
