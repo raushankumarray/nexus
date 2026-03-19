@@ -1,7 +1,5 @@
-
 import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/sections/Hero";
-import { Services } from "@/components/sections/Services";
 import { Portfolio } from "@/components/sections/Portfolio";
 import { AISummarizer } from "@/components/sections/AISummarizer";
 import { Contact } from "@/components/sections/Contact";
@@ -13,7 +11,7 @@ export default function Home() {
     <main className="relative">
       <Navbar />
       <Hero />
-      <Services />
+      {/* Services section removed from main page as requested */}
       <Portfolio />
       <AISummarizer />
       <Contact />

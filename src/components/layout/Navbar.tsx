@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -6,10 +5,12 @@ import Link from "next/link";
 import { Menu, X, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,10 +21,10 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: "Services", href: "#services" },
-    { name: "Portfolio", href: "#portfolio" },
-    { name: "AI Tools", href: "#ai-tools" },
-    { name: "Contact", href: "#contact" },
+    { name: "Services", href: "/services" },
+    { name: "Portfolio", href: "/#portfolio" },
+    { name: "AI Tools", href: "/#ai-tools" },
+    { name: "Contact", href: "/#contact" },
   ];
 
   return (
@@ -51,14 +52,19 @@ export function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className={cn(
+                "text-sm font-medium hover:text-primary transition-colors",
+                pathname === link.href && "text-primary"
+              )}
             >
               {link.name}
             </Link>
           ))}
-          <Button className="font-headline rounded-full px-6 shadow-lg shadow-primary/20">
-            Get Started
-          </Button>
+          <Link href="/#contact">
+            <Button className="font-headline rounded-full px-6 shadow-lg shadow-primary/20">
+              Get Started
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Nav Toggle */}
@@ -83,7 +89,9 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          <Button className="w-full mt-2 font-headline">Get Started</Button>
+          <Link href="/#contact" onClick={() => setIsMobileMenuOpen(false)}>
+            <Button className="w-full mt-2 font-headline">Get Started</Button>
+          </Link>
         </div>
       )}
     </nav>
