@@ -38,7 +38,7 @@ export default function LoginPage() {
                   Welcome <span className="text-primary">Back</span>
                 </CardTitle>
                 <CardDescription className="text-sm font-medium">
-                  Enter your credentials to access the NPB Nexus.
+                  Enter your credentials to access the NPB Media portal.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -109,7 +109,7 @@ export default function LoginPage() {
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Secure
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> Nexus AI
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> NPB AI
                   </div>
                 </div>
               </div>

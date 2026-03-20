@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -184,7 +185,7 @@ export default function OpportunitiesPage() {
               Back to Careers
             </Link>
             <h1 className="text-6xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Career <span className="italic text-yellow-300">Nexus</span>
+              Career <span className="italic text-yellow-300">NPB</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
               Track your journey at NPB Media. Browse active roles, review closed listings, or manage your ongoing applications.

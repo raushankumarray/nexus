@@ -60,7 +60,7 @@ export default function SignupPage() {
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-3xl font-headline font-black italic">
-                  Join <span className="text-primary">Nexus</span>
+                  Join <span className="text-primary">NPB</span>
                 </CardTitle>
                 <CardDescription className="text-sm font-medium">
                   Create your global professional account.
@@ -145,7 +145,7 @@ export default function SignupPage() {
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> AES-256 Encrypted
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> Nexus Guard
+                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> NPB Guard
                   </div>
                 </div>
               </div>

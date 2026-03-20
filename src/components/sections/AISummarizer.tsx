@@ -64,7 +64,7 @@ export function AISummarizer() {
             <BrainCircuit className="w-4 h-4" />
             Internal Innovation Tool
           </div>
-          <h2 className="text-4xl font-headline font-bold">Nexus AI <span className="text-primary">Summarizer</span></h2>
+          <h2 className="text-4xl font-headline font-bold">NPB AI <span className="text-primary">Summarizer</span></h2>
           <p className="text-slate-300 max-w-xl mx-auto">
             Leverage our proprietary Generative AI to distill complex project documentation into impactful summaries for case studies and service briefs.
           </p>
@@ -132,7 +132,7 @@ export function AISummarizer() {
               </CardContent>
               {summary && (
                 <div className="p-4 border-t border-white/10 bg-white/5 text-xs text-center text-slate-400">
-                  Powered by NPB Nexus GenAI Engine v2.5
+                  Powered by NPB Media GenAI Engine v2.5
                 </div>
               )}
             </Card>

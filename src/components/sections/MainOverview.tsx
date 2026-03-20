@@ -26,7 +26,7 @@ const UPTIME_PROJECTS = [
 
 export function MainOverview() {
   return (
-    <section id="nexus-overview" className="py-24 bg-background relative overflow-hidden">
+    <section id="npb-overview" className="py-24 bg-background relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
