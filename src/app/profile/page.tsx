@@ -26,7 +26,10 @@ import {
   Briefcase,
   ShoppingBag,
   Plus,
-  ChevronRight
+  ChevronRight,
+  Share2,
+  Globe,
+  Link as LinkIcon
 } from "lucide-react";
 import Link from "next/link";
 
@@ -77,6 +80,7 @@ export default function ProfilePage() {
     { id: "contact", label: "Contact", icon: Phone },
     { id: "education", label: "Education", icon: GraduationCap },
     { id: "documents", label: "Documents", icon: FileText },
+    { id: "social", label: "Social Link", icon: Share2 },
     { id: "career", label: "Career", icon: Briefcase },
     { id: "order", label: "Order", icon: ShoppingBag },
   ];
@@ -109,16 +113,16 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-6">
           <Tabs defaultValue="profile" className="space-y-12">
             
-            {/* Horizontal Scrollable Menu */}
-            <div className="flex justify-start lg:justify-center overflow-x-auto pb-4 no-scrollbar">
-              <TabsList className="bg-slate-100 p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex">
+            {/* Horizontal Scrollable Menu for better fit on all screens */}
+            <div className="flex justify-start lg:justify-center overflow-x-auto pb-4 no-scrollbar -mx-6 px-6">
+              <TabsList className="bg-slate-100 p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex flex-nowrap shrink-0">
                 {sections.map((sec) => (
                   <TabsTrigger 
                     key={sec.id}
                     value={sec.id} 
-                    className="rounded-full px-8 py-4 font-headline font-black text-sm data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
+                    className="rounded-full px-6 md:px-8 py-4 font-headline font-black text-[10px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
                   >
-                    <sec.icon className="w-4 h-4" />
+                    <sec.icon className="w-3.5 h-3.5 md:w-4 h-4" />
                     {sec.label}
                   </TabsTrigger>
                 ))}
@@ -251,6 +255,33 @@ export default function ProfilePage() {
                         <div key={doc} className="group p-6 bg-slate-50 border-2 border-transparent hover:border-primary rounded-2xl text-center cursor-pointer transition-all">
                           <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-primary transition-colors" />
                           <p className="text-xs font-black uppercase tracking-widest">{doc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="social" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-3xl font-headline font-black italic">Social <span className="text-primary">Profiles</span></h3>
+                      <Button variant="outline" className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-xs">
+                        <Plus className="w-4 h-4 mr-2" /> Connect
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {[
+                        { platform: "LinkedIn", status: "Not Connected", icon: Globe },
+                        { platform: "GitHub", status: "Not Connected", icon: Share2 },
+                        { platform: "Twitter", status: "Not Connected", icon: Globe },
+                        { platform: "Portfolio", status: "Not Connected", icon: LinkIcon },
+                      ].map((social, i) => (
+                        <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-primary transition-all">
+                          <div className="flex items-center gap-4">
+                            <social.icon className="w-5 h-5 text-slate-400 group-hover:text-primary" />
+                            <span className="font-black text-sm uppercase tracking-widest">{social.platform}</span>
+                          </div>
+                          <span className="text-[10px] font-black uppercase text-muted-foreground">{social.status}</span>
                         </div>
                       ))}
                     </div>
