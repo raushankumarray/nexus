@@ -29,7 +29,8 @@ const techStacks = [
     category: "Frontend Excellence",
     description: "Creating immersive, high-performance user interfaces with modern reactive frameworks and optimized rendering engines.",
     icon: Monitor,
-    color: "bg-blue-500",
+    color: "bg-blue-600",
+    hoverColor: "group-hover:bg-blue-600",
     shadow: "shadow-blue-500/20",
     hover: "hover:-rotate-3 hover:scale-105",
     items: [
@@ -43,8 +44,9 @@ const techStacks = [
   {
     category: "Robust Backend",
     description: "Scalable server-side architectures designed for high concurrency, security, and lightning-fast data processing.",
-    icon: ServerIcon, // Custom component defined below
+    icon: ServerIcon, 
     color: "bg-orange-600",
+    hoverColor: "group-hover:bg-orange-600",
     shadow: "shadow-orange-600/20",
     hover: "hover:rotate-2 hover:scale-105",
     items: [
@@ -60,6 +62,7 @@ const techStacks = [
     description: "Engineered data storage solutions ranging from relational databases to high-speed NoSQL and real-time caches.",
     icon: Database,
     color: "bg-emerald-600",
+    hoverColor: "group-hover:bg-emerald-600",
     shadow: "shadow-emerald-600/20",
     hover: "hover:skew-x-2 hover:scale-105",
     items: [
@@ -75,6 +78,7 @@ const techStacks = [
     description: "Automated deployment pipelines and containerized infrastructure ensuring 99.9% uptime and global scalability.",
     icon: Cloud,
     color: "bg-purple-600",
+    hoverColor: "group-hover:bg-purple-600",
     shadow: "shadow-purple-600/20",
     hover: "hover:-skew-y-2 hover:scale-105",
     items: [
@@ -90,6 +94,7 @@ const techStacks = [
     description: "Cross-platform and native mobile applications that deliver smooth performance and native-feel interactions.",
     icon: Smartphone,
     color: "bg-rose-600",
+    hoverColor: "group-hover:bg-rose-600",
     shadow: "shadow-rose-600/20",
     hover: "hover:rotate-3 hover:translate-y-[-10px]",
     items: [
@@ -105,6 +110,7 @@ const techStacks = [
     description: "Integrating advanced machine learning models and Generative AI to automate workflows and drive insights.",
     icon: BrainCircuit,
     color: "bg-cyan-600",
+    hoverColor: "group-hover:bg-cyan-600",
     shadow: "shadow-cyan-600/20",
     hover: "hover:-rotate-2 hover:scale-105",
     items: [
@@ -117,7 +123,6 @@ const techStacks = [
   }
 ];
 
-// Helper for server icon as lucide 'Server' can be generic
 function ServerIcon(props: any) {
   return (
     <svg 
@@ -147,65 +152,65 @@ export default function TechnologyPage() {
 
       {/* Decorative Background */}
       <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px] animate-pulse delay-700" />
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/10 rounded-full blur-[150px] animate-pulse delay-700" />
       </div>
 
-      {/* Hero Overview Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-foreground text-white">
+      {/* Hero Overview Section - Changed to Vibrant Gradient */}
+      <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
         <div className="absolute inset-0 grid-bg opacity-10" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/10 border-2 border-white/20 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
-                <Cpu className="w-5 h-5 text-primary" />
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/20 border-2 border-white/30 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
+                <Cpu className="w-5 h-5 text-yellow-300" />
                 Technical Stack
               </div>
               <h1 className="text-6xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-                The Engine of <span className="italic text-primary">Innovation</span>
+                The Engine of <span className="italic text-yellow-300">Innovation</span>
               </h1>
-              <p className="text-xl md:text-2xl text-white/70 leading-relaxed max-w-xl font-medium border-l-4 border-primary pl-6">
-                We don't just use tools; we master the architectures that power the next generation of digital excellence.
+              <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-xl font-bold border-l-4 border-yellow-300 pl-6">
+                We master the architectures that power the next generation of digital excellence, ensuring your product is built on a rock-solid foundation.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button size="lg" className="rounded-full px-10 h-16 text-lg font-headline bg-primary text-white hover:bg-white hover:text-primary transition-all duration-500 shadow-2xl group">
+                <Button size="lg" className="rounded-full px-10 h-16 text-lg font-headline bg-white text-primary hover:bg-foreground hover:text-white transition-all duration-500 shadow-2xl group border-none">
                   View Our GitHub <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-2" />
                 </Button>
                 <div className="flex items-center gap-4 px-6 border-l border-white/20">
                   <div className="text-center">
-                    <p className="text-3xl font-black text-primary">20+</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Tech Partners</p>
+                    <p className="text-3xl font-black text-yellow-300">20+</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/70">Partners</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-black text-secondary">100%</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Scalability</p>
+                    <p className="text-3xl font-black text-white">100%</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/70">Reliable</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="relative animate-in fade-in zoom-in duration-1000 delay-300 hidden lg:block">
-              <div className="relative p-12 bg-white/5 backdrop-blur-xl rounded-[3rem] border border-white/10 overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 opacity-50 group-hover:opacity-100 transition-opacity" />
-                <div className="relative z-10 space-y-6">
+              <div className="relative p-1 bg-white/20 backdrop-blur-xl rounded-[3rem] border border-white/30 overflow-hidden group shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+                <div className="relative z-10 p-12 space-y-6">
                   <div className="flex justify-between items-center">
-                    <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                      <Zap className="text-primary w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                      <Zap className="text-yellow-300 w-6 h-6" />
                     </div>
-                    <Badge variant="outline" className="border-primary/50 text-primary px-4 py-1">Active R&D</Badge>
+                    <Badge variant="outline" className="border-white/50 text-white px-4 py-1 font-black">ACTIVE R&D</Badge>
                   </div>
-                  <h3 className="text-3xl font-headline font-black italic">Next-Gen Architecture</h3>
-                  <p className="text-white/60 text-lg leading-relaxed">
-                    Our lab is constantly experimenting with serverless edge computing, AI-driven automation, and real-time distributed systems to keep your business ahead of the curve.
+                  <h3 className="text-3xl font-headline font-black italic">Cutting-Edge Lab</h3>
+                  <p className="text-white/80 text-lg leading-relaxed font-semibold">
+                    Mastering serverless edge computing, AI-driven automation, and real-time distributed systems for global scalability.
                   </p>
                   <div className="pt-6 grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                      <Globe className="w-6 h-6 mx-auto mb-2 text-blue-400" />
-                      <p className="text-xs font-black uppercase tracking-widest">Global CDN</p>
+                    <div className="p-4 rounded-2xl bg-white/10 border border-white/20 text-center backdrop-blur-sm">
+                      <Globe className="w-6 h-6 mx-auto mb-2 text-yellow-300" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">Global CDN</p>
                     </div>
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                      <Infinity className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-                      <p className="text-xs font-black uppercase tracking-widest">CI/CD Flow</p>
+                    <div className="p-4 rounded-2xl bg-white/10 border border-white/20 text-center backdrop-blur-sm">
+                      <Infinity className="w-6 h-6 mx-auto mb-2 text-white" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">CI/CD Flow</p>
                     </div>
                   </div>
                 </div>
@@ -215,7 +220,7 @@ export default function TechnologyPage() {
         </div>
       </section>
 
-      {/* Technology Grid Section */}
+      {/* Technology Grid Section - Enhanced Card Hover & UI/UX */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -224,18 +229,19 @@ export default function TechnologyPage() {
                 key={idx} 
                 className={cn(
                   "group relative p-10 bg-white rounded-[3rem] shadow-2xl transition-all duration-700 overflow-hidden flex flex-col border border-slate-100",
+                  "hover:shadow-primary/20",
                   stack.hover
                 )}
               >
-                {/* Background Decor */}
+                {/* Dynamic Hover Background Fill */}
                 <div className={cn(
-                  "absolute top-0 right-0 w-32 h-32 opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 transition-all duration-700 group-hover:scale-[10]",
+                  "absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none -z-0",
                   stack.color
                 )} />
 
                 <div className="relative z-10 space-y-8 flex-1">
                   <div className={cn(
-                    "w-20 h-20 rounded-[2rem] flex items-center justify-center text-white transition-all duration-700 group-hover:rotate-[360deg] shadow-xl",
+                    "w-20 h-20 rounded-[2rem] flex items-center justify-center text-white transition-all duration-700 group-hover:rotate-[360deg] shadow-xl group-hover:bg-white group-hover:text-foreground",
                     stack.color,
                     stack.shadow
                   )}>
@@ -243,10 +249,10 @@ export default function TechnologyPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-3xl font-headline font-black italic group-hover:text-white transition-colors">
+                    <h3 className="text-3xl font-headline font-black italic group-hover:text-white transition-colors duration-500">
                       {stack.category}
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed font-semibold group-hover:text-white/80 transition-colors">
+                    <p className="text-muted-foreground leading-relaxed font-semibold group-hover:text-white/90 transition-colors duration-500">
                       {stack.description}
                     </p>
                   </div>
@@ -256,7 +262,8 @@ export default function TechnologyPage() {
                       <Badge 
                         key={tIdx} 
                         className={cn(
-                          "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white border-none shadow-md transition-all group-hover:bg-white group-hover:text-foreground",
+                          "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white border-none shadow-md transition-all",
+                          "group-hover:bg-white/20 group-hover:text-white group-hover:backdrop-blur-md",
                           tech.color
                         )}
                       >
@@ -267,8 +274,8 @@ export default function TechnologyPage() {
                 </div>
 
                 <div className="relative z-10 pt-8 mt-8 border-t border-slate-100 group-hover:border-white/20 flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white/60">Expert Proficiency</span>
-                  <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-white/10 flex items-center justify-center transition-colors">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white/70 transition-colors">Expert Proficiency</span>
+                  <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-white/20 flex items-center justify-center transition-colors">
                     <Zap className="w-5 h-5 text-slate-300 group-hover:text-white" />
                   </div>
                 </div>
@@ -288,13 +295,13 @@ export default function TechnologyPage() {
           </div>
           <h2 className="text-5xl md:text-8xl font-headline font-black leading-tight italic drop-shadow-2xl">
             Built for <span className="text-white">Performance.</span> <br />
-            Designed for <span className="text-secondary italic">Scale.</span>
+            Designed for <span className="text-yellow-300 italic">Scale.</span>
           </h2>
-          <p className="text-xl md:text-2xl text-white/80 leading-relaxed max-w-3xl mx-auto font-medium">
-            Our technology choices are driven by project goals, not trends. We select the best-in-class tools to ensure your product remains competitive and maintainable for years to come.
+          <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto font-bold">
+            Our technology choices are driven by project goals, not trends. We select best-in-class tools to ensure your product remains competitive and maintainable.
           </p>
           <div className="pt-6">
-            <Button size="lg" className="rounded-full px-16 h-20 text-xl font-headline bg-white text-primary hover:bg-foreground hover:text-white transition-all duration-500 shadow-2xl group active:scale-95">
+            <Button size="lg" className="rounded-full px-16 h-20 text-xl font-headline bg-white text-primary hover:bg-foreground hover:text-white transition-all duration-500 shadow-2xl group active:scale-95 border-none">
               Request Stack Audit <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-4" />
             </Button>
           </div>
@@ -305,3 +312,4 @@ export default function TechnologyPage() {
     </main>
   );
 }
+
