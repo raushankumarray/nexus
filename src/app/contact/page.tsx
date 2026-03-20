@@ -60,11 +60,19 @@ const contactInfo = [
 ];
 
 const timeSlots = [
-  "10:00 AM - 11:00 AM",
-  "11:30 AM - 12:30 PM",
-  "02:00 PM - 03:00 PM",
-  "03:30 PM - 04:30 PM",
-  "05:00 PM - 06:00 PM"
+  "10:00 AM - 10:30 AM",
+  "10:30 AM - 11:00 AM",
+  "11:00 AM - 11:30 AM",
+  "11:30 AM - 12:00 PM",
+  "12:00 PM - 12:30 PM",
+  "02:00 PM - 02:30 PM",
+  "02:30 PM - 03:00 PM",
+  "03:00 PM - 03:30 PM",
+  "03:30 PM - 04:00 PM",
+  "04:00 PM - 04:30 PM",
+  "04:30 PM - 05:00 PM",
+  "05:00 PM - 05:30 PM",
+  "05:30 PM - 06:00 PM"
 ];
 
 export default function ContactPage() {
@@ -144,7 +152,7 @@ export default function ContactPage() {
                       <div className="space-y-1">
                         <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-white/60 transition-colors">Virtual Consultation</h4>
                         <p className="text-xl font-headline font-black group-hover:text-white transition-colors">Schedule Virtual Meeting</p>
-                        <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">Book a 1-on-1 discovery call with our tech leads.</p>
+                        <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">Book a 30-min discovery call with our tech leads.</p>
                       </div>
                       <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
                     </div>
@@ -153,7 +161,7 @@ export default function ContactPage() {
                     <DialogHeader className="space-y-4">
                       <DialogTitle className="text-3xl font-headline font-black italic">Schedule Your <span className="text-emerald-600">Meeting</span></DialogTitle>
                       <DialogDescription className="text-lg font-medium">
-                        Fill in your details and choose a time slot for a technical consultation.
+                        Fill in your details and choose a 30-minute time slot for a technical consultation.
                       </DialogDescription>
                     </DialogHeader>
                     <form className="space-y-6 pt-6" onSubmit={(e) => { e.preventDefault(); setIsDialogOpen(false); }}>
@@ -181,7 +189,7 @@ export default function ContactPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Time Slot</label>
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Time Slot (30 mins)</label>
                           <Select>
                             <SelectTrigger className="h-14 rounded-xl border-2 focus:ring-emerald-600">
                               <SelectValue placeholder="Choose Time Slot" />
