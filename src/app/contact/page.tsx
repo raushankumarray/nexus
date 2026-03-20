@@ -1,15 +1,240 @@
+
 "use client";
 
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Send, 
+  MessageSquare, 
+  Sparkles, 
+  Zap, 
+  Globe,
+  Clock,
+  CheckCircle2
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const contactInfo = [
+  {
+    title: "Email Us",
+    value: "hello@npbmedia.io",
+    description: "Our support team will get back to you within 24 hours.",
+    icon: Mail,
+    color: "bg-orange-500",
+    shadow: "shadow-orange-500/20"
+  },
+  {
+    title: "Call Us",
+    value: "+91 98765 43210",
+    description: "Mon-Fri from 9am to 6pm IST.",
+    icon: Phone,
+    color: "bg-blue-600",
+    shadow: "shadow-blue-600/20"
+  },
+  {
+    title: "Visit Our Studio",
+    value: "Innovation Hub, Begusarai, Bihar",
+    description: "Come say hello at our local engineering lab.",
+    icon: MapPin,
+    color: "bg-emerald-600",
+    shadow: "shadow-emerald-600/20"
+  }
+];
 
 export default function ContactPage() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Logic for form submission would go here
+  };
+
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <Navbar />
-      <div className="flex-1 flex items-center justify-center">
-        <h1 className="text-2xl font-headline font-bold">Contact - Coming Soon</h1>
-      </div>
+
+      {/* Hero Overview Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
+        <div className="absolute inset-0 grid-bg opacity-10" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom duration-1000">
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/20 border-2 border-white/30 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
+              <Sparkles className="w-5 h-5 text-yellow-300" />
+              Get In Touch
+            </div>
+            <h1 className="text-6xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
+              Let's Start a <span className="italic text-yellow-300">Conversation</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
+              Have a project in mind or just want to say hello? Our technical experts are ready to listen and help you scale your digital vision.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Contact Content */}
+      <section className="py-24 bg-background relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            {/* Left Side: Contact Info */}
+            <div className="lg:col-span-5 space-y-12">
+              <div className="space-y-6">
+                <h2 className="text-4xl font-headline font-black italic">Contact <span className="text-primary">Information</span></h2>
+                <p className="text-muted-foreground text-lg font-medium leading-relaxed">
+                  We're here to help you navigate your digital transformation. Reach out through any of these channels or visit our office.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {contactInfo.map((info, idx) => (
+                  <div 
+                    key={idx} 
+                    className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-primary"
+                  >
+                    <div className={cn(
+                      "w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-primary shrink-0",
+                      info.color,
+                      info.shadow
+                    )}>
+                      <info.icon className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-white/60 transition-colors">{info.title}</h4>
+                      <p className="text-xl font-headline font-black group-hover:text-white transition-colors">{info.value}</p>
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">{info.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
+                <div className="absolute inset-0 grid-bg opacity-10" />
+                <div className="relative z-10 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Clock className="text-primary w-6 h-6" />
+                    <h4 className="text-xl font-headline font-black italic">Business Hours</h4>
+                  </div>
+                  <div className="space-y-2 font-medium text-slate-300">
+                    <p className="flex justify-between"><span>Monday - Friday</span> <span>9:00 AM - 6:00 PM</span></p>
+                    <p className="flex justify-between"><span>Saturday</span> <span>10:00 AM - 2:00 PM</span></p>
+                    <p className="flex justify-between"><span>Sunday</span> <span className="text-primary">Closed</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: Contact Form */}
+            <div className="lg:col-span-7">
+              <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
+                <div className="p-10 md:p-16 space-y-10">
+                  <div className="space-y-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest">
+                      <MessageSquare className="w-4 h-4" />
+                      Send an Inquiry
+                    </div>
+                    <h3 className="text-3xl font-headline font-black italic">Tell Us About Your <span className="text-primary">Next Big Idea</span></h3>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
+                        <Input 
+                          placeholder="Raushan Kumar" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address</label>
+                        <Input 
+                          type="email" 
+                          placeholder="raushan@example.com" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
+                        <Input 
+                          type="tel" 
+                          placeholder="+91 00000 00000" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
+                        <Input 
+                          placeholder="Project Inquiry" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Your Message</label>
+                      <Textarea 
+                        placeholder="Tell us about your project requirements..." 
+                        className="min-h-[200px] rounded-3xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium p-6 resize-none"
+                      />
+                    </div>
+
+                    <Button className="w-full h-20 rounded-[2rem] text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-2xl group relative overflow-hidden">
+                      <span className="relative z-10 flex items-center gap-3">
+                        Send Message <Send className="w-6 h-6 transition-transform group-hover:translate-x-2 group-hover:-translate-y-2" />
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-0 group-hover:opacity-20 transition-opacity" />
+                    </Button>
+                  </form>
+
+                  <div className="pt-8 border-t border-slate-100 flex flex-wrap gap-6">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> Secure Form
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> 24/7 Monitoring
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> Privacy Protected
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Section */}
+      <section className="py-24 bg-foreground relative overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-10" />
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-12 relative z-10">
+          <h2 className="text-4xl md:text-6xl font-headline font-black text-white italic">Trusted by <span className="text-primary">Global Leaders</span></h2>
+          <div className="flex flex-wrap justify-center gap-12 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+            <div className="flex items-center gap-3 text-white">
+              <Globe className="w-10 h-10" />
+              <span className="text-2xl font-headline font-black italic"> Begusarai Tech</span>
+            </div>
+            <div className="flex items-center gap-3 text-white">
+              <Zap className="w-10 h-10" />
+              <span className="text-2xl font-headline font-black italic"> RapidScale</span>
+            </div>
+            <div className="flex items-center gap-3 text-white">
+              <Sparkles className="w-10 h-10" />
+              <span className="text-2xl font-headline font-black italic"> InnovateX</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
