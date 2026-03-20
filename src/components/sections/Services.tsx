@@ -2,13 +2,14 @@
 
 import React from "react";
 import { Code2, Globe, Smartphone, Building2, Cloud, Network, ArrowRight, Zap, Sparkles } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const services = [
   {
     title: "Custom Software Development",
-    description: "Tailored applications designed specifically for your unique business requirements.",
+    description: "Tailored applications designed specifically for your unique business requirements and workflows.",
     icon: Code2,
     color: "bg-orange-500",
     hoverBg: "group-hover:bg-orange-600",
@@ -18,7 +19,7 @@ const services = [
   },
   {
     title: "Web Application Development",
-    description: "Secure, scalable, and high-performance web solutions using modern frameworks.",
+    description: "Secure, scalable, and high-performance web solutions using modern React and Node.js frameworks.",
     icon: Globe,
     color: "bg-blue-600",
     hoverBg: "group-hover:bg-blue-700",
@@ -28,7 +29,7 @@ const services = [
   },
   {
     title: "Mobile Application Development",
-    description: "Feature-rich mobile applications for Android and iOS platforms.",
+    description: "Feature-rich mobile applications for Android and iOS platforms with seamless UX.",
     icon: Smartphone,
     color: "bg-emerald-600",
     hoverBg: "group-hover:bg-emerald-700",
@@ -38,7 +39,7 @@ const services = [
   },
   {
     title: "Enterprise Software Solutions",
-    description: "Advanced systems to streamline operations and increase productivity.",
+    description: "Advanced systems like ERP and CRM to streamline operations and increase business productivity.",
     icon: Building2,
     color: "bg-indigo-600",
     hoverBg: "group-hover:bg-indigo-700",
@@ -48,7 +49,7 @@ const services = [
   },
   {
     title: "Cloud Solutions",
-    description: "Infrastructure setup, migration, and optimization for scalable systems.",
+    description: "Infrastructure setup, migration, and optimization using AWS, Azure, and Google Cloud.",
     icon: Cloud,
     color: "bg-purple-600",
     hoverBg: "group-hover:bg-purple-700",
@@ -58,7 +59,7 @@ const services = [
   },
   {
     title: "API Development & Integration",
-    description: "Seamless connectivity between platforms and third-party services.",
+    description: "Seamless connectivity between platforms, microservices, and third-party SaaS tools.",
     icon: Network,
     color: "bg-pink-600",
     hoverBg: "group-hover:bg-pink-700",
@@ -85,7 +86,7 @@ export function Services() {
               Our <span className="text-primary italic">Services</span>
             </h2>
             <p className="text-2xl text-muted-foreground leading-relaxed font-semibold">
-              Hover to explore how we deliver powerful solutions that combine creativity, technology, and strategy.
+              Hover over our expertise to see how we deliver powerful, results-driven software solutions.
             </p>
           </div>
           <div className="hidden md:block">
@@ -100,7 +101,7 @@ export function Services() {
             <Card 
               key={index} 
               className={cn(
-                "group relative border-none transition-all duration-500 rounded-[4rem] overflow-hidden bg-white shadow-2xl p-4 min-h-[400px] flex flex-col justify-center cursor-pointer",
+                "group relative border-none transition-all duration-500 rounded-[4rem] overflow-hidden bg-white shadow-2xl p-4 min-h-[480px] flex flex-col justify-center cursor-pointer",
                 service.anim
               )}
             >
@@ -109,7 +110,7 @@ export function Services() {
                 service.hoverBg
               )} />
               
-              <div className="relative z-10 p-10 flex flex-col items-center text-center transition-all duration-500 group-hover:-translate-y-4">
+              <div className="relative z-10 p-8 flex flex-col items-center text-center transition-all duration-500 group-hover:-translate-y-6">
                 <div className={cn(
                   "w-24 h-24 rounded-[2.5rem] flex items-center justify-center transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg] shadow-2xl text-white mb-10",
                   service.color,
@@ -122,13 +123,18 @@ export function Services() {
                   {service.title}
                 </h3>
 
-                <div className="overflow-hidden max-h-0 group-hover:max-h-40 transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100">
-                  <p className="text-lg leading-relaxed text-white/90 font-medium px-4">
+                <div className="overflow-hidden max-h-0 group-hover:max-h-[300px] transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                  <p className="text-lg leading-relaxed text-white/90 font-medium px-4 mb-8">
                     {service.description}
                   </p>
-                  <div className="mt-8 flex items-center justify-center gap-2 text-white font-black">
-                    Explore <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="rounded-full px-8 py-6 h-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-foreground transition-all duration-300 font-black uppercase tracking-widest text-sm flex items-center gap-2 group/btn"
+                  >
+                    Explore Service 
+                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
+                  </Button>
                 </div>
               </div>
             </Card>
