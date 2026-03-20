@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,7 +13,12 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserPlus, ShieldCheck, Sparkles, ArrowLeft } from "lucide-react";
+import { UserPlus, ShieldCheck, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { useAuth, useFirestore } from "@/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const signupSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
@@ -31,13 +36,44 @@ const signupSchema = z.object({
 type SignupValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
+  const db = useFirestore();
+  const router = useRouter();
+  const { toast } = useToast();
+
   const { register, handleSubmit, formState: { errors } } = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: SignupValues) => {
-    console.log("Signup data:", data);
-    // Submit logic
+  const onSubmit = async (values: SignupValues) => {
+    setIsLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // Create user profile in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        id: user.uid,
+        email: values.email,
+        fullName: values.fullName,
+        mobile: values.mobile,
+        dob: values.dob,
+        provider: "password",
+        createdAt: serverTimestamp(),
+      });
+
+      toast({ title: "Account created!", description: "Welcome to NPB Media." });
+      router.push("/");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Signup Failed",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,9 +98,7 @@ export default function SignupPage() {
                 <CardTitle className="text-3xl font-headline font-black italic">
                   Join <span className="text-primary">NPB</span>
                 </CardTitle>
-                <CardDescription className="text-sm font-medium">
-                  Create your global professional account.
-                </CardDescription>
+                <CardDescription className="text-sm font-medium">Create your global professional account.</CardDescription>
               </div>
             </CardHeader>
             
@@ -73,87 +107,54 @@ export default function SignupPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</Label>
-                    <Input 
-                      {...register("fullName")}
-                      placeholder="Enter Name" 
-                      className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-base font-medium px-6" 
-                    />
-                    {errors.fullName && <p className="text-[10px] text-destructive font-black ml-2 uppercase tracking-widest">{errors.fullName.message}</p>}
+                    <Input {...register("fullName")} placeholder="Enter Name" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
+                    {errors.fullName && <p className="text-[10px] text-destructive font-black ml-2">{errors.fullName.message}</p>}
                   </div>
-                  
                   <div className="space-y-2">
                     <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address</Label>
-                    <Input 
-                      {...register("email")}
-                      type="email" 
-                      placeholder="Enter Email" 
-                      className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-base font-medium px-6" 
-                    />
-                    {errors.email && <p className="text-[10px] text-destructive font-black ml-2 uppercase tracking-widest">{errors.email.message}</p>}
+                    <Input {...register("email")} type="email" placeholder="Enter Email" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
+                    {errors.email && <p className="text-[10px] text-destructive font-black ml-2">{errors.email.message}</p>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Mobile Number</Label>
-                    <Input 
-                      {...register("mobile")}
-                      type="tel" 
-                      placeholder="Enter Mobile" 
-                      className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-base font-medium px-6" 
-                    />
-                    {errors.mobile && <p className="text-[10px] text-destructive font-black ml-2 uppercase tracking-widest">{errors.mobile.message}</p>}
+                    <Input {...register("mobile")} type="tel" placeholder="Enter Mobile" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
+                    {errors.mobile && <p className="text-[10px] text-destructive font-black ml-2">{errors.mobile.message}</p>}
                   </div>
-                  
                   <div className="space-y-2">
                     <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Date of Birth</Label>
-                    <Input 
-                      {...register("dob")}
-                      type="date" 
-                      className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-base font-medium px-6" 
-                    />
-                    {errors.dob && <p className="text-[10px] text-destructive font-black ml-2 uppercase tracking-widest">{errors.dob.message}</p>}
+                    <Input {...register("dob")} type="date" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
+                    {errors.dob && <p className="text-[10px] text-destructive font-black ml-2">{errors.dob.message}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Create Password</Label>
-                  <Input 
-                    {...register("password")}
-                    type="password" 
-                    placeholder="Min 6 chars (A, a, 1, @)" 
-                    className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-base font-medium px-6" 
-                  />
-                  {errors.password && <p className="text-[10px] text-destructive font-black ml-2 uppercase tracking-widest">{errors.password.message}</p>}
+                  <Input {...register("password")} type="password" placeholder="Min 6 chars (A, a, 1, @)" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
+                  {errors.password && <p className="text-[10px] text-destructive font-black ml-2">{errors.password.message}</p>}
                 </div>
                 
-                <Button className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl shadow-primary/20 group relative overflow-hidden border-none">
-                   Create Account <UserPlus className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" />
+                <Button disabled={isLoading} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group relative border-none">
+                   {isLoading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Creating...</> : "Create Account"} 
+                   {!isLoading && <UserPlus className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" />}
                 </Button>
               </form>
               
               <div className="text-center space-y-4 pt-4 border-t border-slate-50">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Already have an account?{" "}
-                  <Link href="/login" className="text-primary font-black hover:underline uppercase tracking-widest text-xs">
-                    Sign In Here
-                  </Link>
+                  Already have an account? <Link href="/login" className="text-primary font-black hover:underline uppercase tracking-widest text-xs">Sign In Here</Link>
                 </p>
-                
-                <div className="flex items-center gap-4 justify-center">
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> AES-256 Encrypted
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> NPB Guard
-                  </div>
+                <div className="flex items-center gap-4 justify-center opacity-60">
+                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> AES-256 Encrypted</div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest"><Sparkles className="w-3.5 h-3.5 text-yellow-500" /> NPB Guard</div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
       <Footer />
     </main>
   );

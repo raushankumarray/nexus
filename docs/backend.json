@@ -1,328 +1,80 @@
+
 {
   "entities": {
     "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
       "type": "object",
-      "description": "Represents a user profile on NPB Media, storing non-sensitive information for both local and external (e.g., Google) authenticated users. Passwords and sensitive authentication credentials are managed by an external system.",
+      "description": "User profile information tied to Firebase Auth UID.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the UserProfile entity, typically provided by an external authentication system."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address, used for communication and identification.",
-          "format": "email"
-        },
-        "firstName": {
-          "type": "string",
-          "description": "The user's first name."
-        },
-        "lastName": {
-          "type": "string",
-          "description": "The user's last name."
-        },
-        "provider": {
-          "type": "string",
-          "description": "Indicates the authentication provider used (e.g., 'local', 'google')."
-        },
-        "profilePictureUrl": {
-          "type": "string",
-          "description": "URL to the user's profile picture, if available (e.g., from social login).",
-          "format": "uri"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the user profile was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the user profile was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "mobile": { "type": "string" },
+        "dob": { "type": "string" },
+        "provider": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "email",
-        "firstName",
-        "lastName",
-        "provider",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "email", "fullName", "createdAt"]
     },
     "Service": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Service",
       "type": "object",
-      "description": "Represents a service offered by NPB Media, detailing its features and benefits for display on the website's interactive services showcase.",
+      "description": "Product/Service details managed by admins.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Service entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The name or title of the service."
-        },
-        "shortDescription": {
-          "type": "string",
-          "description": "A concise, AI-assisted summary of the service, used for initial presentation."
-        },
-        "longDescription": {
-          "type": "string",
-          "description": "A detailed description of the service, highlighting its features and value proposition."
-        },
-        "iconUrl": {
-          "type": "string",
-          "description": "URL to an icon representing the service, for visual identification.",
-          "format": "uri"
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL to a primary image associated with the service, for visual engagement.",
-          "format": "uri"
-        },
-        "displayOrder": {
-          "type": "number",
-          "description": "A numerical value indicating the order in which services should be displayed on the website."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the service record was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the service record was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "isActive": { "type": "boolean" }
       },
-      "required": [
-        "id",
-        "title",
-        "shortDescription",
-        "longDescription",
-        "iconUrl",
-        "imageUrl",
-        "displayOrder",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "title", "description", "isActive"]
     },
-    "CaseStudy": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "CaseStudy",
+    "CareerOpportunity": {
+      "title": "CareerOpportunity",
       "type": "object",
-      "description": "Represents a detailed case study or portfolio project by NPB Media, showcasing successful work and client solutions within the dynamic portfolio area.",
+      "description": "Job listings managed by admins.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the CaseStudy entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title of the case study or project."
-        },
-        "clientName": {
-          "type": "string",
-          "description": "The name of the client for whom the project was undertaken."
-        },
-        "industry": {
-          "type": "string",
-          "description": "The industry sector of the client or project."
-        },
-        "briefSummary": {
-          "type": "string",
-          "description": "A concise, AI-assisted summary of the case study's key aspects and outcomes."
-        },
-        "fullDescription": {
-          "type": "string",
-          "description": "The comprehensive narrative of the project, including challenges, solutions, and measurable results."
-        },
-        "projectUrl": {
-          "type": "string",
-          "description": "URL to the live project or a relevant external link, if applicable.",
-          "format": "uri"
-        },
-        "thumbnailUrl": {
-          "type": "string",
-          "description": "URL to the thumbnail image for displaying the case study in listings and previews.",
-          "format": "uri"
-        },
-        "galleryImageUrls": {
-          "type": "array",
-          "description": "An array of URLs for images showcasing various aspects of the project work.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "description": "An array of keywords or tags to categorize and filter case studies.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the case study record was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp when the case study record was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "closed"] }
       },
-      "required": [
-        "id",
-        "title",
-        "clientName",
-        "briefSummary",
-        "fullDescription",
-        "thumbnailUrl",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "title", "status"]
     },
-    "ContactSubmission": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ContactSubmission",
+    "Inquiry": {
+      "title": "Inquiry",
       "type": "object",
-      "description": "Stores information submitted through the website's streamlined contact form, enabling efficient lead capture and visitor inquiry management.",
+      "description": "Contact form submissions.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the ContactSubmission entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The full name of the person submitting the inquiry."
-        },
-        "email": {
-          "type": "string",
-          "description": "The email address of the submitter for follow-up communication.",
-          "format": "email"
-        },
-        "company": {
-          "type": "string",
-          "description": "The name of the company the submitter represents (optional)."
-        },
-        "subject": {
-          "type": "string",
-          "description": "The subject line or brief topic of the inquiry."
-        },
-        "message": {
-          "type": "string",
-          "description": "The full message content from the submitter."
-        },
-        "submissionTime": {
-          "type": "string",
-          "description": "Timestamp indicating when the contact form was submitted.",
-          "format": "date-time"
-        },
-        "isRead": {
-          "type": "boolean",
-          "description": "A flag indicating whether the submission has been reviewed by an internal team member."
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "email",
-        "subject",
-        "message",
-        "submissionTime",
-        "isRead"
-      ]
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "google.com", "anonymous"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores non-sensitive user profile information, directly tied to the Firebase Authentication UID. Access is restricted to the authenticated user owning the profile. Includes denormalized 'provider' for authorization checks."
-        }
-      },
-      {
-        "path": "/services/{serviceId}",
-        "definition": {
-          "entityName": "Service",
-          "schema": {
-            "$ref": "#/backend/entities/Service"
-          },
-          "description": "Stores details of services offered by NPB Media. These documents are publicly readable by all users. CRUD operations (create, update, delete) are restricted to authenticated administrators.",
-          "params": [
-            {
-              "name": "serviceId",
-              "description": "The unique identifier for a specific service."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/caseStudies/{caseStudyId}",
-        "definition": {
-          "entityName": "CaseStudy",
-          "schema": {
-            "$ref": "#/backend/entities/CaseStudy"
-          },
-          "description": "Stores detailed case studies and portfolio projects by NPB Media. These documents are publicly readable by all users. CRUD operations are restricted to authenticated administrators.",
-          "params": [
-            {
-              "name": "caseStudyId",
-              "description": "The unique identifier for a specific case study."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/contactSubmissions/{submissionId}",
-        "definition": {
-          "entityName": "ContactSubmission",
-          "schema": {
-            "$ref": "#/backend/entities/ContactSubmission"
-          },
-          "description": "Stores inquiries submitted through the contact form. Anonymous users can create (write) submissions, but only authenticated administrators can read and update (e.g., set 'isRead' status) these documents.",
-          "params": [
-            {
-              "name": "submissionId",
-              "description": "The unique identifier for a contact form submission."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "AdminRole",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "A collection used for Database Access Control (DBAC) to grant administrative privileges. An empty document exists at this path if the corresponding userId is an administrator. This is used to check administrative roles without custom claims.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of a user who has been granted administrative privileges."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The recommended Firestore structure for NPB Media prioritizes secure, scalable, and debuggable access by strictly adhering to the core design principles. This involves a clear segregation of data based on its security posture (public, user-private, admin-private) and a consistent application of access modeling patterns.\n\n**Authorization Independence (CRITICAL):**\n\n1.  **User Profiles (`/users/{userId}`):** Authorization independence is achieved through path-based ownership. A user's profile document `users/{userId}` is directly tied to their `request.auth.uid`. Security rules can simply compare `request.auth.uid` to `{userId}` in the path, eliminating the need for `get()` calls to other documents to determine ownership. This allows for atomic user profile operations.\n\n2.  **Public Content (`/services/{serviceId}`, `/caseStudies/{caseStudyId}`):** These collections are designed for public read access. Since all documents are globally readable, there's no inherent authorization dependency between documents, thus no `get()` calls are required for reading. Administrative write access to these public documents (for content management) is granted by checking the existence of the user's ID in the dedicated `/roles_admin/{userId}` collection. This check is an atomic `exists()` operation, ensuring authorization independence for content modification.\n\n3.  **Contact Submissions (`/contactSubmissions/{submissionId}`):** Anonymous users can create these, but only administrators can read or update them. Authorization for administrators to read/update is determined by their presence in the `/roles_admin/{userId}` collection, using an atomic `exists()` check. No `get()` calls on other `ContactSubmission` documents or parent documents are needed for authorization.\n\n**QAPs (Rules are not Filters):**\n\n1.  **Public Content (`/services`, `/caseStudies`):** Both collections explicitly grant public read access. This means `list` operations for these collections will return all documents, as intended, without requiring any client-side filtering or complex server-side rule evaluations that filter results. The security rules fully define the permissible data for `list` operations.\n\n2.  **User Profiles (`/users`):** `list` operations on the root `/users` collection are generally not permitted for security and privacy reasons, preventing users from seeing a directory of all other users' profiles. Access is restricted to `get` operations on individual, owned profiles, or specific, public sub-collections if they were to exist.\n\n3.  **Contact Submissions (`/contactSubmissions`):** `list` operations are secured by restricting them to only authenticated administrators. The security rule will verify the user's admin role using `exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid))` before allowing any `list` operation. This ensures that only authorized users can list the submissions, maintaining the QAP principle.\n\n**Structural Segregation & Access Modeling:**\n\n*   **User-Owned Private Data:** `users/{userId}` uses path-based ownership, a highly secure and simple pattern for individual user data.\n*   **Public Read-Only Data:** `services/{serviceId}` and `caseStudies/{caseStudyId}` hold data intended for everyone. Their security posture is globally readable, simplifying rules.\n*   **Admin-Managed Data:** `contactSubmissions/{submissionId}` is writeable by anyone, but readable only by admins, demonstrating a specific internal management need.\n*   **Global Roles (DBAC):** `/roles_admin/{userId}` standardizes administrator access control via a simple document existence check, avoiding custom claims and centralizing role management.\n\nThis structure minimizes complexity in security rules, enhances debuggability, and provides a solid foundation for secure and performant data access."
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user profiles."
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/Service" },
+      "description": "Public services/products."
+    },
+    "/careers/{careerId}": {
+      "schema": { "$ref": "#/entities/CareerOpportunity" },
+      "description": "Public career listings."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": { "$ref": "#/entities/Inquiry" },
+      "description": "Private contact submissions."
+    }
   }
 }

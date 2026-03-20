@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,12 +10,51 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, Sparkles, ShieldCheck, UserPlus, Lock } from "lucide-react";
+import { LogIn, Sparkles, ShieldCheck, UserPlus, Lock, Chrome } from "lucide-react";
+import { useAuth } from "@/firebase";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
-  const handleLogin = (e: React.FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic for standard user login
+    setIsLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({ title: "Welcome back!", description: "Successfully logged in." });
+      router.push("/");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      toast({ title: "Welcome back!", description: "Successfully logged in with Google." });
+      router.push("/");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Google Login Failed",
+        description: error.message,
+      });
+    }
   };
 
   return (
@@ -24,7 +63,6 @@ export default function LoginPage() {
       
       <div className="flex-1 flex items-center justify-center p-6 pt-32 pb-20 relative z-10">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] -z-10 animate-pulse delay-700" />
         
         <div className="w-full max-w-md space-y-6">
           <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[3rem] bg-white overflow-hidden animate-in fade-in zoom-in duration-700">
@@ -38,7 +76,7 @@ export default function LoginPage() {
                   Welcome <span className="text-primary">Back</span>
                 </CardTitle>
                 <CardDescription className="text-sm font-medium">
-                  Enter your credentials to access the NPB Media portal.
+                  Access the NPB Media portal.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -47,12 +85,11 @@ export default function LoginPage() {
               <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">
-                      Email Address
-                    </Label>
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address</Label>
                     <Input 
-                      id="email" 
                       type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter Email" 
                       className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" 
                       required
@@ -60,17 +97,11 @@ export default function LoginPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">
-                        Password
-                      </Label>
-                      <Link href="#" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">
-                        Forgot?
-                      </Link>
-                    </div>
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Password</Label>
                     <Input 
-                      id="password" 
                       type="password" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter Password" 
                       className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" 
                       required
@@ -78,18 +109,22 @@ export default function LoginPage() {
                   </div>
                 </div>
                 
-                <Button className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl shadow-primary/20 group relative overflow-hidden border-none">
-                   Sign In <LogIn className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <Button disabled={isLoading} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl shadow-primary/20 group relative overflow-hidden border-none">
+                   {isLoading ? "Signing In..." : "Sign In"} <LogIn className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </form>
               
-              <div className="text-center space-y-4 pt-4">
+              <div className="text-center space-y-4">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-100" /></div>
                   <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-4 text-muted-foreground font-black tracking-widest">Or</span></div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
+                <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:bg-slate-50 font-black uppercase tracking-widest text-xs">
+                  <Chrome className="mr-2 w-4 h-4 text-primary" /> Login with Google
+                </Button>
+
+                <div className="grid grid-cols-1 gap-3 pt-2">
                   <Link href="/signup">
                     <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-primary hover:bg-primary/5 font-black uppercase tracking-widest text-xs group">
                       <UserPlus className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -103,21 +138,11 @@ export default function LoginPage() {
                     </Button>
                   </Link>
                 </div>
-
-                <div className="flex items-center gap-4 justify-center pt-4">
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Secure
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                    <Sparkles className="w-3.5 h-3.5 text-yellow-500" /> NPB AI
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
       <Footer />
     </main>
   );
