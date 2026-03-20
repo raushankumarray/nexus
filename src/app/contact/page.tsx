@@ -16,6 +16,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
   Mail, 
   Phone, 
   Video, 
@@ -50,6 +57,14 @@ const contactInfo = [
     color: "bg-blue-600",
     shadow: "shadow-blue-600/20"
   }
+];
+
+const timeSlots = [
+  "10:00 AM - 11:00 AM",
+  "11:30 AM - 12:30 PM",
+  "02:00 PM - 03:00 PM",
+  "03:30 PM - 04:30 PM",
+  "05:00 PM - 06:00 PM"
 ];
 
 export default function ContactPage() {
@@ -138,16 +153,55 @@ export default function ContactPage() {
                     <DialogHeader className="space-y-4">
                       <DialogTitle className="text-3xl font-headline font-black italic">Schedule Your <span className="text-emerald-600">Meeting</span></DialogTitle>
                       <DialogDescription className="text-lg font-medium">
-                        Fill in your details and we will send you a calendar invite for a technical consultation.
+                        Fill in your details and choose a time slot for a technical consultation.
                       </DialogDescription>
                     </DialogHeader>
                     <form className="space-y-6 pt-6" onSubmit={(e) => { e.preventDefault(); setIsDialogOpen(false); }}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Input placeholder="Full Name" className="h-14 rounded-xl border-2" />
-                        <Input placeholder="Preferred Date" type="date" className="h-14 rounded-xl border-2" />
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
+                          <Input placeholder="Enter Name" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Work Email</label>
+                          <Input placeholder="Enter Email" type="email" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
+                        </div>
                       </div>
-                      <Input placeholder="Work Email" type="email" className="h-14 rounded-xl border-2" />
-                      <Button className="w-full h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline text-xl">
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
+                          <Input placeholder="Enter Phone No." type="tel" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Schedule Date</label>
+                          <Input type="date" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Time Slot</label>
+                          <Select>
+                            <SelectTrigger className="h-14 rounded-xl border-2 focus:ring-emerald-600">
+                              <SelectValue placeholder="Choose Time Slot" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-none shadow-2xl">
+                              {timeSlots.map((slot) => (
+                                <SelectItem key={slot} value={slot} className="py-3 rounded-lg">
+                                  {slot}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
+                          <Input placeholder="Enter Subject" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
+                        </div>
+                      </div>
+
+                      <Button className="w-full h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline text-xl transition-all shadow-xl shadow-emerald-600/20 active:scale-95">
                         Request Schedule <CalendarDays className="ml-2 w-6 h-6" />
                       </Button>
                     </form>
@@ -197,7 +251,7 @@ export default function ContactPage() {
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
                         <Input 
-                          placeholder="Raushan Kumar" 
+                          placeholder="Enter Name" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
                       </div>
@@ -205,7 +259,7 @@ export default function ContactPage() {
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address</label>
                         <Input 
                           type="email" 
-                          placeholder="raushan@example.com" 
+                          placeholder="Enter Email" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
                       </div>
@@ -216,14 +270,14 @@ export default function ContactPage() {
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
                         <Input 
                           type="tel" 
-                          placeholder="+91 88773 00114" 
+                          placeholder="Enter Phone No." 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
                       </div>
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
                         <Input 
-                          placeholder="Project Inquiry" 
+                          placeholder="Enter Subject" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
                       </div>
