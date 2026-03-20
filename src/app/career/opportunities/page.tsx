@@ -89,64 +89,76 @@ export default function OpportunitiesPage() {
       {/* Job List Section */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {roles.map((role, i) => (
-              <Card 
-                key={i} 
-                className="group border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden hover:-translate-y-2 transition-all duration-500"
-              >
-                <CardContent className="p-10 flex flex-col h-full space-y-8">
-                  <div className="flex justify-between items-start">
-                    <div className={cn(
-                      "w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-700 group-hover:rotate-[360deg] shadow-xl",
-                      role.color
-                    )}>
-                      <role.icon className="w-8 h-8" />
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge variant="outline" className="px-4 py-1.5 rounded-full border-2 border-slate-100 font-black uppercase text-[10px] tracking-widest text-muted-foreground">
-                        {role.type}
-                      </Badge>
-                      <Badge className={cn("px-4 py-1.5 rounded-full text-white border-none font-black uppercase text-[10px] tracking-widest", role.color)}>
-                        {role.category}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 flex-1">
-                    <h3 className="text-3xl font-headline font-black italic group-hover:text-primary transition-colors">
-                      {role.title}
-                    </h3>
-                    <div className="flex items-center gap-6 text-muted-foreground font-bold text-sm">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-primary" />
-                        {role.location}
+          {roles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {roles.map((role, i) => (
+                <Card 
+                  key={i} 
+                  className="group border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden hover:-translate-y-2 transition-all duration-500"
+                >
+                  <CardContent className="p-10 flex flex-col h-full space-y-8">
+                    <div className="flex justify-between items-start">
+                      <div className={cn(
+                        "w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-700 group-hover:rotate-[360deg] shadow-xl",
+                        role.color
+                      )}>
+                        <role.icon className="w-8 h-8" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-primary" />
-                        Immediate Start
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge variant="outline" className="px-4 py-1.5 rounded-full border-2 border-slate-100 font-black uppercase text-[10px] tracking-widest text-muted-foreground">
+                          {role.type}
+                        </Badge>
+                        <Badge className={cn("px-4 py-1.5 rounded-full text-white border-none font-black uppercase text-[10px] tracking-widest", role.color)}>
+                          {role.category}
+                        </Badge>
                       </div>
                     </div>
-                    <p className="text-muted-foreground leading-relaxed font-semibold">
-                      {role.description}
-                    </p>
-                  </div>
 
-                  <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
-                    <Button className={cn(
-                      "rounded-full px-8 h-14 text-sm font-black uppercase tracking-widest text-white border-none group/btn shadow-lg",
-                      role.color
-                    )}>
-                      Apply Now <ArrowUpRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
-                    </Button>
-                    <Link href="/contact" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline">
-                      Questions?
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className="space-y-4 flex-1">
+                      <h3 className="text-3xl font-headline font-black italic group-hover:text-primary transition-colors">
+                        {role.title}
+                      </h3>
+                      <div className="flex items-center gap-6 text-muted-foreground font-bold text-sm">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-primary" />
+                          {role.location}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          Immediate Start
+                        </div>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed font-semibold">
+                        {role.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                      <Button className={cn(
+                        "rounded-full px-8 h-14 text-sm font-black uppercase tracking-widest text-white border-none group/btn shadow-lg",
+                        role.color
+                      )}>
+                        Apply Now <ArrowUpRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
+                      </Button>
+                      <Link href="/contact" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline">
+                        Questions?
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 space-y-6">
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
+                <Briefcase className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-3xl font-headline font-black italic">No current openings</h3>
+              <p className="text-muted-foreground max-w-md mx-auto font-medium">
+                We're currently scaling our teams. Check back soon or send us a general application below.
+              </p>
+            </div>
+          )}
 
           <div className="mt-20 p-12 rounded-[4rem] bg-foreground text-white text-center space-y-6 relative overflow-hidden group">
             <div className="absolute inset-0 grid-bg opacity-10" />
