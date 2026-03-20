@@ -208,16 +208,28 @@ export function Navbar() {
             </div>
 
             {/* Mobile Nav Actions */}
-            <div className="flex items-center gap-2 md:hidden">
+            <div className="flex items-center gap-1 md:hidden">
               {!isAdminDashboard && !isUserLoading && user && (
-                <Link href="/cart">
-                  <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
-                    <ShoppingBag className="w-5 h-5" />
-                  </Button>
-                </Link>
+                <div className="flex items-center gap-1">
+                  <Link href="/cart">
+                    <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
+                      <ShoppingBag className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                  <Link href="/profile">
+                    <Button variant="ghost" size="icon" className="rounded-full p-0 overflow-hidden border-2 border-primary/20 h-9 w-9">
+                      <Avatar className="h-full w-full">
+                        <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                        <AvatarFallback className="bg-primary text-white text-[10px] font-black">
+                          {getInitials(user.displayName)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </Link>
+                </div>
               )}
               <button
-                className="p-2 text-foreground"
+                className="p-2 text-foreground ml-1"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X /> : <Menu />}
@@ -229,7 +241,7 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && !isAdminLogin && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300 shadow-xl">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300 shadow-xl max-h-[80vh] overflow-y-auto">
           {(isAdminDashboard ? adminLinks : navLinks).map((link) => (
             <Link
               key={link.name}
@@ -261,7 +273,7 @@ export function Navbar() {
             <Button 
               onClick={handleSignOut}
               variant="destructive" 
-              className="w-full rounded-2xl h-14 font-black uppercase tracking-widest"
+              className="w-full rounded-2xl h-14 font-black uppercase tracking-widest mt-4"
             >
               <LogOut className="mr-2 w-5 h-5" /> Sign Out
             </Button>
