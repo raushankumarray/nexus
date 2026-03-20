@@ -3,10 +3,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,7 +37,7 @@ export function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
         isScrolled 
-          ? "bg-background/80 backdrop-blur-md border-b py-3" 
+          ? "bg-background/80 backdrop-blur-md border-b py-3 shadow-sm" 
           : "bg-transparent"
       )}
     >
@@ -56,27 +57,40 @@ export function Navbar() {
               key={link.name}
               href={link.href}
               className={cn(
-                "text-sm font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
-                pathname === link.href ? "text-primary border-b-2 border-primary pb-1" : "text-foreground/70"
+                "text-[10px] lg:text-xs font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
+                pathname === link.href ? "text-primary" : "text-foreground/70"
               )}
             >
               {link.name}
             </Link>
           ))}
+          
+          <Link href="/login" title="Login">
+            <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all">
+              <UserCircle className="w-6 h-6" />
+            </Button>
+          </Link>
         </div>
 
-        {/* Mobile Nav Toggle */}
-        <button
-          className="md:hidden p-2 text-foreground"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
+        {/* Mobile Nav Actions */}
+        <div className="flex items-center gap-2 md:hidden">
+          <Link href="/login">
+            <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
+              <UserCircle className="w-6 h-6" />
+            </Button>
+          </Link>
+          <button
+            className="p-2 text-foreground"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300 shadow-xl">
           {navLinks.map((link) => (
             <Link
               key={link.name}
