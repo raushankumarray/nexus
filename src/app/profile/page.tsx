@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,8 +16,6 @@ import {
   Phone, 
   Calendar, 
   ShieldCheck, 
-  Clock, 
-  Sparkles,
   ArrowLeft,
   Loader2,
   MapPin,
@@ -32,6 +30,7 @@ import {
   Link as LinkIcon
 } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -80,7 +79,7 @@ export default function ProfilePage() {
     { id: "contact", label: "Contact", icon: Phone },
     { id: "education", label: "Education", icon: GraduationCap },
     { id: "documents", label: "Documents", icon: FileText },
-    { id: "social", label: "Social Link", icon: Share2 },
+    { id: "social", label: "Social link", icon: Share2 },
     { id: "career", label: "Career", icon: Briefcase },
     { id: "order", label: "Order", icon: ShoppingBag },
   ];
@@ -111,28 +110,13 @@ export default function ProfilePage() {
       {/* Profile Content */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
-          <Tabs defaultValue="profile" className="space-y-12">
-            
-            {/* Horizontal Scrollable Menu for better fit on all screens */}
-            <div className="flex justify-start lg:justify-center overflow-x-auto pb-4 no-scrollbar -mx-6 px-6">
-              <TabsList className="bg-slate-100 p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex flex-nowrap shrink-0">
-                {sections.map((sec) => (
-                  <TabsTrigger 
-                    key={sec.id}
-                    value={sec.id} 
-                    className="rounded-full px-6 md:px-8 py-4 font-headline font-black text-[10px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
-                  >
-                    <sec.icon className="w-3.5 h-3.5 md:w-4 h-4" />
-                    {sec.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-
+          <Tabs defaultValue="profile" className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               
-              {/* Left Sidebar: Profile Summary */}
+              {/* Left Sidebar: Profile Summary & Navigation Menu */}
               <div className="lg:col-span-4 space-y-8">
+                
+                {/* 1. Identity Card */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
                   <CardContent className="p-10 text-center space-y-6">
                     <div className="relative mx-auto w-32 h-32">
@@ -158,6 +142,46 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
+                {/* 2. Menu Navigation Card (Vertical on Desktop, scrollable on Mobile) */}
+                <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
+                  <div className="p-4 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
+                    <TabsList className="flex flex-col w-full h-auto bg-transparent gap-2">
+                      {sections.map((sec) => (
+                        <TabsTrigger 
+                          key={sec.id}
+                          value={sec.id} 
+                          className={cn(
+                            "w-full justify-start rounded-2xl px-6 py-4 font-headline font-black text-sm transition-all flex items-center gap-4 border-2 border-transparent",
+                            "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg shadow-primary/20",
+                            "hover:bg-slate-50 hover:border-slate-100"
+                          )}
+                        >
+                          <sec.icon className="w-5 h-5" />
+                          {sec.label}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  </div>
+                </Card>
+
+                {/* Mobile View Menu (Horizontal Scroll) */}
+                <div className="lg:hidden w-full overflow-x-auto pb-4 no-scrollbar">
+                  <TabsList className="bg-slate-100/50 backdrop-blur-sm p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex flex-nowrap shrink-0">
+                    {sections.map((sec) => (
+                      <TabsTrigger 
+                        key={sec.id}
+                        value={sec.id} 
+                        className="rounded-full px-6 py-4 font-headline font-black text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
+                      >
+                        <sec.icon className="w-4 h-4" />
+                        {sec.label}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+
+                {/* 3. Account Status Card */}
                 <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
                   <div className="absolute inset-0 grid-bg opacity-10" />
                   <div className="relative z-10 space-y-6">
@@ -179,12 +203,12 @@ export default function ProfilePage() {
               </div>
 
               {/* Right Side: Tab Contents */}
-              <div className="lg:col-span-8 space-y-8">
+              <div className="lg:col-span-8 space-y-8 min-h-[600px]">
                 
                 <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
                     <CardHeader className="p-10 md:p-16 pb-0">
-                      <CardTitle className="text-3xl font-headline font-black italic">Personal <span className="text-primary">Identity</span></CardTitle>
+                      <h3 className="text-3xl font-headline font-black italic">Personal <span className="text-primary">Identity</span></h3>
                     </CardHeader>
                     <CardContent className="p-10 md:p-16 grid grid-cols-1 md:grid-cols-2 gap-8">
                       {[
