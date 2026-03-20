@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,17 +8,26 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { 
   Mail, 
   Phone, 
   Video, 
   Send, 
   MessageSquare, 
   Sparkles, 
-  Zap, 
-  Globe,
   Clock,
   CheckCircle2,
-  CalendarDays
+  CalendarDays,
+  ShieldCheck,
+  Zap,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +35,7 @@ const contactInfo = [
   {
     title: "Email Us",
     value: "helpdesk.npbmedia@gmail.com",
+    href: "mailto:helpdesk.npbmedia@gmail.com",
     description: "Our support team will get back to you within 24 hours.",
     icon: Mail,
     color: "bg-orange-500",
@@ -34,26 +44,20 @@ const contactInfo = [
   {
     title: "Call Us",
     value: "8877300114",
-    description: "Mon-Fri from 9am to 6pm IST.",
+    href: "tel:8877300114",
+    description: "Mon-Fri from 10am to 6pm IST.",
     icon: Phone,
     color: "bg-blue-600",
     shadow: "shadow-blue-600/20"
-  },
-  {
-    title: "Virtual Consultation",
-    value: "Schedule Virtual Meeting",
-    description: "Book a 1-on-1 discovery call with our tech leads.",
-    icon: Video,
-    color: "bg-emerald-600",
-    shadow: "shadow-emerald-600/20",
-    isButton: true
   }
 ];
 
 export default function ContactPage() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic for form submission would go here
+    // Submission logic here
   };
 
   return (
@@ -95,12 +99,10 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 {contactInfo.map((info, idx) => (
-                  <div 
-                    key={idx} 
-                    className={cn(
-                      "group relative p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-primary cursor-pointer",
-                      info.isButton && "border-2 border-emerald-100 bg-emerald-50/30"
-                    )}
+                  <a 
+                    key={idx}
+                    href={info.href}
+                    className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-primary cursor-pointer block"
                   >
                     <div className={cn(
                       "w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-primary shrink-0",
@@ -114,24 +116,65 @@ export default function ContactPage() {
                       <p className="text-xl font-headline font-black group-hover:text-white transition-colors">{info.value}</p>
                       <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">{info.description}</p>
                     </div>
-                    {info.isButton && (
-                      <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
-                    )}
-                  </div>
+                  </a>
                 ))}
+
+                {/* Virtual Meeting Dialog Trigger */}
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <div className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border-2 border-emerald-100 bg-emerald-50/30 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-emerald-600 cursor-pointer">
+                      <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-emerald-600 shrink-0 shadow-lg shadow-emerald-600/20">
+                        <Video className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-white/60 transition-colors">Virtual Consultation</h4>
+                        <p className="text-xl font-headline font-black group-hover:text-white transition-colors">Schedule Virtual Meeting</p>
+                        <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">Book a 1-on-1 discovery call with our tech leads.</p>
+                      </div>
+                      <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="rounded-[3rem] p-10 max-w-2xl border-none">
+                    <DialogHeader className="space-y-4">
+                      <DialogTitle className="text-3xl font-headline font-black italic">Schedule Your <span className="text-emerald-600">Meeting</span></DialogTitle>
+                      <DialogDescription className="text-lg font-medium">
+                        Fill in your details and we will send you a calendar invite for a technical consultation.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form className="space-y-6 pt-6" onSubmit={(e) => { e.preventDefault(); setIsDialogOpen(false); }}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Input placeholder="Full Name" className="h-14 rounded-xl border-2" />
+                        <Input placeholder="Preferred Date" type="date" className="h-14 rounded-xl border-2" />
+                      </div>
+                      <Input placeholder="Work Email" type="email" className="h-14 rounded-xl border-2" />
+                      <Button className="w-full h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline text-xl">
+                        Request Schedule <CalendarDays className="ml-2 w-6 h-6" />
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
 
+              {/* Business Hours Section */}
               <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
                 <div className="absolute inset-0 grid-bg opacity-10" />
-                <div className="relative z-10 space-y-4">
+                <div className="relative z-10 space-y-6">
                   <div className="flex items-center gap-3">
                     <Clock className="text-primary w-6 h-6" />
-                    <h4 className="text-xl font-headline font-black italic">Business Hours</h4>
+                    <h4 className="text-xl font-headline font-black italic">Operating Hours</h4>
                   </div>
-                  <div className="space-y-2 font-medium text-slate-300">
-                    <p className="flex justify-between"><span>Monday - Friday</span> <span>9:00 AM - 6:00 PM</span></p>
-                    <p className="flex justify-between"><span>Saturday</span> <span>10:00 AM - 2:00 PM</span></p>
-                    <p className="flex justify-between"><span>Sunday</span> <span className="text-primary">Closed</span></p>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                      <span className="font-bold text-slate-300">Monday - Friday</span> 
+                      <span className="font-black text-primary">10:00 AM - 6:00 PM</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/10">
+                      <div className="flex items-center gap-2">
+                        <Zap className="text-yellow-300 w-5 h-5" />
+                        <span className="font-bold">Support 24*7</span>
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-widest text-emerald-400">All Day Active</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -204,13 +247,13 @@ export default function ContactPage() {
 
                   <div className="pt-8 border-t border-slate-100 flex flex-wrap gap-6">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> Secure Form
+                      <ShieldCheck className="text-emerald-500 w-4 h-4" /> Secure Form
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> 24/7 Monitoring
+                      <Zap className="text-emerald-500 w-4 h-4" /> 24/7 Monitoring
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      <CheckCircle2 className="text-emerald-500 w-4 h-4" /> Privacy Protected
+                      <Globe className="text-emerald-500 w-4 h-4" /> Privacy Protected
                     </div>
                   </div>
                 </div>
