@@ -32,7 +32,8 @@ import {
   Globe,
   Link as LinkIcon,
   Camera,
-  Save
+  Save,
+  Navigation
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -52,7 +53,7 @@ export default function ProfilePage() {
 
   const { data: profileData, isLoading: isProfileLoading } = useDoc(userDocRef);
 
-  // Form State
+  // Profile Form State
   const [formData, setFormData] = useState({
     fullName: "",
     fathersName: "",
@@ -60,7 +61,19 @@ export default function ProfilePage() {
     dob: "",
     photoURL: ""
   });
+
+  // Address Form State
+  const [addressData, setAddressData] = useState({
+    fullAddress: "",
+    block: "",
+    district: "",
+    state: "",
+    pincode: "",
+    country: ""
+  });
+
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -76,6 +89,14 @@ export default function ProfilePage() {
         mobile: profileData.mobile || "",
         dob: profileData.dob || "",
         photoURL: profileData.photoURL || user?.photoURL || ""
+      });
+      setAddressData({
+        fullAddress: profileData.fullAddress || "",
+        block: profileData.block || "",
+        district: profileData.district || "",
+        state: profileData.state || "",
+        pincode: profileData.pincode || "",
+        country: profileData.country || ""
       });
     }
   }, [profileData, user]);
@@ -98,6 +119,11 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAddressData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -109,34 +135,102 @@ export default function ProfilePage() {
     }
   };
 
-  const handleUpdate = () => {
+  const handleUpdateProfile = () => {
     if (!userDocRef) return;
     setIsUpdating(true);
-    
-    // Non-blocking update to Firestore
     updateDocumentNonBlocking(userDocRef, {
       ...formData,
       updatedAt: new Date().toISOString()
     });
-
-    // Provide immediate feedback
     setTimeout(() => {
       setIsUpdating(false);
-      toast({
-        title: "Profile Updated",
-        description: "Your information has been successfully synchronized.",
-      });
+      toast({ title: "Profile Updated", description: "Personal details synchronized." });
     }, 800);
+  };
+
+  const handleUpdateAddress = () => {
+    if (!userDocRef) return;
+    
+    // Check if all fields are filled
+    const isComplete = Object.values(addressData).every(val => val.trim() !== "");
+    if (!isComplete) {
+      toast({
+        variant: "destructive",
+        title: "Incomplete Address",
+        description: "Please fill in all address fields before updating."
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    updateDocumentNonBlocking(userDocRef, {
+      ...addressData,
+      updatedAt: new Date().toISOString()
+    });
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({ title: "Address Updated", description: "Your location details have been saved." });
+    }, 800);
+  };
+
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Not Supported",
+        description: "Geolocation is not supported by your browser."
+      });
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          // Using OpenStreetMap Nominatim for free reverse geocoding
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
+          const data = await response.json();
+          
+          if (data && data.address) {
+            const addr = data.address;
+            setAddressData({
+              fullAddress: data.display_name || "",
+              block: addr.suburb || addr.neighbourhood || addr.city_district || "",
+              district: addr.city || addr.town || addr.village || addr.county || "",
+              state: addr.state || "",
+              pincode: addr.postcode || "",
+              country: addr.country || ""
+            });
+            toast({
+              title: "Location Found",
+              description: "Address fields have been auto-filled."
+            });
+          }
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Lookup Failed",
+            description: "Could not retrieve address details from GPS coordinates."
+          });
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        setIsLocating(false);
+        toast({
+          variant: "destructive",
+          title: "Permission Denied",
+          description: "Please allow location access to use this feature."
+        });
+      }
+    );
   };
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   };
 
   const sections = [
@@ -154,15 +248,11 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <Navbar />
 
-      {/* Profile Header */}
       <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
         <div className="absolute inset-0 grid-bg opacity-10" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom duration-1000">
-            <Link 
-              href="/" 
-              className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-4 group"
-            >
+            <Link href="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-4 group">
               <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               Back to Home
             </Link>
@@ -173,16 +263,11 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* Profile Content */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <Tabs defaultValue="profile" className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              
-              {/* Left Sidebar */}
               <div className="lg:col-span-4 space-y-8">
-                
-                {/* 1. Identity Card */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
                   <CardContent className="p-10 text-center space-y-6">
                     <div className="relative mx-auto w-32 h-32 group/avatar">
@@ -193,26 +278,15 @@ export default function ProfilePage() {
                           {getInitials(formData.fullName)}
                         </AvatarFallback>
                       </Avatar>
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="absolute bottom-0 right-0 z-20 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all scale-0 group-hover/avatar:scale-100"
-                      >
+                      <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 z-20 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all scale-0 group-hover/avatar:scale-100">
                         <Camera className="w-5 h-5" />
                       </button>
-                      <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        onChange={handlePhotoUpload} 
-                        className="hidden" 
-                        accept="image/*"
-                      />
+                      <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" accept="image/*" />
                     </div>
-                    
                     <div className="space-y-1">
                       <h3 className="text-2xl font-headline font-black italic">{formData.fullName || "NPB User"}</h3>
                       <p className="text-muted-foreground font-medium text-sm">{user.email}</p>
                     </div>
-
                     <div className="pt-6 border-t border-slate-100">
                       <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100">
                         <ShieldCheck className="w-3 h-3" /> Identity Verified
@@ -221,21 +295,12 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                {/* 2. Menu Navigation Card */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
                     <TabsList className="flex flex-col w-full h-auto bg-transparent gap-2">
                       {sections.map((sec) => (
-                        <TabsTrigger 
-                          key={sec.id}
-                          value={sec.id} 
-                          className={cn(
-                            "w-full justify-start rounded-2xl px-6 py-4 font-headline font-black text-sm transition-all flex items-center gap-4 border-2 border-transparent",
-                            "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg shadow-primary/20",
-                            "hover:bg-slate-50 hover:border-slate-100"
-                          )}
-                        >
+                        <TabsTrigger key={sec.id} value={sec.id} className={cn("w-full justify-start rounded-2xl px-6 py-4 font-headline font-black text-sm transition-all flex items-center gap-4 border-2 border-transparent", "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-lg shadow-primary/20", "hover:bg-slate-50 hover:border-slate-100")}>
                           <sec.icon className="w-5 h-5" />
                           {sec.label}
                         </TabsTrigger>
@@ -244,50 +309,20 @@ export default function ProfilePage() {
                   </div>
                 </Card>
 
-                {/* Mobile View Menu */}
                 <div className="lg:hidden w-full pb-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
                   <TabsList className="grid grid-cols-2 gap-3 bg-transparent h-auto w-full">
                     {sections.map((sec) => (
-                      <TabsTrigger 
-                        key={sec.id}
-                        value={sec.id} 
-                        className={cn(
-                          "rounded-2xl px-4 py-6 font-headline font-black text-[10px] bg-white border-2 border-slate-100 transition-all flex flex-col items-center justify-center gap-3 shadow-sm",
-                          "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-md"
-                        )}
-                      >
+                      <TabsTrigger key={sec.id} value={sec.id} className={cn("rounded-2xl px-4 py-6 font-headline font-black text-[10px] bg-white border-2 border-slate-100 transition-all flex flex-col items-center justify-center gap-3 shadow-sm", "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-md")}>
                         <sec.icon className="w-5 h-5" />
                         {sec.label}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                 </div>
-
-                {/* Account Status Card */}
-                <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
-                  <div className="absolute inset-0 grid-bg opacity-10" />
-                  <div className="relative z-10 space-y-6">
-                    <h4 className="text-xl font-headline font-black italic">Account Status</h4>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                        <span className="font-bold text-slate-300">Member Since</span> 
-                        <span className="font-black text-primary uppercase text-xs">
-                          {profileData?.createdAt ? new Date(profileData.createdAt.seconds ? profileData.createdAt.seconds * 1000 : profileData.createdAt).getFullYear() : '2025'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                        <span className="font-bold text-slate-300">Level</span> 
-                        <span className="text-secondary font-black text-xs uppercase">Elite Member</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              {/* Right Side */}
               <div className="lg:col-span-8 space-y-8 min-h-[600px]">
-                
                 <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
                     <CardHeader className="p-10 md:p-16 pb-0 flex flex-row items-center justify-between">
@@ -300,70 +335,31 @@ export default function ProfilePage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</Label>
-                          <Input 
-                            name="fullName"
-                            value={formData.fullName}
-                            onChange={handleInputChange}
-                            placeholder="Enter Name" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Enter Name" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Father's Name</Label>
-                          <Input 
-                            name="fathersName"
-                            value={formData.fathersName}
-                            onChange={handleInputChange}
-                            placeholder="Father's Name" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input name="fathersName" value={formData.fathersName} onChange={handleInputChange} placeholder="Father's Name" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address (Primary)</Label>
-                          <Input 
-                            disabled
-                            value={user.email || ""}
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-200 focus:border-slate-200 transition-all text-lg font-medium px-6 opacity-60 cursor-not-allowed"
-                          />
+                          <Input disabled value={user.email || ""} className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-200 focus:border-slate-200 transition-all text-lg font-medium px-6 opacity-60 cursor-not-allowed" />
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Mobile Number</Label>
-                          <Input 
-                            name="mobile"
-                            value={formData.mobile}
-                            onChange={handleInputChange}
-                            type="tel" 
-                            placeholder="Enter Mobile" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input name="mobile" value={formData.mobile} onChange={handleInputChange} type="tel" placeholder="Enter Mobile" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Date of Birth</Label>
-                          <Input 
-                            name="dob"
-                            value={formData.dob}
-                            onChange={handleInputChange}
-                            type="date" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input name="dob" value={formData.dob} onChange={handleInputChange} type="date" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="flex items-end">
-                          <Button 
-                            onClick={handleUpdate}
-                            disabled={isUpdating}
-                            className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
-                          >
-                            {isUpdating ? (
-                              <Loader2 className="w-6 h-6 animate-spin" />
-                            ) : (
-                              <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>
-                            )}
+                          <Button onClick={handleUpdateProfile} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
+                            {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
                           </Button>
                         </div>
                       </div>
@@ -372,17 +368,106 @@ export default function ProfilePage() {
                 </TabsContent>
 
                 <TabsContent value="address" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-3xl font-headline font-black italic">Registered <span className="text-primary">Addresses</span></h3>
-                      <Button variant="outline" className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-xs">
-                        <Plus className="w-4 h-4 mr-2" /> Add New
-                      </Button>
-                    </div>
-                    <div className="p-8 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center space-y-4">
-                      <MapPin className="w-12 h-12 text-slate-300 mx-auto" />
-                      <p className="text-muted-foreground font-semibold">No addresses saved yet. Start by adding your first one.</p>
-                    </div>
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
+                    <CardHeader className="p-10 md:p-16 pb-0 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-3xl font-headline font-black italic">Postal <span className="text-primary">Coordinates</span></h3>
+                        <Button 
+                          variant="outline" 
+                          onClick={handleLocateMe}
+                          disabled={isLocating}
+                          className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-[10px] gap-2 border-primary/20 hover:border-primary text-primary"
+                        >
+                          {isLocating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+                          Locate Me (GPS)
+                        </Button>
+                      </div>
+                      <p className="text-muted-foreground font-semibold text-sm">Please provide your precise physical location details for global shipments and compliance.</p>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 space-y-8">
+                      <div className="space-y-3">
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Address (House/Street/Area)</Label>
+                        <Input 
+                          required
+                          name="fullAddress"
+                          value={addressData.fullAddress}
+                          onChange={handleAddressInputChange}
+                          placeholder="e.g. 123 Innovation Street, Begusarai" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Block / Sub-District</Label>
+                          <Input 
+                            required
+                            name="block"
+                            value={addressData.block}
+                            onChange={handleAddressInputChange}
+                            placeholder="Enter Block" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">District</Label>
+                          <Input 
+                            required
+                            name="district"
+                            value={addressData.district}
+                            onChange={handleAddressInputChange}
+                            placeholder="Enter District" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">State</Label>
+                          <Input 
+                            required
+                            name="state"
+                            value={addressData.state}
+                            onChange={handleAddressInputChange}
+                            placeholder="Enter State" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Pincode</Label>
+                          <Input 
+                            required
+                            name="pincode"
+                            value={addressData.pincode}
+                            onChange={handleAddressInputChange}
+                            placeholder="Postal Code" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Country</Label>
+                          <Input 
+                            required
+                            name="country"
+                            value={addressData.country}
+                            onChange={handleAddressInputChange}
+                            placeholder="Enter Country" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-4">
+                        <Button 
+                          onClick={handleUpdateAddress} 
+                          disabled={isUpdating} 
+                          className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
+                        >
+                          {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Address <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
@@ -392,7 +477,7 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-1 gap-4">
                       {[
                         { label: "Primary Email", value: user.email, status: "Verified" },
-                        { label: "Alternate Phone", value: "Not provided", status: "Add Now" }
+                        { label: "Alternate Phone", value: formData.mobile || "Not provided", status: formData.mobile ? "Active" : "Add Now" }
                       ].map((c, i) => (
                         <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl">
                           <div>
@@ -490,7 +575,6 @@ export default function ProfilePage() {
                     </div>
                   </Card>
                 </TabsContent>
-
               </div>
             </div>
           </Tabs>

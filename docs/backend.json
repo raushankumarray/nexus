@@ -13,6 +13,12 @@
         "mobile": { "type": "string" },
         "dob": { "type": "string" },
         "photoURL": { "type": "string", "description": "Base64 or URL for the profile picture." },
+        "fullAddress": { "type": "string" },
+        "block": { "type": "string" },
+        "district": { "type": "string" },
+        "state": { "type": "string" },
+        "pincode": { "type": "string" },
+        "country": { "type": "string" },
         "provider": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
