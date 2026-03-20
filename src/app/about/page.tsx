@@ -20,7 +20,9 @@ import {
   Users,
   Award,
   BarChart,
-  ShieldAlert
+  ShieldAlert,
+  GraduationCap,
+  Briefcase
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -57,7 +59,7 @@ const values = [
 ];
 
 const milestones = [
-  { label: "Founded in", value: "2023", icon: Rocket },
+  { label: "Founded in", value: "2025", icon: Rocket },
   { label: "Projects Delivered", value: "10+", icon: Award },
   { label: "Global Clients", value: "7+", icon: Globe },
   { label: "Success Rate", value: "100%", icon: BarChart },
