@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -33,6 +34,9 @@
             }
           }
         },
+        "resumeURL": { "type": "string", "description": "Base64 string of the user's PDF resume." },
+        "idCardType": { "type": "string", "enum": ["Aadhar", "Pan", "Voter", "Driving"] },
+        "idCardURL": { "type": "string", "description": "Base64 string of the user's ID card." },
         "provider": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },

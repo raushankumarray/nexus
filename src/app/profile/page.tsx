@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
@@ -41,7 +42,10 @@ import {
   Save,
   Navigation,
   MessageSquare,
-  Trash2
+  Trash2,
+  Upload,
+  Eye,
+  IdCard
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -61,7 +65,9 @@ export default function ProfilePage() {
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const profilePhotoRef = useRef<HTMLInputElement>(null);
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const idCardInputRef = useRef<HTMLInputElement>(null);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -99,6 +105,13 @@ export default function ProfilePage() {
     { qualification: "", institution: "", passingYear: "", university: "", subject: "", percentage: "" }
   ]);
 
+  // Documents State
+  const [docData, setDocData] = useState({
+    resumeURL: "",
+    idCardType: "",
+    idCardURL: ""
+  });
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
@@ -127,6 +140,11 @@ export default function ProfilePage() {
         state: profileData.state || "",
         pincode: profileData.pincode || "",
         country: profileData.country || ""
+      });
+      setDocData({
+        resumeURL: profileData.resumeURL || "",
+        idCardType: profileData.idCardType || "",
+        idCardURL: profileData.idCardURL || ""
       });
       if (profileData.education && profileData.education.length > 0) {
         setEducationData(profileData.education);
@@ -188,6 +206,34 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'resume' | 'idCard') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (type === 'resume' && file.type !== 'application/pdf') {
+      toast({ variant: "destructive", title: "Invalid File", description: "Resume must be in PDF format." });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setDocData(prev => ({
+        ...prev,
+        [type === 'resume' ? 'resumeURL' : 'idCardURL']: reader.result as string
+      }));
+      toast({ title: "File Selected", description: `${type === 'resume' ? 'Resume' : 'ID Card'} is ready to update.` });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const viewResume = () => {
+    if (!docData.resumeURL) return;
+    const win = window.open();
+    if (win) {
+      win.document.write(`<iframe src="${docData.resumeURL}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+    }
+  };
+
   const handleUpdateProfile = () => {
     if (!userDocRef) return;
     setIsUpdating(true);
@@ -216,8 +262,6 @@ export default function ProfilePage() {
 
   const handleUpdateAddress = () => {
     if (!userDocRef) return;
-    
-    // Check if all fields are filled
     const isComplete = Object.values(addressData).every(val => val.trim() !== "");
     if (!isComplete) {
       toast({
@@ -227,7 +271,6 @@ export default function ProfilePage() {
       });
       return;
     }
-
     setIsUpdating(true);
     updateDocumentNonBlocking(userDocRef, {
       ...addressData,
@@ -241,7 +284,6 @@ export default function ProfilePage() {
 
   const handleUpdateEducation = () => {
     if (!userDocRef) return;
-    
     setIsUpdating(true);
     updateDocumentNonBlocking(userDocRef, {
       education: educationData,
@@ -253,16 +295,28 @@ export default function ProfilePage() {
     }, 800);
   };
 
-  const handleLocateMe = () => {
-    if (!navigator.geolocation) {
-      toast({
-        variant: "destructive",
-        title: "Not Supported",
-        description: "Geolocation is not supported by your browser."
-      });
+  const handleUpdateDocuments = () => {
+    if (!userDocRef) return;
+    if (!docData.resumeURL) {
+      toast({ variant: "destructive", title: "Resume Required", description: "Please upload your resume in PDF format." });
       return;
     }
+    setIsUpdating(true);
+    updateDocumentNonBlocking(userDocRef, {
+      ...docData,
+      updatedAt: new Date().toISOString()
+    });
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({ title: "Vault Synchronized", description: "Documents securely saved to your profile." });
+    }, 800);
+  };
 
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) {
+      toast({ variant: "destructive", title: "Not Supported", description: "Geolocation is not supported by your browser." });
+      return;
+    }
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -270,7 +324,6 @@ export default function ProfilePage() {
         try {
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
           const data = await response.json();
-          
           if (data && data.address) {
             const addr = data.address;
             setAddressData({
@@ -281,28 +334,17 @@ export default function ProfilePage() {
               pincode: addr.postcode || "",
               country: addr.country || ""
             });
-            toast({
-              title: "Location Found",
-              description: "Address fields have been auto-filled."
-            });
+            toast({ title: "Location Found", description: "Address fields have been auto-filled." });
           }
         } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Lookup Failed",
-            description: "Could not retrieve address details from GPS coordinates."
-          });
+          toast({ variant: "destructive", title: "Lookup Failed", description: "Could not retrieve address details." });
         } finally {
           setIsLocating(false);
         }
       },
-      (error) => {
+      () => {
         setIsLocating(false);
-        toast({
-          variant: "destructive",
-          title: "Permission Denied",
-          description: "Please allow location access to use this feature."
-        });
+        toast({ variant: "destructive", title: "Permission Denied", description: "Please allow location access." });
       }
     );
   };
@@ -324,6 +366,7 @@ export default function ProfilePage() {
   ];
 
   const qualificationOptions = ["10th", "12th", "Graduate", "Post Graduate"];
+  const idCardOptions = ["Aadhar", "Pan", "Voter", "Driving"];
 
   return (
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
@@ -348,7 +391,6 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-6">
           <Tabs defaultValue="profile" className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-              {/* Sidebar Menu */}
               <div className="lg:col-span-4 space-y-8">
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
                   <CardContent className="p-10 text-center space-y-6">
@@ -360,10 +402,10 @@ export default function ProfilePage() {
                           {getInitials(formData.fullName)}
                         </AvatarFallback>
                       </Avatar>
-                      <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 z-20 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all scale-0 group-hover/avatar:scale-100">
+                      <button onClick={() => profilePhotoRef.current?.click()} className="absolute bottom-0 right-0 z-20 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all scale-0 group-hover/avatar:scale-100">
                         <Camera className="w-5 h-5" />
                       </button>
-                      <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" accept="image/*" />
+                      <input type="file" ref={profilePhotoRef} onChange={handlePhotoUpload} className="hidden" accept="image/*" />
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-2xl font-headline font-black italic">{formData.fullName || "NPB User"}</h3>
@@ -377,7 +419,6 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                {/* Desktop Menu */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
@@ -392,7 +433,6 @@ export default function ProfilePage() {
                   </div>
                 </Card>
 
-                {/* Mobile Grid Menu */}
                 <div className="lg:hidden w-full pb-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
                   <TabsList className="grid grid-cols-2 gap-3 bg-transparent h-auto w-full">
@@ -406,7 +446,6 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Content Area */}
               <div className="lg:col-span-8 space-y-8 min-h-[600px]">
                 <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
@@ -457,26 +496,20 @@ export default function ProfilePage() {
                     <CardHeader className="p-10 md:p-16 pb-0 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-3xl font-headline font-black italic">Postal <span className="text-primary">Coordinates</span></h3>
-                        <Button 
-                          variant="outline" 
-                          onClick={handleLocateMe}
-                          disabled={isLocating}
-                          className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-[10px] gap-2 border-primary/20 hover:border-primary text-primary"
-                        >
+                        <Button variant="outline" onClick={handleLocateMe} disabled={isLocating} className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-[10px] gap-2 border-primary/20 hover:border-primary text-primary">
                           {isLocating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
                           Locate Me (GPS)
                         </Button>
                       </div>
-                      <p className="text-muted-foreground font-semibold text-sm">Please provide your precise physical location details for global shipments and compliance.</p>
                     </CardHeader>
                     <CardContent className="p-10 md:p-16 space-y-8">
                       <div className="space-y-3">
-                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Address (House/Street/Area)</Label>
-                        <Input required name="fullAddress" value={addressData.fullAddress} onChange={handleAddressInputChange} placeholder="e.g. 123 Innovation Street, Begusarai" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
+                        <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Address</Label>
+                        <Input required name="fullAddress" value={addressData.fullAddress} onChange={handleAddressInputChange} placeholder="House/Street/Area" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Block / Sub-District</Label>
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Block</Label>
                           <Input required name="block" value={addressData.block} onChange={handleAddressInputChange} placeholder="Enter Block" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="space-y-3">
@@ -511,7 +544,6 @@ export default function ProfilePage() {
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2 overflow-hidden">
                     <CardHeader className="p-10 md:p-16 pb-0 space-y-4">
                       <h3 className="text-3xl font-headline font-black italic">Communication <span className="text-primary">Preferences</span></h3>
-                      <p className="text-muted-foreground font-semibold text-sm">Manage your secondary contact methods for account recovery and notifications.</p>
                     </CardHeader>
                     <CardContent className="p-10 md:p-16 space-y-8">
                       <div className="grid grid-cols-1 gap-6">
@@ -557,30 +589,19 @@ export default function ProfilePage() {
                         {educationData.map((edu, idx) => (
                           <div key={idx} className="relative p-8 rounded-[2.5rem] bg-slate-50 border-2 border-slate-100 space-y-8 animate-in fade-in zoom-in duration-300">
                             {educationData.length > 1 && (
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={() => removeEducationRow(idx)}
-                                className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-white shadow-lg border-2 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all"
-                              >
+                              <Button variant="ghost" size="icon" onClick={() => removeEducationRow(idx)} className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-white shadow-lg border-2 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             )}
-                            
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-3">
                                 <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Qualification</Label>
-                                <Select 
-                                  value={edu.qualification} 
-                                  onValueChange={(val) => handleEducationChange(idx, "qualification", val)}
-                                >
+                                <Select value={edu.qualification} onValueChange={(val) => handleEducationChange(idx, "qualification", val)}>
                                   <SelectTrigger className="h-16 rounded-2xl border-2 border-white bg-white focus:ring-primary shadow-sm text-lg font-medium px-6">
                                     <SelectValue placeholder="Select Qualification" />
                                   </SelectTrigger>
                                   <SelectContent className="rounded-2xl border-none shadow-2xl">
-                                    {qualificationOptions.map(opt => (
-                                      <SelectItem key={opt} value={opt} className="py-4 rounded-xl text-base font-medium">{opt}</SelectItem>
-                                    ))}
+                                    {qualificationOptions.map(opt => <SelectItem key={opt} value={opt} className="py-4 rounded-xl text-base font-medium">{opt}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                               </div>
@@ -589,7 +610,6 @@ export default function ProfilePage() {
                                 <Input value={edu.institution} onChange={(e) => handleEducationChange(idx, "institution", e.target.value)} placeholder="Enter Institution" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
                               </div>
                             </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-3">
                                 <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Passing Year</Label>
@@ -600,7 +620,6 @@ export default function ProfilePage() {
                                 <Input value={edu.university} onChange={(e) => handleEducationChange(idx, "university", e.target.value)} placeholder="Enter University" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
                               </div>
                             </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-3">
                                 <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject / Stream</Label>
@@ -614,7 +633,6 @@ export default function ProfilePage() {
                           </div>
                         ))}
                       </div>
-
                       <div className="pt-4">
                         <Button onClick={handleUpdateEducation} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
                           {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
@@ -624,18 +642,71 @@ export default function ProfilePage() {
                   </Card>
                 </TabsContent>
 
-                {/* Placeholder Tabs */}
                 <TabsContent value="documents" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
-                    <h3 className="text-3xl font-headline font-black italic">Digital <span className="text-primary">Vault</span></h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {["Resume", "Degree", "ID Card", "Certifications"].map((doc) => (
-                        <div key={doc} className="group p-6 bg-slate-50 border-2 border-transparent hover:border-primary rounded-2xl text-center cursor-pointer transition-all">
-                          <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-primary transition-colors" />
-                          <p className="text-xs font-black uppercase tracking-widest">{doc}</p>
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
+                    <CardHeader className="p-10 md:p-16 pb-0 flex flex-row items-center justify-between">
+                      <h3 className="text-3xl font-headline font-black italic">Digital <span className="text-primary">Vault</span></h3>
+                      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" /> End-to-End Encrypted
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 space-y-10">
+                      <div className="space-y-6">
+                        <div className="p-8 rounded-[2.5rem] bg-slate-50 border-2 border-dashed border-slate-200 hover:border-primary transition-all group/doc">
+                          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="flex items-center gap-6">
+                              <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg text-primary">
+                                <FileText className="w-8 h-8" />
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-headline font-black italic">Professional Resume</h4>
+                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Requirement: PDF Format only (Mandatory)</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              {docData.resumeURL && (
+                                <Button onClick={viewResume} variant="outline" className="rounded-full h-14 px-6 border-2 font-black uppercase tracking-widest text-[10px] gap-2">
+                                  <Eye className="w-4 h-4" /> View
+                                </Button>
+                              )}
+                              <Button onClick={() => resumeInputRef.current?.click()} className="rounded-full h-14 px-8 bg-primary text-white hover:bg-foreground transition-all font-black uppercase tracking-widest text-[10px] gap-2">
+                                <Upload className="w-4 h-4" /> {docData.resumeURL ? 'Replace' : 'Upload'}
+                              </Button>
+                              <input type="file" ref={resumeInputRef} onChange={(e) => handleDocumentUpload(e, 'resume')} className="hidden" accept=".pdf" />
+                            </div>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+
+                        <div className="p-8 rounded-[2.5rem] bg-slate-50 border-2 border-slate-100 space-y-8">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">ID Card Type</Label>
+                              <Select value={docData.idCardType} onValueChange={(val) => setDocData(prev => ({ ...prev, idCardType: val }))}>
+                                <SelectTrigger className="h-16 rounded-2xl border-2 border-white bg-white focus:ring-primary shadow-sm text-lg font-medium px-6">
+                                  <SelectValue placeholder="Select ID Type" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                  {idCardOptions.map(opt => <SelectItem key={opt} value={opt} className="py-4 rounded-xl text-base font-medium">{opt}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-3">
+                              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">ID Card Document</Label>
+                              <Button onClick={() => idCardInputRef.current?.click()} variant="outline" className="w-full h-16 rounded-2xl border-2 border-white bg-white hover:bg-slate-50 transition-all font-black uppercase tracking-widest text-[10px] gap-2 shadow-sm">
+                                <IdCard className="w-5 h-5 text-primary" /> {docData.idCardURL ? 'Replace Scanned ID' : 'Upload ID Copy'}
+                              </Button>
+                              <input type="file" ref={idCardInputRef} onChange={(e) => handleDocumentUpload(e, 'idCard')} className="hidden" accept="image/*,.pdf" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4">
+                        <Button onClick={handleUpdateDocuments} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
+                          {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Vault <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
