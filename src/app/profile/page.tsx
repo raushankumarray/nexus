@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from "react";
@@ -78,7 +77,7 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <Navbar />
 
-      {/* Hero Header */}
+      {/* Profile Header */}
       <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
         <div className="absolute inset-0 grid-bg opacity-10" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -90,16 +89,9 @@ export default function ProfilePage() {
               <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               Back to Home
             </Link>
-            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/20 border-2 border-white/30 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
-              <Sparkles className="w-5 h-5 text-yellow-300" />
-              User Portal
-            </div>
             <h1 className="text-5xl md:text-7xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
               Profile
             </h1>
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
-              Welcome back, {profileData?.fullName || user.displayName || "Explorer"}. Manage your account details and security preferences.
-            </p>
           </div>
         </div>
       </section>
@@ -175,7 +167,6 @@ export default function ProfilePage() {
                     Personal Details
                   </div>
                   <CardTitle className="text-3xl font-headline font-black italic">Manage Your <span className="text-primary">Identity</span></CardTitle>
-                  <CardDescription className="text-lg font-medium">Verify your registered information for NPB Media services.</CardDescription>
                 </CardHeader>
                 
                 <CardContent className="p-10 md:p-16 space-y-10">
@@ -196,7 +187,7 @@ export default function ProfilePage() {
                   <div className="pt-8 border-t border-slate-100 space-y-6">
                     <h4 className="text-xl font-headline font-black italic">Account Controls</h4>
                     <div className="flex flex-wrap gap-4">
-                      <Button className="rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs bg-primary hover:bg-foreground shadow-lg">
+                      <Button className="rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs bg-primary hover:bg-foreground shadow-lg border-none">
                         Edit Profile
                       </Button>
                       <Button variant="outline" className="rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs border-2 hover:bg-slate-50">
