@@ -11,6 +11,7 @@
         "fullName": { "type": "string" },
         "fathersName": { "type": "string" },
         "mobile": { "type": "string" },
+        "alternateMobile": { "type": "string", "description": "Secondary contact number." },
         "dob": { "type": "string" },
         "photoURL": { "type": "string", "description": "Base64 or URL for the profile picture." },
         "fullAddress": { "type": "string" },

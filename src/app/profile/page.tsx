@@ -33,7 +33,8 @@ import {
   Link as LinkIcon,
   Camera,
   Save,
-  Navigation
+  Navigation,
+  MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,11 @@ export default function ProfilePage() {
     mobile: "",
     dob: "",
     photoURL: ""
+  });
+
+  // Contact Form State
+  const [contactData, setContactData] = useState({
+    alternateMobile: ""
   });
 
   // Address Form State
@@ -90,6 +96,9 @@ export default function ProfilePage() {
         dob: profileData.dob || "",
         photoURL: profileData.photoURL || user?.photoURL || ""
       });
+      setContactData({
+        alternateMobile: profileData.alternateMobile || ""
+      });
       setAddressData({
         fullAddress: profileData.fullAddress || "",
         block: profileData.block || "",
@@ -119,6 +128,11 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleContactInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setContactData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddressData(prev => ({ ...prev, [name]: value }));
@@ -145,6 +159,19 @@ export default function ProfilePage() {
     setTimeout(() => {
       setIsUpdating(false);
       toast({ title: "Profile Updated", description: "Personal details synchronized." });
+    }, 800);
+  };
+
+  const handleUpdateContact = () => {
+    if (!userDocRef) return;
+    setIsUpdating(true);
+    updateDocumentNonBlocking(userDocRef, {
+      ...contactData,
+      updatedAt: new Date().toISOString()
+    });
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({ title: "Contact Updated", description: "Your communication preferences have been saved." });
     }, 800);
   };
 
@@ -472,22 +499,52 @@ export default function ProfilePage() {
                 </TabsContent>
 
                 <TabsContent value="contact" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
-                    <h3 className="text-3xl font-headline font-black italic">Communication <span className="text-primary">Preferences</span></h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      {[
-                        { label: "Primary Email", value: user.email, status: "Verified" },
-                        { label: "Alternate Phone", value: formData.mobile || "Not provided", status: formData.mobile ? "Active" : "Add Now" }
-                      ].map((c, i) => (
-                        <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl">
-                          <div>
-                            <p className="text-xs font-black uppercase text-muted-foreground">{c.label}</p>
-                            <p className="font-bold">{c.value}</p>
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2 overflow-hidden">
+                    <CardHeader className="p-10 md:p-16 pb-0 space-y-4">
+                      <h3 className="text-3xl font-headline font-black italic">Communication <span className="text-primary">Preferences</span></h3>
+                      <p className="text-muted-foreground font-semibold text-sm">Manage your secondary contact methods for account recovery and notifications.</p>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 space-y-8">
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between group">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                              <Mail className="w-6 h-6 text-primary" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-black uppercase text-muted-foreground">Primary Email</p>
+                              <p className="font-bold">{user.email}</p>
+                            </div>
                           </div>
-                          <span className="text-[10px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">{c.status}</span>
+                          <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Verified</span>
                         </div>
-                      ))}
-                    </div>
+
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Alternate Mobile Number</Label>
+                          <div className="relative group/input">
+                            <Input 
+                              name="alternateMobile"
+                              value={contactData.alternateMobile}
+                              onChange={handleContactInputChange}
+                              type="tel" 
+                              placeholder="Enter Alternate Number" 
+                              className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14"
+                            />
+                            <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within/input:text-primary transition-colors w-5 h-5" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4">
+                        <Button 
+                          onClick={handleUpdateContact} 
+                          disabled={isUpdating} 
+                          className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
+                        >
+                          {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
