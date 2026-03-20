@@ -9,8 +9,10 @@
         "id": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "fullName": { "type": "string" },
+        "fathersName": { "type": "string" },
         "mobile": { "type": "string" },
         "dob": { "type": "string" },
+        "photoURL": { "type": "string", "description": "Base64 or URL for the profile picture." },
         "provider": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },

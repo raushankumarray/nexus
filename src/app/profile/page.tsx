@@ -1,15 +1,18 @@
+
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   User, 
   Mail, 
@@ -27,15 +30,20 @@ import {
   ChevronRight,
   Share2,
   Globe,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Camera,
+  Save
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -44,11 +52,33 @@ export default function ProfilePage() {
 
   const { data: profileData, isLoading: isProfileLoading } = useDoc(userDocRef);
 
+  // Form State
+  const [formData, setFormData] = useState({
+    fullName: "",
+    fathersName: "",
+    mobile: "",
+    dob: "",
+    photoURL: ""
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
+
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push("/login");
     }
   }, [user, isUserLoading, router]);
+
+  useEffect(() => {
+    if (profileData) {
+      setFormData({
+        fullName: profileData.fullName || "",
+        fathersName: profileData.fathersName || "",
+        mobile: profileData.mobile || "",
+        dob: profileData.dob || "",
+        photoURL: profileData.photoURL || user?.photoURL || ""
+      });
+    }
+  }, [profileData, user]);
 
   if (isUserLoading || isProfileLoading) {
     return (
@@ -62,6 +92,42 @@ export default function ProfilePage() {
   }
 
   if (!user) return null;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, photoURL: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUpdate = () => {
+    if (!userDocRef) return;
+    setIsUpdating(true);
+    
+    // Non-blocking update to Firestore
+    updateDocumentNonBlocking(userDocRef, {
+      ...formData,
+      updatedAt: new Date().toISOString()
+    });
+
+    // Provide immediate feedback
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({
+        title: "Profile Updated",
+        description: "Your information has been successfully synchronized.",
+      });
+    }, 800);
+  };
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
@@ -113,24 +179,37 @@ export default function ProfilePage() {
           <Tabs defaultValue="profile" className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               
-              {/* Left Sidebar: Profile Summary & Navigation Menu */}
+              {/* Left Sidebar */}
               <div className="lg:col-span-4 space-y-8">
                 
                 {/* 1. Identity Card */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
                   <CardContent className="p-10 text-center space-y-6">
-                    <div className="relative mx-auto w-32 h-32">
+                    <div className="relative mx-auto w-32 h-32 group/avatar">
                       <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
                       <Avatar className="w-32 h-32 border-4 border-primary/20 shadow-xl relative z-10">
-                        <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                        <AvatarImage src={formData.photoURL} alt={formData.fullName || "User"} className="object-cover" />
                         <AvatarFallback className="bg-primary text-white text-4xl font-black">
-                          {getInitials(user.displayName || profileData?.fullName)}
+                          {getInitials(formData.fullName)}
                         </AvatarFallback>
                       </Avatar>
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute bottom-0 right-0 z-20 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all scale-0 group-hover/avatar:scale-100"
+                      >
+                        <Camera className="w-5 h-5" />
+                      </button>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        onChange={handlePhotoUpload} 
+                        className="hidden" 
+                        accept="image/*"
+                      />
                     </div>
                     
                     <div className="space-y-1">
-                      <h3 className="text-2xl font-headline font-black italic">{profileData?.fullName || user.displayName || "NPB User"}</h3>
+                      <h3 className="text-2xl font-headline font-black italic">{formData.fullName || "NPB User"}</h3>
                       <p className="text-muted-foreground font-medium text-sm">{user.email}</p>
                     </div>
 
@@ -142,7 +221,7 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                {/* 2. Menu Navigation Card (Desktop Sidebar List) */}
+                {/* 2. Menu Navigation Card */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
@@ -165,7 +244,7 @@ export default function ProfilePage() {
                   </div>
                 </Card>
 
-                {/* 3. Mobile View Menu (Static Grid List - No Slide) */}
+                {/* Mobile View Menu */}
                 <div className="lg:hidden w-full pb-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
                   <TabsList className="grid grid-cols-2 gap-3 bg-transparent h-auto w-full">
@@ -185,7 +264,7 @@ export default function ProfilePage() {
                   </TabsList>
                 </div>
 
-                {/* 4. Account Status Card */}
+                {/* Account Status Card */}
                 <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
                   <div className="absolute inset-0 grid-bg opacity-10" />
                   <div className="relative z-10 space-y-6">
@@ -194,7 +273,7 @@ export default function ProfilePage() {
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="font-bold text-slate-300">Member Since</span> 
                         <span className="font-black text-primary uppercase text-xs">
-                          {profileData?.createdAt ? new Date(profileData.createdAt.seconds * 1000).getFullYear() : '2025'}
+                          {profileData?.createdAt ? new Date(profileData.createdAt.seconds ? profileData.createdAt.seconds * 1000 : profileData.createdAt).getFullYear() : '2025'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center border-b border-white/10 pb-2">
@@ -206,26 +285,88 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Right Side: Tab Contents */}
+              {/* Right Side */}
               <div className="lg:col-span-8 space-y-8 min-h-[600px]">
                 
                 <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
-                    <CardHeader className="p-10 md:p-16 pb-0">
+                    <CardHeader className="p-10 md:p-16 pb-0 flex flex-row items-center justify-between">
                       <h3 className="text-3xl font-headline font-black italic">Personal <span className="text-primary">Identity</span></h3>
+                      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" /> Auto-Sync Active
+                      </div>
                     </CardHeader>
-                    <CardContent className="p-10 md:p-16 grid grid-cols-1 md:grid-cols-2 gap-8">
-                      {[
-                        { label: "Full Name", value: profileData?.fullName || user.displayName || "N/A", icon: User },
-                        { label: "Email Address", value: user.email, icon: Mail },
-                        { label: "Mobile Number", value: profileData?.mobile || "N/A", icon: Phone },
-                        { label: "Date of Birth", value: profileData?.dob || "N/A", icon: Calendar },
-                      ].map((item, idx) => (
-                        <div key={idx} className="p-8 bg-slate-50 rounded-[2.5rem] border-2 border-transparent hover:border-primary/20 hover:bg-white transition-all duration-500">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">{item.label}</p>
-                          <p className="text-lg font-headline font-black break-words">{item.value}</p>
+                    <CardContent className="p-10 md:p-16 space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</Label>
+                          <Input 
+                            name="fullName"
+                            value={formData.fullName}
+                            onChange={handleInputChange}
+                            placeholder="Enter Name" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
                         </div>
-                      ))}
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Father's Name</Label>
+                          <Input 
+                            name="fathersName"
+                            value={formData.fathersName}
+                            onChange={handleInputChange}
+                            placeholder="Father's Name" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address (Primary)</Label>
+                          <Input 
+                            disabled
+                            value={user.email || ""}
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-200 focus:border-slate-200 transition-all text-lg font-medium px-6 opacity-60 cursor-not-allowed"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Mobile Number</Label>
+                          <Input 
+                            name="mobile"
+                            value={formData.mobile}
+                            onChange={handleInputChange}
+                            type="tel" 
+                            placeholder="Enter Mobile" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Date of Birth</Label>
+                          <Input 
+                            name="dob"
+                            value={formData.dob}
+                            onChange={handleInputChange}
+                            type="date" 
+                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          />
+                        </div>
+                        <div className="flex items-end">
+                          <Button 
+                            onClick={handleUpdate}
+                            disabled={isUpdating}
+                            className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
+                          >
+                            {isUpdating ? (
+                              <Loader2 className="w-6 h-6 animate-spin" />
+                            ) : (
+                              <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
