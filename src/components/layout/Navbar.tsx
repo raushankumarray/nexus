@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, UserCircle, LogOut, Loader2 } from "lucide-react";
+import { Menu, X, UserCircle, LogOut, Loader2, ShoppingBag, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
@@ -11,6 +11,14 @@ import { Button } from "@/components/ui/button";
 import { useAuth, useUser } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -54,6 +62,7 @@ export function Navbar() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
+      setIsMobileMenuOpen(false);
       if (isAdminDashboard) {
         router.push("/admin/login");
       } else {
@@ -141,22 +150,50 @@ export function Navbar() {
                     {isUserLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                     ) : user ? (
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10 border-2 border-primary/20">
-                          <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                          <AvatarFallback className="bg-primary text-white font-black">
-                            {getInitials(user.displayName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Button 
-                          onClick={handleSignOut}
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-full text-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
-                          title="Sign Out"
-                        >
-                          <LogOut className="w-5 h-5" />
-                        </Button>
+                      <div className="flex items-center gap-4">
+                        <Link href="/cart" className="relative group">
+                          <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10">
+                            <ShoppingBag className="w-5 h-5" />
+                          </Button>
+                        </Link>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                              <Avatar className="h-10 w-10 border-2 border-primary/20">
+                                <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                                <AvatarFallback className="bg-primary text-white font-black">
+                                  {getInitials(user.displayName)}
+                                </AvatarFallback>
+                              </Avatar>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56 rounded-2xl p-2" align="end" forceMount>
+                            <DropdownMenuLabel className="font-headline font-black px-4 py-3">
+                              <div className="flex flex-col space-y-1">
+                                <p className="text-sm leading-none">{user.displayName || "User"}</p>
+                                <p className="text-xs leading-none text-muted-foreground font-medium">
+                                  {user.email}
+                                </p>
+                              </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild className="rounded-xl px-4 py-3 cursor-pointer">
+                              <Link href="/profile" className="flex items-center w-full">
+                                <User className="mr-2 h-4 w-4" />
+                                <span className="font-black uppercase text-[10px] tracking-widest">Profile Page</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={handleSignOut}
+                              className="rounded-xl px-4 py-3 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                            >
+                              <LogOut className="mr-2 h-4 w-4" />
+                              <span className="font-black uppercase text-[10px] tracking-widest">Sign Out</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     ) : (
                       <Link href="/login" title="Login">
@@ -172,23 +209,12 @@ export function Navbar() {
 
             {/* Mobile Nav Actions */}
             <div className="flex items-center gap-2 md:hidden">
-              {!isAdminDashboard && !isUserLoading && (
-                user ? (
-                  <div className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8 border border-primary/20">
-                      <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                      <AvatarFallback className="bg-primary text-white text-[10px] font-black">
-                        {getInitials(user.displayName)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                ) : (
-                  <Link href="/login">
-                    <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
-                      <UserCircle className="w-6 h-6" />
-                    </Button>
-                  </Link>
-                )
+              {!isAdminDashboard && !isUserLoading && user && (
+                <Link href="/cart">
+                  <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
+                    <ShoppingBag className="w-5 h-5" />
+                  </Button>
+                </Link>
               )}
               <button
                 className="p-2 text-foreground"
@@ -217,6 +243,20 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
+          
+          {!isAdminDashboard && user && (
+            <Link
+              href="/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={cn(
+                "text-lg font-black uppercase tracking-widest py-3 border-b border-muted transition-colors flex items-center gap-3",
+                pathname === "/profile" ? "text-primary" : "text-foreground"
+              )}
+            >
+              <User className="w-5 h-5" /> Profile Page
+            </Link>
+          )}
+
           {(isAdminDashboard || user) && (
             <Button 
               onClick={handleSignOut}
@@ -225,6 +265,14 @@ export function Navbar() {
             >
               <LogOut className="mr-2 w-5 h-5" /> Sign Out
             </Button>
+          )}
+
+          {!user && !isAdminDashboard && (
+            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button className="w-full rounded-2xl h-14 font-black uppercase tracking-widest bg-primary">
+                <UserCircle className="mr-2 w-5 h-5" /> Sign In
+              </Button>
+            </Link>
           )}
         </div>
       )}
