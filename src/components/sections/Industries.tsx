@@ -13,56 +13,106 @@ import {
   Globe,
   ArrowRight
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const industries = [
-  { name: "E-Commerce", icon: ShoppingBag, color: "bg-orange-500" },
-  { name: "Healthcare", icon: Stethoscope, color: "bg-blue-600" },
-  { name: "Education", icon: GraduationCap, color: "bg-emerald-600" },
-  { name: "FinTech", icon: Wallet, color: "bg-indigo-600" },
-  { name: "Logistics", icon: Truck, color: "bg-purple-600" },
-  { name: "Real Estate", icon: Home, color: "bg-pink-600" },
-  { name: "Media & Entertainment", icon: PlayCircle, color: "bg-red-600" },
-  { name: "SaaS Platforms", icon: Layers, color: "bg-cyan-600" }
+  { 
+    name: "E-Commerce", 
+    icon: ShoppingBag, 
+    color: "bg-orange-500", 
+    hoverColor: "group-hover:bg-orange-600",
+    anim: "hover:rotate-3 hover:scale-105",
+    border: "border-orange-200"
+  },
+  { 
+    name: "Healthcare", 
+    icon: Stethoscope, 
+    color: "bg-blue-600", 
+    hoverColor: "group-hover:bg-blue-700",
+    anim: "hover:-rotate-3 hover:scale-110",
+    border: "border-blue-200"
+  },
+  { 
+    name: "Education", 
+    icon: GraduationCap, 
+    color: "bg-emerald-600", 
+    hoverColor: "group-hover:bg-emerald-700",
+    anim: "hover:skew-x-2 hover:scale-105",
+    border: "border-emerald-200"
+  },
+  { 
+    name: "FinTech", 
+    icon: Wallet, 
+    color: "bg-indigo-600", 
+    hoverColor: "group-hover:bg-indigo-700",
+    anim: "hover:-skew-y-2 hover:scale-110",
+    border: "border-indigo-200"
+  },
+  { 
+    name: "Logistics", 
+    icon: Truck, 
+    color: "bg-purple-600", 
+    hoverColor: "group-hover:bg-purple-700",
+    anim: "hover:translate-y-[-10px]",
+    border: "border-purple-200"
+  },
+  { 
+    name: "Real Estate", 
+    icon: Home, 
+    color: "bg-pink-600", 
+    hoverColor: "group-hover:bg-pink-700",
+    anim: "hover:rotate-6 hover:scale-105",
+    border: "border-pink-200"
+  },
+  { 
+    name: "Media & Entertainment", 
+    icon: PlayCircle, 
+    color: "bg-red-600", 
+    hoverColor: "group-hover:bg-red-700",
+    anim: "hover:-rotate-6 hover:scale-110",
+    border: "border-red-200"
+  },
+  { 
+    name: "SaaS Platforms", 
+    icon: Layers, 
+    color: "bg-cyan-600", 
+    hoverColor: "group-hover:bg-cyan-700",
+    anim: "hover:skew-y-3 hover:scale-105",
+    border: "border-cyan-200"
+  }
 ];
 
 export function Industries() {
   return (
-    <section id="industries" className="py-32 bg-foreground text-white overflow-hidden relative">
-      <div className="absolute inset-0 grid-bg opacity-10" />
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/20 blur-[200px] -z-10 animate-pulse" />
+    <section id="industries" className="py-32 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden relative">
+      {/* Dynamic colorful background blobs */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[180px] -z-10 animate-pulse" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/20 rounded-full blur-[180px] -z-10 animate-pulse delay-1000" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="space-y-12">
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/10 border-2 border-white/20 text-primary text-sm font-black uppercase tracking-widest shadow-2xl">
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white border-2 border-primary text-primary text-sm font-black uppercase tracking-widest shadow-xl animate-bounce">
                 <Globe className="w-5 h-5" />
                 Sector Expertise
               </div>
               <h2 className="text-6xl md:text-8xl font-headline font-black leading-tight italic">
-                Industries We <span className="text-primary">Serve</span>
+                Industries We <span className="text-primary drop-shadow-lg">Serve</span>
               </h2>
-              <p className="text-2xl text-slate-300 leading-relaxed max-w-xl font-semibold">
-                NPB Media develops tailored software solutions for diverse global industries with engineering precision.
+              <p className="text-2xl text-muted-foreground leading-relaxed max-w-xl font-semibold">
+                NPB Media develops tailored software solutions for diverse global industries with engineering precision and vibrant innovation.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-10">
-              <div className="space-y-2 border-l-8 border-primary pl-6">
-                <span className="text-6xl font-black text-white italic">10+</span>
-                <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Projects</p>
+            <div className="grid grid-cols-2 gap-10">
+              <div className="p-8 bg-white rounded-[2.5rem] shadow-xl border-l-8 border-primary group hover:bg-primary hover:text-white transition-all duration-500">
+                <span className="text-6xl font-black italic">10+</span>
+                <p className="font-black uppercase tracking-widest text-sm opacity-60">Projects Delivered</p>
               </div>
-              <div className="space-y-2 border-l-8 border-secondary pl-6">
-                <span className="text-6xl font-black text-white italic">7+</span>
-                <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Global Clients</p>
-              </div>
-              <div className="space-y-2 border-l-8 border-primary pl-6">
-                <span className="text-6xl font-black text-white italic">2+</span>
-                <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Years Exp</p>
-              </div>
-              <div className="space-y-2 border-l-8 border-secondary pl-6">
-                <span className="text-6xl font-black text-white italic">Global</span>
-                <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Network</p>
+              <div className="p-8 bg-white rounded-[2.5rem] shadow-xl border-l-8 border-secondary group hover:bg-secondary hover:text-white transition-all duration-500">
+                <span className="text-6xl font-black italic">7+</span>
+                <p className="font-black uppercase tracking-widest text-sm opacity-60">Global Partners</p>
               </div>
             </div>
           </div>
@@ -71,13 +121,33 @@ export function Industries() {
             {industries.map((industry, idx) => (
               <div 
                 key={idx} 
-                className="group p-10 bg-white/5 border-2 border-white/10 rounded-[3.5rem] hover:bg-white/10 hover:border-primary/50 transition-all duration-700 hover:-translate-y-4 hover:scale-105 relative overflow-hidden"
+                className={cn(
+                  "group p-10 bg-white border-2 rounded-[3.5rem] shadow-lg transition-all duration-700 relative overflow-hidden",
+                  industry.border,
+                  industry.anim
+                )}
               >
-                <div className={`w-16 h-16 rounded-[1.8rem] ${industry.color} flex items-center justify-center text-white mb-8 group-hover:scale-125 group-hover:rotate-[360deg] transition-all duration-700 shadow-2xl`}>
+                {/* Randomly styled accent background on hover */}
+                <div className={cn(
+                  "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10",
+                  industry.color
+                )} />
+
+                <div className={cn(
+                  "w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-white mb-8 group-hover:scale-125 group-hover:rotate-[360deg] transition-all duration-700 shadow-2xl",
+                  industry.color
+                )}>
                   <industry.icon className="w-8 h-8" />
                 </div>
-                <h3 className="font-black text-2xl group-hover:text-primary transition-colors font-headline italic">{industry.name}</h3>
-                <ArrowRight className="w-8 h-8 mt-6 text-white/30 group-hover:text-primary group-hover:translate-x-4 transition-all duration-500" />
+                
+                <h3 className="font-black text-2xl group-hover:text-white transition-colors font-headline italic">
+                  {industry.name}
+                </h3>
+                
+                <div className="flex items-center gap-3 mt-6 text-primary group-hover:text-white transition-colors">
+                  <span className="text-xs font-black uppercase tracking-widest">Industry Expertise</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-3 transition-transform duration-500" />
+                </div>
               </div>
             ))}
           </div>
