@@ -142,7 +142,7 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
-                {/* 2. Menu Navigation Card (Vertical on Desktop, scrollable on Mobile) */}
+                {/* 2. Menu Navigation Card (Desktop Sidebar List) */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
@@ -165,23 +165,27 @@ export default function ProfilePage() {
                   </div>
                 </Card>
 
-                {/* Mobile View Menu (Horizontal Scroll) */}
-                <div className="lg:hidden w-full overflow-x-auto pb-4 no-scrollbar">
-                  <TabsList className="bg-slate-100/50 backdrop-blur-sm p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex flex-nowrap shrink-0">
+                {/* 3. Mobile View Menu (Static Grid List - No Slide) */}
+                <div className="lg:hidden w-full pb-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
+                  <TabsList className="grid grid-cols-2 gap-3 bg-transparent h-auto w-full">
                     {sections.map((sec) => (
                       <TabsTrigger 
                         key={sec.id}
                         value={sec.id} 
-                        className="rounded-full px-6 py-4 font-headline font-black text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
+                        className={cn(
+                          "rounded-2xl px-4 py-6 font-headline font-black text-[10px] bg-white border-2 border-slate-100 transition-all flex flex-col items-center justify-center gap-3 shadow-sm",
+                          "data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:border-primary data-[state=active]:shadow-md"
+                        )}
                       >
-                        <sec.icon className="w-4 h-4" />
+                        <sec.icon className="w-5 h-5" />
                         {sec.label}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                 </div>
 
-                {/* 3. Account Status Card */}
+                {/* 4. Account Status Card */}
                 <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
                   <div className="absolute inset-0 grid-bg opacity-10" />
                   <div className="relative z-10 space-y-6">
