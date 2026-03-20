@@ -1,10 +1,12 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, Rocket } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,12 +41,10 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:rotate-12">
-            <Rocket className="text-white w-6 h-6" />
-          </div>
-          <span className="font-headline font-bold text-xl tracking-tight hidden sm:block">
-            NPB <span className="text-primary">Nexus</span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <Logo className="transition-transform group-hover:scale-110 duration-500" />
+          <span className="font-headline font-black text-2xl tracking-tight hidden sm:block">
+            NPB <span className="text-primary italic">Media</span>
           </span>
         </Link>
 
@@ -55,8 +55,8 @@ export function Navbar() {
               key={link.name}
               href={link.href}
               className={cn(
-                "text-sm font-medium hover:text-primary transition-colors whitespace-nowrap",
-                pathname === link.href && "text-primary"
+                "text-sm font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
+                pathname === link.href ? "text-primary" : "text-foreground/70"
               )}
             >
               {link.name}
@@ -66,7 +66,7 @@ export function Navbar() {
 
         {/* Mobile Nav Toggle */}
         <button
-          className="md:hidden p-2"
+          className="md:hidden p-2 text-foreground"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X /> : <Menu />}
@@ -82,8 +82,8 @@ export function Navbar() {
               href={link.href}
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
-                "text-lg font-medium py-2 border-b transition-colors",
-                pathname === link.href && "text-primary border-primary"
+                "text-lg font-black uppercase tracking-widest py-3 border-b border-muted transition-colors",
+                pathname === link.href ? "text-primary" : "text-foreground"
               )}
             >
               {link.name}

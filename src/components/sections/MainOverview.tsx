@@ -12,8 +12,7 @@ import {
   Globe, 
   Zap, 
   ShieldCheck, 
-  Sparkles,
-  Search
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -42,22 +41,22 @@ export function MainOverview() {
                 <Sparkles className="w-3.5 h-3.5" />
                 Next-Gen Infrastructure
               </div>
-              <h2 className="text-5xl lg:text-6xl font-headline font-bold leading-tight">
+              <h2 className="text-5xl lg:text-6xl font-headline font-black leading-tight tracking-tighter">
                 Empowering the <span className="text-primary italic">Digital Ecosystem</span>
               </h2>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-                NPB Nexus provides an integrated overview of your digital assets, leveraging proprietary AI to monitor uptime, optimize performance, and secure your future.
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl font-semibold">
+                NPB Media provides an integrated overview of your digital assets, leveraging proprietary AI to monitor uptime, optimize performance, and secure your future.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-4">
               <Link href="/services">
-                <Button size="lg" className="rounded-full px-8 h-14 text-base font-headline bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20 group">
+                <Button size="lg" className="rounded-full px-8 h-14 text-base font-headline bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20 group border-none">
                   Know More <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
               <Link href="/technology">
-                <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-headline border-2">
+                <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-headline border-2 border-primary/20 hover:border-primary transition-all">
                   Explore Tech
                 </Button>
               </Link>
@@ -67,15 +66,15 @@ export function MainOverview() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-4">
               <div className="space-y-1">
                 <p className="text-3xl font-black text-foreground">24/7</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Active Monitoring</p>
+                <p className="text-xs text-muted-foreground font-black uppercase tracking-widest">Active Monitoring</p>
               </div>
               <div className="space-y-1">
                 <p className="text-3xl font-black text-primary">99.9%</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">System Reliability</p>
+                <p className="text-xs text-muted-foreground font-black uppercase tracking-widest">System Reliability</p>
               </div>
               <div className="space-y-1 hidden sm:block">
                 <p className="text-3xl font-black text-accent">AI-Driven</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Decision Matrix</p>
+                <p className="text-xs text-muted-foreground font-black uppercase tracking-widest">Decision Matrix</p>
               </div>
             </div>
           </div>
@@ -86,13 +85,13 @@ export function MainOverview() {
             <Card className="bg-white/40 backdrop-blur-xl border-white/20 shadow-2xl rounded-[2.5rem] overflow-hidden">
               <CardHeader className="p-8 border-b border-white/10 flex flex-row items-center justify-between">
                 <div className="space-y-1">
-                  <CardTitle className="text-xl font-headline flex items-center gap-2">
+                  <CardTitle className="text-xl font-headline flex items-center gap-2 font-black italic">
                     <Activity className="text-primary w-5 h-5" />
                     Live Infrastructure
                   </CardTitle>
-                  <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Global Status Report</p>
+                  <p className="text-xs text-muted-foreground uppercase font-black tracking-widest">Global Status Report</p>
                 </div>
-                <Badge variant="outline" className="animate-pulse bg-emerald-50 text-emerald-600 border-emerald-200">
+                <Badge variant="outline" className="animate-pulse bg-emerald-50 text-emerald-600 border-emerald-200 font-black">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 mr-2" />
                   All Systems Operational
                 </Badge>
@@ -109,12 +108,12 @@ export function MainOverview() {
                           <Globe className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="font-bold text-sm">{project.name}</p>
+                          <p className="font-black text-sm">{project.name}</p>
                           <p className="text-[10px] uppercase font-black text-muted-foreground/60">{project.status}</p>
                         </div>
                       </div>
                       <div className="text-right space-y-1">
-                        <p className="font-headline font-bold text-lg">{project.uptime}</p>
+                        <p className="font-headline font-black text-lg">{project.uptime}</p>
                         <div className="h-1 w-20 bg-muted rounded-full overflow-hidden">
                           <div className="h-full bg-primary" style={{ width: project.uptime }} />
                         </div>
@@ -130,18 +129,18 @@ export function MainOverview() {
                       <BrainCircuit className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-headline font-bold text-lg">AI Innovation Lab</h4>
-                      <p className="text-slate-400 text-xs">Proprietary Optimization Engine</p>
+                      <h4 className="font-headline font-black text-lg italic">NPB Media Lab</h4>
+                      <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Optimization Engine</p>
                     </div>
                   </div>
                   <div className="bg-white/5 rounded-2xl p-5 border border-white/10 space-y-4">
                     <div className="flex items-center gap-3">
                       <Zap className="w-4 h-4 text-primary" />
-                      <p className="text-sm font-medium">Predictive Maintenance Active</p>
+                      <p className="text-sm font-black uppercase tracking-widest text-slate-200">Predictive Maintenance</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <ShieldCheck className="w-4 h-4 text-secondary" />
-                      <p className="text-sm font-medium">Auto-Scaling Security Protocols</p>
+                      <p className="text-sm font-black uppercase tracking-widest text-slate-200">Auto-Scaling Security</p>
                     </div>
                   </div>
                 </div>
