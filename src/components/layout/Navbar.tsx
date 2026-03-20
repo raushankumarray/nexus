@@ -3,9 +3,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, UserCircle } from "lucide-react";
+import { Menu, X, UserCircle, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +22,10 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const isAdminPath = pathname.startsWith("/admin");
+  const isAdminLogin = pathname === "/admin/login";
+  const isAdminDashboard = isAdminPath && !isAdminLogin;
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -31,6 +36,19 @@ export function Navbar() {
     { name: "About Us", href: "/about" },
     { name: "Contact Us", href: "/contact" },
   ];
+
+  const adminLinks = [
+    { name: "Product management", href: "/admin/products" },
+    { name: "Career Management", href: "/admin/careers" },
+    { name: "Contact form Data management", href: "/admin/contacts" },
+    { name: "Shedule meeting videocall Page", href: "/admin/meetings" },
+    { name: "Profile management", href: "/admin/profiles" },
+    { name: "User Data", href: "/admin/users" },
+  ];
+
+  const handleSignOut = () => {
+    router.push("/admin/login");
+  };
 
   return (
     <nav
@@ -44,54 +62,86 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
           <Logo className="transition-transform group-hover:scale-110 duration-500" />
-          
-          <span className="font-headline font-black text-2xl tracking-tight">
-            <span className="text-[#00008B]">Media</span>
+          <span className="font-headline font-black text-2xl tracking-tight text-[#00008B]">
+            Media
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                "text-[10px] lg:text-xs font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
-                pathname === link.href ? "text-primary" : "text-foreground/70"
+        {/* Conditional Rendering Based on Admin State */}
+        {!isAdminLogin && (
+          <>
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-4 lg:gap-6">
+              {isAdminDashboard ? (
+                <>
+                  {adminLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={cn(
+                        "text-[9px] lg:text-[10px] font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
+                        pathname === link.href ? "text-primary" : "text-foreground/70"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                  <Button 
+                    onClick={handleSignOut}
+                    variant="ghost" 
+                    size="sm" 
+                    className="rounded-full text-foreground/70 hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-widest text-[10px]"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={cn(
+                        "text-[10px] lg:text-xs font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
+                        pathname === link.href ? "text-primary" : "text-foreground/70"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                  <Link href="/login" title="Login">
+                    <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all">
+                      <UserCircle className="w-6 h-6" />
+                    </Button>
+                  </Link>
+                </>
               )}
-            >
-              {link.name}
-            </Link>
-          ))}
-          
-          <Link href="/login" title="Login">
-            <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all">
-              <UserCircle className="w-6 h-6" />
-            </Button>
-          </Link>
-        </div>
+            </div>
 
-        {/* Mobile Nav Actions */}
-        <div className="flex items-center gap-2 md:hidden">
-          <Link href="/login">
-            <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
-              <UserCircle className="w-6 h-6" />
-            </Button>
-          </Link>
-          <button
-            className="p-2 text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
+            {/* Mobile Nav Actions */}
+            <div className="flex items-center gap-2 md:hidden">
+              {!isAdminDashboard && (
+                <Link href="/login">
+                  <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
+                    <UserCircle className="w-6 h-6" />
+                  </Button>
+                </Link>
+              )}
+              <button
+                className="p-2 text-foreground"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X /> : <Menu />}
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
+      {isMobileMenuOpen && !isAdminLogin && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b p-6 flex flex-col gap-4 animate-in slide-in-from-top duration-300 shadow-xl">
-          {navLinks.map((link) => (
+          {(isAdminDashboard ? adminLinks : navLinks).map((link) => (
             <Link
               key={link.name}
               href={link.href}
@@ -104,6 +154,15 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
+          {isAdminDashboard && (
+            <Button 
+              onClick={handleSignOut}
+              variant="destructive" 
+              className="w-full rounded-2xl h-14 font-black uppercase tracking-widest"
+            >
+              <LogOut className="mr-2 w-5 h-5" /> Sign Out
+            </Button>
+          )}
         </div>
       )}
     </nav>
