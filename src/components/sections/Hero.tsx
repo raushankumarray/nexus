@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -8,87 +7,90 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 right-0 w-[80%] h-full bg-primary/5 -skew-x-12 translate-x-1/4 pointer-events-none" />
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse delay-700" />
+    <section className="relative min-h-[95vh] flex items-center pt-24 pb-12 overflow-hidden bg-background">
+      {/* Dynamic Background Elements - More Colorful */}
+      <div className="absolute top-0 right-0 w-[80%] h-full bg-primary/10 -skew-x-12 translate-x-1/4 pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[150px] animate-pulse delay-700" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(242,140,48,0.05)_0%,transparent_70%)] pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5" />
+        <div className="space-y-10 animate-in fade-in slide-in-from-left duration-1000">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/20 border-2 border-primary/40 text-primary text-sm font-black tracking-widest uppercase shadow-lg shadow-primary/20">
+            <Sparkles className="w-4 h-4" />
             Empowering Innovation
           </div>
           
-          <h1 className="text-5xl lg:text-7xl font-headline font-bold leading-[1.1]">
-            Building Powerful <span className="text-primary italic">Software</span> for the <span className="text-gradient">Digital Future</span>
+          <h1 className="text-6xl lg:text-8xl font-headline font-black leading-[1] tracking-tighter">
+            Building Powerful <span className="text-primary italic drop-shadow-sm">Software</span> for the <span className="text-gradient">Digital Future</span>
           </h1>
           
-          <p className="text-xl text-muted-foreground max-w-lg leading-relaxed font-medium">
-            At NPB Media, we help businesses transform their ideas into scalable digital solutions. Our team specializes in developing innovative software, modern web platforms, and high-performance applications that empower companies to grow faster.
+          <p className="text-2xl text-muted-foreground max-w-xl leading-relaxed font-semibold">
+            At NPB Media, we help businesses transform their ideas into scalable digital solutions. We empower companies to grow faster through future-ready tech.
           </p>
           
-          <div className="flex flex-wrap gap-4 pt-4">
-            <Button size="lg" className="rounded-full px-10 h-16 text-lg font-headline shadow-2xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 group">
-              Start Your Project <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+          <div className="flex flex-wrap gap-6 pt-6">
+            <Button size="lg" className="rounded-full px-12 h-20 text-xl font-headline shadow-2xl shadow-primary/30 bg-primary hover:bg-primary/90 transition-all hover:scale-110 active:scale-95 group">
+              Start Your Project <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-2" />
             </Button>
             <Link href="/services">
-              <Button size="lg" variant="outline" className="rounded-full px-10 h-16 text-lg font-headline border-2 hover:bg-muted transition-all">
-                Explore Our Services
+              <Button size="lg" variant="outline" className="rounded-full px-12 h-20 text-xl font-headline border-4 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                Explore Services
               </Button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 pt-6">
-            <div className="flex items-center gap-4 group">
-              <div className="w-12 h-12 rounded-2xl bg-secondary/20 flex items-center justify-center text-primary group-hover:bg-secondary group-hover:text-white transition-all duration-300">
-                <Cpu className="w-6 h-6" />
+          <div className="grid grid-cols-2 gap-10 pt-10">
+            <div className="flex items-center gap-5 group cursor-pointer">
+              <div className="w-16 h-16 rounded-[2rem] bg-secondary/30 flex items-center justify-center text-primary group-hover:bg-secondary group-hover:text-white group-hover:rotate-12 transition-all duration-500 shadow-xl">
+                <Cpu className="w-8 h-8" />
               </div>
               <div>
-                <p className="font-bold text-xl">Innovation</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Future-Ready Tech</p>
+                <p className="font-black text-2xl">Innovation</p>
+                <p className="text-sm text-muted-foreground font-black uppercase tracking-widest">Future-Ready Tech</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 group">
-              <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all duration-300">
-                <Target className="w-6 h-6" />
+            <div className="flex items-center gap-5 group cursor-pointer">
+              <div className="w-16 h-16 rounded-[2rem] bg-accent/30 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white group-hover:-rotate-12 transition-all duration-500 shadow-xl">
+                <Target className="w-8 h-8" />
               </div>
               <div>
-                <p className="font-bold text-xl">Strategy</p>
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Data-Driven Results</p>
+                <p className="font-black text-2xl">Strategy</p>
+                <p className="text-sm text-muted-foreground font-black uppercase tracking-widest">Data-Driven Results</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="relative animate-in fade-in zoom-in duration-1000 delay-300 hidden lg:block">
-          <div className="relative p-1 bg-gradient-to-br from-primary/30 via-transparent to-accent/30 rounded-[3rem]">
-            <div className="bg-foreground rounded-[2.9rem] p-12 text-white space-y-8 relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full animate-float" />
-              <div className="space-y-4 relative z-10">
-                <h3 className="text-4xl font-headline font-bold">Our Edge</h3>
-                <p className="text-slate-400 text-lg leading-relaxed">
-                  We combine creativity, technology, and strategy to deliver solutions that drive real business results for startups and enterprises globally.
+          <div className="relative p-2 bg-gradient-to-br from-primary via-accent to-secondary rounded-[4rem] shadow-2xl">
+            <div className="bg-foreground rounded-[3.8rem] p-16 text-white space-y-12 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-primary/30 blur-[120px] rounded-full animate-float" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent/20 blur-[100px] rounded-full animate-float delay-1000" />
+              
+              <div className="space-y-6 relative z-10">
+                <h3 className="text-5xl font-headline font-black italic text-primary">Our Edge</h3>
+                <p className="text-slate-300 text-2xl leading-relaxed font-medium">
+                  We combine creativity, technology, and strategy to deliver solutions that drive real results.
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 gap-12 pt-4 relative z-10">
-                <div className="space-y-1">
-                  <span className="text-6xl font-black text-primary">10+</span>
-                  <p className="text-slate-300 font-bold uppercase tracking-widest text-xs">Successful Projects</p>
+              <div className="grid grid-cols-2 gap-16 pt-6 relative z-10">
+                <div className="space-y-2">
+                  <span className="text-7xl font-black text-primary drop-shadow-md">10+</span>
+                  <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Successful Projects</p>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-6xl font-black text-secondary">7+</span>
-                  <p className="text-slate-300 font-bold uppercase tracking-widest text-xs">Global Clients</p>
+                <div className="space-y-2">
+                  <span className="text-7xl font-black text-secondary drop-shadow-md">7+</span>
+                  <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Global Clients</p>
                 </div>
               </div>
 
-              <div className="pt-8 border-t border-white/10 flex items-center gap-4 text-sm text-slate-400 relative z-10">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Zap className="text-secondary w-5 h-5" />
+              <div className="pt-12 border-t border-white/20 flex items-center gap-6 text-lg text-slate-300 relative z-10">
+                <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center animate-bounce">
+                  <Zap className="text-secondary w-7 h-7" />
                 </div>
-                Empowering businesses through cutting-edge tech.
+                <span className="font-bold">Empowering businesses through cutting-edge tech.</span>
               </div>
             </div>
           </div>

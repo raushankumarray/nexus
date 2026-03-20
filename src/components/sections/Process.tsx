@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -19,150 +18,158 @@ const steps = [
   {
     num: "01",
     title: "Discovery & Consultation",
-    desc: "We understand your business goals, technical requirements, and target audience through deep-dive workshops.",
+    desc: "Understanding your business goals and technical requirements through deep-dive workshops.",
     icon: Search,
-    color: "group-hover:text-orange-500",
-    bg: "bg-orange-500/10",
+    color: "bg-orange-500",
+    hoverColor: "group-hover:bg-orange-600",
+    anim: "hover:rotate-2"
   },
   {
     num: "02",
     title: "Strategic Planning",
-    desc: "Our team prepares a precise roadmap and scalable architecture for highly efficient development cycles.",
+    desc: "Preparing a precise roadmap and scalable architecture for efficient development.",
     icon: Map,
-    color: "group-hover:text-blue-500",
-    bg: "bg-blue-500/10",
+    color: "bg-blue-600",
+    hoverColor: "group-hover:bg-blue-700",
+    anim: "hover:-rotate-2"
   },
   {
     num: "03",
     title: "UI/UX Design",
-    desc: "Creating visually engaging and user-friendly interfaces that maximize user retention and brand impact.",
+    desc: "Creating visually engaging and user-friendly interfaces that maximize brand impact.",
     icon: PenTool,
-    color: "group-hover:text-emerald-500",
-    bg: "bg-emerald-500/10",
+    color: "bg-emerald-600",
+    hoverColor: "group-hover:bg-emerald-700",
+    anim: "hover:skew-x-2"
   },
   {
     num: "04",
     title: "Development",
-    desc: "Our expert developers build secure, scalable, and high-performance systems using the modern tech stack.",
+    desc: "Our expert developers build secure, scalable, and high-performance systems.",
     icon: Code2,
-    color: "group-hover:text-indigo-500",
-    bg: "bg-indigo-500/10",
+    color: "bg-indigo-600",
+    hoverColor: "group-hover:bg-indigo-700",
+    anim: "hover:-skew-x-2"
   },
   {
     num: "05",
     title: "Testing & QA",
-    desc: "Ensuring the product meets the highest performance and security standards through rigorous automated testing.",
+    desc: "Ensuring the product meets the highest standards through rigorous automated testing.",
     icon: ShieldCheck,
-    color: "group-hover:text-purple-500",
-    bg: "bg-purple-500/10",
+    color: "bg-purple-600",
+    hoverColor: "group-hover:bg-purple-700",
+    anim: "hover:scale-105"
   },
   {
     num: "06",
     title: "Deployment",
-    desc: "Launching the software smoothly in the production environment with continuous monitoring and zero downtime.",
+    desc: "Launching the software smoothly in production with continuous monitoring.",
     icon: Rocket,
-    color: "group-hover:text-pink-500",
-    bg: "bg-pink-500/10",
+    color: "bg-pink-600",
+    hoverColor: "group-hover:bg-pink-700",
+    anim: "hover:translate-y-[-10px]"
   },
   {
     num: "07",
     title: "Maintenance & Support",
-    desc: "Providing ongoing updates, improvements, and round-the-clock technical support for peak performance.",
+    desc: "Providing ongoing updates, improvements, and round-the-clock technical support.",
     icon: RefreshCw,
-    color: "group-hover:text-primary",
-    bg: "bg-primary/10",
+    color: "bg-primary",
+    hoverColor: "group-hover:bg-primary-foreground group-hover:text-primary",
+    anim: "hover:scale-105"
   }
 ];
 
 export function Process() {
   return (
-    <section id="process" className="py-24 bg-background relative overflow-hidden">
+    <section id="process" className="py-32 bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-          <div className="max-w-2xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black tracking-widest uppercase">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-12">
+          <div className="max-w-3xl space-y-8">
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/10 border-2 border-primary/30 text-primary text-sm font-black uppercase tracking-widest shadow-md">
               Our Workflow
             </div>
-            <h2 className="text-5xl md:text-6xl font-headline font-bold">
+            <h2 className="text-6xl md:text-8xl font-headline font-black leading-[0.9]">
               The <span className="text-primary italic">Process</span>
             </h2>
-            <p className="text-muted-foreground text-xl leading-relaxed font-medium">
+            <p className="text-2xl text-muted-foreground leading-relaxed font-semibold">
               A systematic approach to building resilient digital products.
             </p>
           </div>
-          <div className="hidden lg:flex items-center gap-4 text-xs font-black text-muted-foreground uppercase tracking-widest">
-            <span className="flex items-center gap-2 text-primary"><Search className="w-5 h-5" /> Discovery</span>
-            <ArrowRight className="w-5 h-5 opacity-20" />
-            <span className="flex items-center gap-2 text-primary"><Rocket className="w-5 h-5" /> Launch</span>
-            <ArrowRight className="w-5 h-5 opacity-20" />
-            <span className="flex items-center gap-2 text-primary"><Zap className="w-5 h-5" /> Scale</span>
+          <div className="hidden lg:flex items-center gap-6 text-sm font-black text-muted-foreground uppercase tracking-widest">
+            <span className="flex items-center gap-3 text-orange-500 animate-pulse"><Search className="w-6 h-6" /> Discovery</span>
+            <ArrowRight className="w-6 h-6 opacity-30" />
+            <span className="flex items-center gap-3 text-blue-600"><Rocket className="w-6 h-6" /> Launch</span>
+            <ArrowRight className="w-6 h-6 opacity-30" />
+            <span className="flex items-center gap-3 text-emerald-600"><Zap className="w-6 h-6" /> Scale</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
           {steps.map((step, idx) => (
             <div 
               key={idx}
               className={cn(
-                "group relative p-10 rounded-[3rem] bg-white border border-border/50 shadow-sm transition-all duration-700 hover:shadow-2xl hover:-translate-y-3 overflow-hidden animate-in fade-in slide-in-from-bottom fill-mode-both",
-                idx === steps.length - 1 && "lg:col-span-2 xl:col-span-1"
+                "group relative p-12 rounded-[4rem] bg-white border-none shadow-2xl transition-all duration-700 overflow-hidden animate-in fade-in slide-in-from-bottom fill-mode-both",
+                step.anim
               )}
               style={{ animationDelay: `${idx * 100}ms` }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-transparent via-primary/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
-
-              <div className="absolute -top-10 -right-10 text-[12rem] font-black text-slate-50/50 group-hover:text-primary/5 transition-colors duration-700 pointer-events-none select-none">
+              <div className={cn(
+                "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0",
+                step.hoverColor
+              )} />
+              
+              <div className="absolute -top-12 -right-12 text-[14rem] font-black text-slate-100 group-hover:text-white/10 transition-colors duration-700 pointer-events-none select-none z-0">
                 {step.num}
               </div>
 
               <div className="relative z-10 h-full flex flex-col">
                 <div className={cn(
-                  "w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg] shadow-lg mb-10",
-                  step.bg,
-                  "text-slate-400 group-hover:bg-primary group-hover:text-white"
+                  "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 group-hover:scale-125 group-hover:rotate-[360deg] shadow-2xl mb-12 text-white",
+                  step.color
                 )}>
-                  <step.icon className="w-8 h-8" />
+                  <step.icon className="w-10 h-10" />
                 </div>
 
-                <div className="space-y-6 flex-1">
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs font-black text-primary/40 group-hover:text-primary transition-colors">STEP {step.num}</span>
-                    <div className="h-px flex-1 bg-border/50 group-hover:bg-primary/20 transition-colors" />
+                <div className="space-y-8 flex-1">
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm font-black text-primary/40 group-hover:text-white transition-colors">STEP {step.num}</span>
+                    <div className="h-1 flex-1 bg-primary/10 group-hover:bg-white/30 transition-colors" />
                   </div>
                   
-                  <h3 className="text-2xl font-bold font-headline leading-tight group-hover:text-primary transition-colors">
+                  <h3 className="text-3xl font-black font-headline leading-tight group-hover:text-white transition-colors italic">
                     {step.title}
                   </h3>
                   
-                  <p className="text-muted-foreground leading-relaxed text-base font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+                  <p className="text-xl text-muted-foreground leading-relaxed font-semibold opacity-80 group-hover:opacity-100 group-hover:text-white/90 transition-all">
                     {step.desc}
                   </p>
                 </div>
 
-                <div className="mt-10 flex items-center gap-3 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500">
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                <div className="mt-12 flex items-center gap-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                  <span className="relative flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
                   </span>
-                  <span className="text-xs font-black uppercase tracking-widest text-primary">In Progress</span>
+                  <span className="text-sm font-black uppercase tracking-widest text-white">In Progress</span>
                 </div>
               </div>
             </div>
           ))}
 
-          <div className="xl:col-span-1 p-10 rounded-[3rem] bg-foreground text-white flex flex-col justify-center items-center text-center space-y-8 animate-in fade-in zoom-in duration-700 delay-700 group overflow-hidden relative">
+          <div className="xl:col-span-1 p-12 rounded-[4rem] bg-gradient-to-br from-primary to-accent text-white flex flex-col justify-center items-center text-center space-y-10 animate-in fade-in zoom-in duration-700 delay-700 group overflow-hidden relative shadow-2xl">
             <div className="absolute inset-0 grid-bg opacity-10" />
-            <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
+            <div className="absolute -top-16 -right-16 w-64 h-64 bg-white/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700" />
             
-            <div className="relative z-10 space-y-6">
-              <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Zap className="text-primary w-10 h-10" />
+            <div className="relative z-10 space-y-8">
+              <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-125 transition-transform shadow-xl">
+                <Zap className="text-white w-12 h-12" />
               </div>
-              <h4 className="text-3xl font-bold font-headline">Ready to Start?</h4>
-              <p className="text-slate-400 text-base leading-relaxed">Let&apos;s turn your vision into a scalable digital product.</p>
-              <button className="w-full py-5 bg-primary hover:bg-primary/90 text-white rounded-[1.5rem] text-lg font-bold transition-all active:scale-95 shadow-2xl shadow-primary/20 flex items-center justify-center gap-3">
-                Get in Touch <ArrowRight className="w-5 h-5" />
+              <h4 className="text-4xl font-black font-headline italic">Ready to Start?</h4>
+              <p className="text-white/80 text-xl leading-relaxed font-medium">Let&apos;s turn your vision into a scalable digital product.</p>
+              <button className="w-full py-6 bg-white text-primary hover:bg-white/90 rounded-[2rem] text-2xl font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group">
+                Get in Touch <ArrowRight className="w-8 h-8 transition-transform group-hover:translate-x-3" />
               </button>
             </div>
           </div>

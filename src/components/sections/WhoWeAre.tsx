@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -10,95 +9,103 @@ const values = [
     title: "Innovation",
     description: "We constantly explore new technologies and creative ideas to build future-ready solutions.",
     icon: Lightbulb,
-    color: "text-primary",
-    bg: "bg-primary/10"
+    color: "text-white",
+    bg: "bg-orange-500",
+    hoverEffect: "hover:rotate-3 hover:scale-105"
   },
   {
     title: "Quality",
     description: "Every product we develop goes through strict quality assurance to ensure performance and reliability.",
     icon: ShieldCheck,
-    color: "text-secondary",
-    bg: "bg-secondary/10"
+    color: "text-white",
+    bg: "bg-blue-600",
+    hoverEffect: "hover:-rotate-3 hover:scale-105"
   },
   {
     title: "Transparency",
     description: "We maintain open communication with clients throughout the entire development process.",
     icon: Eye,
-    color: "text-accent",
-    bg: "bg-accent/10"
+    color: "text-white",
+    bg: "bg-emerald-600",
+    hoverEffect: "hover:skew-x-2 hover:scale-105"
   },
   {
     title: "Customer Success",
     description: "Our success depends on the success of our clients. We grow together.",
     icon: Heart,
-    color: "text-primary",
-    bg: "bg-primary/10"
+    color: "text-white",
+    bg: "bg-pink-600",
+    hoverEffect: "hover:-skew-x-2 hover:scale-105"
   }
 ];
 
 export function WhoWeAre() {
   return (
-    <section id="who-we-are" className="py-24 bg-muted/30 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+    <section id="who-we-are" className="py-24 bg-gradient-to-b from-background via-primary/5 to-background relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-accent to-secondary" />
       
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-24">
-          <div className="space-y-8 animate-in fade-in slide-in-from-left duration-1000 ease-out">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border shadow-sm text-primary text-xs font-bold uppercase tracking-wider">
-                <Rocket className="w-4 h-4" />
+          <div className="space-y-12 animate-in fade-in slide-in-from-left duration-1000 ease-out">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/10 border-2 border-primary/20 text-primary text-sm font-black uppercase tracking-widest shadow-lg">
+                <Rocket className="w-5 h-5" />
                 Who We Are
               </div>
-              <h2 className="text-5xl md:text-6xl font-headline font-bold leading-tight">
+              <h2 className="text-6xl md:text-7xl font-headline font-black leading-tight">
                 Engineering <span className="text-primary italic">Reliability</span>
               </h2>
-              <div className="space-y-4">
-                <p className="text-xl text-muted-foreground leading-relaxed">
+              <div className="space-y-6">
+                <p className="text-2xl text-muted-foreground leading-relaxed font-medium">
                   NPB Media is a technology-driven software development company committed to building reliable and high-quality digital products.
                 </p>
-                <p className="text-lg text-muted-foreground/80 leading-relaxed">
-                  Our team of developers, designers, and technology experts work together to create solutions that solve complex business challenges and improve operational efficiency. We partner with startups, small businesses, and enterprises to deliver powerful software solutions tailored to their needs.
+                <p className="text-xl text-muted-foreground/80 leading-relaxed">
+                  Our team of experts work together to create solutions that solve complex challenges. We partner with startups and enterprises to deliver powerful software tailored to their needs.
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
                 {[
                   "Startups & Small Businesses",
                   "Enterprise Scale Solutions",
                   "Complex Business Logic",
                   "Operational Efficiency"
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <CheckCircle2 className="text-primary w-5 h-5" />
-                    <span className="font-bold text-base text-foreground/80">{item}</span>
+                  <div key={i} className="flex items-center gap-4 group cursor-default">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                      <CheckCircle2 className="text-primary group-hover:text-white w-6 h-6" />
+                    </div>
+                    <span className="font-black text-lg text-foreground/80">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-right duration-1000 ease-out delay-200">
-            <Card className="border-none shadow-2xl bg-white rounded-[2.5rem] p-6 transition-all hover:translate-x-2 group">
-              <CardHeader className="flex flex-row items-center gap-6 space-y-0 p-4">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-                  <Eye className="w-8 h-8" />
+          <div className="grid grid-cols-1 gap-10 animate-in fade-in slide-in-from-right duration-1000 ease-out delay-200">
+            <Card className="border-none shadow-2xl bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-[3rem] p-8 transition-all hover:translate-x-4 hover:scale-105 group overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+              <CardHeader className="flex flex-row items-center gap-8 space-y-0 p-4">
+                <div className="w-20 h-20 rounded-[1.8rem] bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 group-hover:rotate-12 transition-transform">
+                  <Eye className="w-10 h-10" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-headline font-bold">Our Vision</CardTitle>
-                  <p className="text-muted-foreground text-base mt-2">
+                  <CardTitle className="text-3xl font-headline font-black italic">Our Vision</CardTitle>
+                  <p className="text-white/80 text-lg mt-3 font-medium">
                     To become a trusted technology partner for businesses worldwide.
                   </p>
                 </div>
               </CardHeader>
             </Card>
 
-            <Card className="border-none shadow-2xl bg-white rounded-[2.5rem] p-6 transition-all hover:translate-x-2 group">
-              <CardHeader className="flex flex-row items-center gap-6 space-y-0 p-4">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-secondary/10 flex items-center justify-center text-secondary shrink-0 group-hover:scale-110 transition-transform">
-                  <Target className="w-8 h-8" />
+            <Card className="border-none shadow-2xl bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-[3rem] p-8 transition-all hover:translate-x-4 hover:scale-105 group overflow-hidden relative">
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+              <CardHeader className="flex flex-row items-center gap-8 space-y-0 p-4">
+                <div className="w-20 h-20 rounded-[1.8rem] bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0 group-hover:-rotate-12 transition-transform">
+                  <Target className="w-10 h-10" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl font-headline font-bold">Our Mission</CardTitle>
-                  <p className="text-muted-foreground text-base mt-2">
+                  <CardTitle className="text-3xl font-headline font-black italic">Our Mission</CardTitle>
+                  <p className="text-white/80 text-lg mt-3 font-medium">
                     To deliver innovative software solutions that solve real-world problems.
                   </p>
                 </div>
@@ -107,29 +114,29 @@ export function WhoWeAre() {
           </div>
         </div>
 
-        <div className="space-y-16">
-          <div className="text-center space-y-4 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 ease-out">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest mb-2">
-              <Sparkles className="w-3.5 h-3.5" />
+        <div className="space-y-20">
+          <div className="text-center space-y-6 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom duration-1000 ease-out">
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-black uppercase tracking-widest mb-4 border border-primary/20 shadow-sm">
+              <Sparkles className="w-5 h-5" />
               Excellence Driven
             </div>
-            <h2 className="text-4xl md:text-5xl font-headline font-bold">Our Core <span className="text-primary">Values</span></h2>
-            <p className="text-muted-foreground text-lg">The principles guiding our engineering excellence.</p>
-            <div className="w-24 h-1.5 bg-primary mx-auto rounded-full" />
+            <h2 className="text-5xl md:text-7xl font-headline font-black">Our Core <span className="text-primary italic">Values</span></h2>
+            <div className="w-48 h-2 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {values.map((value, idx) => (
               <div 
                 key={idx} 
                 style={{ animationDelay: `${idx * 150}ms` }}
-                className="group p-10 bg-white rounded-[3rem] shadow-xl hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-primary/20 hover:-translate-y-3 animate-in fade-in slide-in-from-bottom fill-mode-both"
+                className={`group p-12 ${value.bg} text-white rounded-[4rem] shadow-2xl transition-all duration-500 ${value.hoverEffect} animate-in fade-in slide-in-from-bottom fill-mode-both relative overflow-hidden`}
               >
-                <div className={`w-16 h-16 rounded-[1.5rem] ${value.bg} ${value.color} flex items-center justify-center mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}>
-                  <value.icon className="w-8 h-8" />
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform" />
+                <div className={`w-20 h-20 rounded-[1.8rem] bg-white/20 flex items-center justify-center mb-10 transition-all duration-500 group-hover:rotate-[360deg] shadow-lg`}>
+                  <value.icon className={`w-10 h-10 ${value.color}`} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 font-headline">{value.title}</h3>
-                <p className="text-muted-foreground leading-relaxed text-base">
+                <h3 className="text-3xl font-black mb-6 font-headline italic">{value.title}</h3>
+                <p className="text-white/90 leading-relaxed text-lg font-medium">
                   {value.description}
                 </p>
               </div>

@@ -91,3 +91,11 @@
 .glass-dark {
   @apply bg-foreground/10 backdrop-blur-md border border-white/5;
 }
+
+.vibrant-gradient {
+  background: linear-gradient(135deg, #F28C30 0%, #E94E77 50%, #4A90E2 100%);
+}
+
+.vibrant-gradient-soft {
+  background: linear-gradient(135deg, rgba(242, 140, 48, 0.1) 0%, rgba(233, 78, 119, 0.1) 50%, rgba(74, 144, 226, 0.1) 100%);
+}
