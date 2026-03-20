@@ -18,7 +18,7 @@ export function Footer() {
                 <span className="text-[#FF0000]">N</span>
                 <span className="text-white">P</span>
                 <span className="text-[#008000]">B</span>
-                <span className="text-[#4169E1] ml-2 italic">Media</span>
+                <span className="text-[#00008B] ml-2 italic">Media</span>
               </span>
             </Link>
             <p className="text-slate-400 text-lg max-w-md leading-relaxed font-medium">
