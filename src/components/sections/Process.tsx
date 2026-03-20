@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -87,7 +88,7 @@ export function Process() {
               The <span className="text-primary italic">Process</span>
             </h2>
             <p className="text-2xl text-muted-foreground leading-relaxed font-semibold">
-              Hover over each step to see our detailed style of working.
+              Explore our systematic approach to building resilient digital products.
             </p>
           </div>
           <div className="hidden lg:flex items-center gap-6 text-sm font-black text-muted-foreground uppercase tracking-widest">
@@ -104,7 +105,7 @@ export function Process() {
             <div 
               key={idx}
               className={cn(
-                "group relative p-12 rounded-[4rem] bg-white border-none shadow-2xl transition-all duration-700 overflow-hidden min-h-[450px] flex flex-col cursor-help",
+                "group relative p-10 rounded-[4rem] bg-white border border-border/50 shadow-2xl transition-all duration-700 overflow-hidden flex flex-col min-h-[480px] cursor-default",
                 idx % 2 === 0 ? "hover:rotate-1" : "hover:-rotate-1"
               )}
             >
@@ -119,43 +120,39 @@ export function Process() {
 
               <div className="relative z-10 h-full flex flex-col flex-1">
                 <div className={cn(
-                  "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 group-hover:scale-125 group-hover:rotate-[360deg] shadow-2xl mb-12 text-white",
+                  "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg] shadow-2xl mb-10 text-white",
                   step.color
                 )}>
                   <step.icon className="w-10 h-10" />
                 </div>
 
-                <div className="space-y-8 flex-1">
-                  <div className="flex items-center gap-6">
-                    <span className="text-sm font-black text-primary/40 group-hover:text-white transition-colors">STEP {step.num}</span>
-                    <div className="h-1 flex-1 bg-primary/10 group-hover:bg-white/30 transition-colors" />
+                <div className="space-y-6 flex-1">
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-black text-primary/40 group-hover:text-white transition-colors">STEP {step.num}</span>
+                    <div className="h-0.5 flex-1 bg-primary/10 group-hover:bg-white/30 transition-colors" />
                   </div>
                   
                   <h3 className="text-3xl font-black font-headline leading-tight group-hover:text-white transition-colors italic">
                     {step.title}
                   </h3>
                   
-                  {/* Content revealed on hover */}
-                  <div className="overflow-hidden max-h-0 group-hover:max-h-60 transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
-                    <p className="text-xl text-muted-foreground leading-relaxed font-semibold group-hover:text-white transition-all pt-4">
-                      {step.desc}
-                    </p>
-                    
-                    {/* Special indicator for Step 7 */}
-                    {step.num === "07" && (
-                      <div className="mt-8 flex items-center gap-3 py-3 px-5 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white animate-pulse">
-                        <Activity className="w-5 h-5" />
-                        <span className="text-sm font-black uppercase tracking-widest">Active 24/7 Support</span>
-                      </div>
-                    )}
-                  </div>
+                  <p className="text-lg text-muted-foreground leading-relaxed font-semibold group-hover:text-white transition-all">
+                    {step.desc}
+                  </p>
+                  
+                  {step.num === "07" && (
+                    <div className="mt-6 inline-flex items-center gap-3 py-3 px-5 rounded-2xl bg-primary/10 group-hover:bg-white/20 backdrop-blur-md border border-primary/20 group-hover:border-white/30 text-primary group-hover:text-white transition-all animate-pulse">
+                      <Activity className="w-5 h-5" />
+                      <span className="text-xs font-black uppercase tracking-widest">Active 24/7 Support</span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-auto pt-8 flex items-center gap-4 opacity-100 group-hover:opacity-0 transition-opacity">
-                  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1" />
+                <div className="mt-8 pt-8 border-t border-border/50 group-hover:border-white/20 flex items-center justify-between transition-colors">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-400 group-hover:text-white/80">Expert Workflow</span>
+                  <div className="w-10 h-10 rounded-full bg-slate-100 group-hover:bg-white/20 flex items-center justify-center transition-all group-hover:rotate-45">
+                    <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-white" />
                   </div>
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-400">Hover for Details</span>
                 </div>
               </div>
             </div>
@@ -171,7 +168,7 @@ export function Process() {
               </div>
               <h4 className="text-4xl font-black font-headline italic">Ready to Start?</h4>
               <p className="text-white/80 text-xl leading-relaxed font-medium">Let&apos;s turn your vision into a scalable digital product.</p>
-              <button className="w-full py-6 bg-white text-primary hover:bg-white/90 rounded-[2rem] text-2xl font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4">
+              <button className="w-full py-6 bg-white text-primary hover:bg-white/90 rounded-[2.5rem] text-2xl font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4">
                 Get in Touch <ArrowRight className="w-8 h-8 group-hover:translate-x-3 transition-transform" />
               </button>
             </div>
