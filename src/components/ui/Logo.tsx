@@ -8,7 +8,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("relative flex items-center justify-center w-12 h-12 bg-[#F28C30] rounded-full shrink-0 shadow-lg", className)}>
       <div className="flex items-center justify-center leading-none">
-        <div className="flex font-black text-xl tracking-tighter select-none">
+        <div className="flex font-black text-xl tracking-widest select-none ml-1">
           <span className="text-[#FF0000]">N</span>
           <span className="text-white">P</span>
           <span className="text-[#008000]">B</span>

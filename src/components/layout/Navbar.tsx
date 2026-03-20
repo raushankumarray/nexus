@@ -44,7 +44,10 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 group">
           <Logo className="transition-transform group-hover:scale-110 duration-500" />
           <span className="font-headline font-black text-2xl tracking-tight hidden sm:block">
-            NPB <span className="text-primary italic">Media</span>
+            <span className="text-[#FF0000]">N</span>
+            <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">P</span>
+            <span className="text-[#008000]">B</span>
+            <span className="text-[#00008B] ml-2 italic">Media</span>
           </span>
         </Link>
 
@@ -56,7 +59,7 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "text-sm font-black uppercase tracking-widest hover:text-primary transition-colors whitespace-nowrap",
-                pathname === link.href ? "text-primary" : "text-foreground/70"
+                pathname === link.href ? "text-primary border-b-2 border-primary pb-1" : "text-foreground/70"
               )}
             >
               {link.name}

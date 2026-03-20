@@ -15,7 +15,10 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-4">
               <Logo />
               <span className="font-headline font-black text-3xl tracking-tight">
-                NPB <span className="text-primary italic">Media</span>
+                <span className="text-[#FF0000]">N</span>
+                <span className="text-white">P</span>
+                <span className="text-[#008000]">B</span>
+                <span className="text-[#4169E1] ml-2 italic">Media</span>
               </span>
             </Link>
             <p className="text-slate-400 text-lg max-w-md leading-relaxed font-medium">
@@ -33,7 +36,7 @@ export function Footer() {
           <div className="space-y-6">
             <h4 className="font-headline font-black text-xl italic text-primary">Quick Links</h4>
             <ul className="space-y-4">
-              {["Services", "Portfolio", "Case Studies", "AI Lab"].map((item) => (
+              {["Services", "Technology", "Products", "Career"].map((item) => (
                 <li key={item}>
                   <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 group font-black uppercase text-xs tracking-widest">
                     {item} <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -46,7 +49,7 @@ export function Footer() {
           <div className="space-y-6">
             <h4 className="font-headline font-black text-xl italic text-primary">Support</h4>
             <ul className="space-y-4">
-              {["Privacy Policy", "Terms of Service", "Career", "Contact Us"].map((item) => (
+              {["About", "Contact", "Career"].map((item) => (
                 <li key={item}>
                   <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-slate-400 hover:text-white transition-colors font-black uppercase text-xs tracking-widest">
                     {item}
