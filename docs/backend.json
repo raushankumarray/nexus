@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -20,6 +19,20 @@
         "state": { "type": "string" },
         "pincode": { "type": "string" },
         "country": { "type": "string" },
+        "education": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "qualification": { "type": "string" },
+              "institution": { "type": "string" },
+              "passingYear": { "type": "string" },
+              "university": { "type": "string" },
+              "subject": { "type": "string" },
+              "percentage": { "type": "string" }
+            }
+          }
+        },
         "provider": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },

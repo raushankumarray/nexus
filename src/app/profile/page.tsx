@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
@@ -13,6 +12,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   User, 
   Mail, 
@@ -34,11 +40,21 @@ import {
   Camera,
   Save,
   Navigation,
-  MessageSquare
+  MessageSquare,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+
+interface EducationItem {
+  qualification: string;
+  institution: string;
+  passingYear: string;
+  university: string;
+  subject: string;
+  percentage: string;
+}
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -78,6 +94,11 @@ export default function ProfilePage() {
     country: ""
   });
 
+  // Education State
+  const [educationData, setEducationData] = useState<EducationItem[]>([
+    { qualification: "", institution: "", passingYear: "", university: "", subject: "", percentage: "" }
+  ]);
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
@@ -107,6 +128,9 @@ export default function ProfilePage() {
         pincode: profileData.pincode || "",
         country: profileData.country || ""
       });
+      if (profileData.education && profileData.education.length > 0) {
+        setEducationData(profileData.education);
+      }
     }
   }, [profileData, user]);
 
@@ -136,6 +160,21 @@ export default function ProfilePage() {
   const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddressData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEducationChange = (index: number, field: keyof EducationItem, value: string) => {
+    const updated = [...educationData];
+    updated[index] = { ...updated[index], [field]: value };
+    setEducationData(updated);
+  };
+
+  const addEducationRow = () => {
+    setEducationData([...educationData, { qualification: "", institution: "", passingYear: "", university: "", subject: "", percentage: "" }]);
+  };
+
+  const removeEducationRow = (index: number) => {
+    if (educationData.length === 1) return;
+    setEducationData(educationData.filter((_, i) => i !== index));
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,6 +239,20 @@ export default function ProfilePage() {
     }, 800);
   };
 
+  const handleUpdateEducation = () => {
+    if (!userDocRef) return;
+    
+    setIsUpdating(true);
+    updateDocumentNonBlocking(userDocRef, {
+      education: educationData,
+      updatedAt: new Date().toISOString()
+    });
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({ title: "Education Updated", description: "Your academic history has been saved." });
+    }, 800);
+  };
+
   const handleLocateMe = () => {
     if (!navigator.geolocation) {
       toast({
@@ -215,7 +268,6 @@ export default function ProfilePage() {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          // Using OpenStreetMap Nominatim for free reverse geocoding
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
           const data = await response.json();
           
@@ -271,6 +323,8 @@ export default function ProfilePage() {
     { id: "order", label: "Order", icon: ShoppingBag },
   ];
 
+  const qualificationOptions = ["10th", "12th", "Graduate", "Post Graduate"];
+
   return (
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <Navbar />
@@ -294,6 +348,7 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto px-6">
           <Tabs defaultValue="profile" className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              {/* Sidebar Menu */}
               <div className="lg:col-span-4 space-y-8">
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
                   <CardContent className="p-10 text-center space-y-6">
@@ -322,6 +377,7 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
 
+                {/* Desktop Menu */}
                 <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-4 hidden lg:block">
                   <div className="p-4 space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
@@ -336,6 +392,7 @@ export default function ProfilePage() {
                   </div>
                 </Card>
 
+                {/* Mobile Grid Menu */}
                 <div className="lg:hidden w-full pb-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground px-4 mb-4">Management Menu</p>
                   <TabsList className="grid grid-cols-2 gap-3 bg-transparent h-auto w-full">
@@ -349,6 +406,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Content Area */}
               <div className="lg:col-span-8 space-y-8 min-h-[600px]">
                 <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
@@ -414,83 +472,34 @@ export default function ProfilePage() {
                     <CardContent className="p-10 md:p-16 space-y-8">
                       <div className="space-y-3">
                         <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Address (House/Street/Area)</Label>
-                        <Input 
-                          required
-                          name="fullAddress"
-                          value={addressData.fullAddress}
-                          onChange={handleAddressInputChange}
-                          placeholder="e.g. 123 Innovation Street, Begusarai" 
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                        />
+                        <Input required name="fullAddress" value={addressData.fullAddress} onChange={handleAddressInputChange} placeholder="e.g. 123 Innovation Street, Begusarai" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Block / Sub-District</Label>
-                          <Input 
-                            required
-                            name="block"
-                            value={addressData.block}
-                            onChange={handleAddressInputChange}
-                            placeholder="Enter Block" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input required name="block" value={addressData.block} onChange={handleAddressInputChange} placeholder="Enter Block" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">District</Label>
-                          <Input 
-                            required
-                            name="district"
-                            value={addressData.district}
-                            onChange={handleAddressInputChange}
-                            placeholder="Enter District" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input required name="district" value={addressData.district} onChange={handleAddressInputChange} placeholder="Enter District" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">State</Label>
-                          <Input 
-                            required
-                            name="state"
-                            value={addressData.state}
-                            onChange={handleAddressInputChange}
-                            placeholder="Enter State" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input required name="state" value={addressData.state} onChange={handleAddressInputChange} placeholder="Enter State" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Pincode</Label>
-                          <Input 
-                            required
-                            name="pincode"
-                            value={addressData.pincode}
-                            onChange={handleAddressInputChange}
-                            placeholder="Postal Code" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input required name="pincode" value={addressData.pincode} onChange={handleAddressInputChange} placeholder="Postal Code" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Country</Label>
-                          <Input 
-                            required
-                            name="country"
-                            value={addressData.country}
-                            onChange={handleAddressInputChange}
-                            placeholder="Enter Country" 
-                            className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
-                          />
+                          <Input required name="country" value={addressData.country} onChange={handleAddressInputChange} placeholder="Enter Country" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6" />
                         </div>
                       </div>
-
                       <div className="pt-4">
-                        <Button 
-                          onClick={handleUpdateAddress} 
-                          disabled={isUpdating} 
-                          className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
-                        >
+                        <Button onClick={handleUpdateAddress} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
                           {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Address <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
                         </Button>
                       </div>
@@ -518,29 +527,16 @@ export default function ProfilePage() {
                           </div>
                           <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Verified</span>
                         </div>
-
                         <div className="space-y-3">
                           <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Alternate Mobile Number</Label>
                           <div className="relative group/input">
-                            <Input 
-                              name="alternateMobile"
-                              value={contactData.alternateMobile}
-                              onChange={handleContactInputChange}
-                              type="tel" 
-                              placeholder="Enter Alternate Number" 
-                              className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14"
-                            />
+                            <Input name="alternateMobile" value={contactData.alternateMobile} onChange={handleContactInputChange} type="tel" placeholder="Enter Alternate Number" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14" />
                             <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within/input:text-primary transition-colors w-5 h-5" />
                           </div>
                         </div>
                       </div>
-
                       <div className="pt-4">
-                        <Button 
-                          onClick={handleUpdateContact} 
-                          disabled={isUpdating} 
-                          className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group"
-                        >
+                        <Button onClick={handleUpdateContact} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
                           {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
                         </Button>
                       </div>
@@ -549,15 +545,86 @@ export default function ProfilePage() {
                 </TabsContent>
 
                 <TabsContent value="education" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
-                    <h3 className="text-3xl font-headline font-black italic">Academic <span className="text-primary">Portfolio</span></h3>
-                    <p className="text-muted-foreground font-semibold">Keep your education history up to date for potential career advancements within NPB Media.</p>
-                    <Button className="rounded-full h-14 px-10 font-headline text-lg bg-primary hover:bg-foreground shadow-xl border-none">
-                      Manage Education <ChevronRight className="ml-2 w-5 h-5" />
-                    </Button>
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
+                    <CardHeader className="p-10 md:p-16 pb-0 flex flex-row items-center justify-between">
+                      <h3 className="text-3xl font-headline font-black italic">Academic <span className="text-primary">Portfolio</span></h3>
+                      <Button variant="outline" onClick={addEducationRow} className="rounded-full h-12 border-2 border-primary/20 text-primary font-black uppercase text-[10px] tracking-widest hover:border-primary">
+                        <Plus className="w-4 h-4 mr-2" /> Add More
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 space-y-12">
+                      <div className="space-y-12">
+                        {educationData.map((edu, idx) => (
+                          <div key={idx} className="relative p-8 rounded-[2.5rem] bg-slate-50 border-2 border-slate-100 space-y-8 animate-in fade-in zoom-in duration-300">
+                            {educationData.length > 1 && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => removeEducationRow(idx)}
+                                className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-white shadow-lg border-2 border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Qualification</Label>
+                                <Select 
+                                  value={edu.qualification} 
+                                  onValueChange={(val) => handleEducationChange(idx, "qualification", val)}
+                                >
+                                  <SelectTrigger className="h-16 rounded-2xl border-2 border-white bg-white focus:ring-primary shadow-sm text-lg font-medium px-6">
+                                    <SelectValue placeholder="Select Qualification" />
+                                  </SelectTrigger>
+                                  <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                    {qualificationOptions.map(opt => (
+                                      <SelectItem key={opt} value={opt} className="py-4 rounded-xl text-base font-medium">{opt}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">School / College Name</Label>
+                                <Input value={edu.institution} onChange={(e) => handleEducationChange(idx, "institution", e.target.value)} placeholder="Enter Institution" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Passing Year</Label>
+                                <Input value={edu.passingYear} onChange={(e) => handleEducationChange(idx, "passingYear", e.target.value)} placeholder="e.g. 2022" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
+                              </div>
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">University / Board</Label>
+                                <Input value={edu.university} onChange={(e) => handleEducationChange(idx, "university", e.target.value)} placeholder="Enter University" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject / Stream</Label>
+                                <Input value={edu.subject} onChange={(e) => handleEducationChange(idx, "subject", e.target.value)} placeholder="e.g. Computer Science" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
+                              </div>
+                              <div className="space-y-3">
+                                <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Percentage / CGPA</Label>
+                                <Input value={edu.percentage} onChange={(e) => handleEducationChange(idx, "percentage", e.target.value)} placeholder="e.g. 85%" className="h-16 rounded-2xl border-2 border-white bg-white focus:border-primary shadow-sm text-lg font-medium px-6" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-4">
+                        <Button onClick={handleUpdateEducation} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
+                          {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Now <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
+                {/* Placeholder Tabs */}
                 <TabsContent value="documents" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
                   <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
                     <h3 className="text-3xl font-headline font-black italic">Digital <span className="text-primary">Vault</span></h3>
