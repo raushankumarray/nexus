@@ -10,7 +10,8 @@ import {
   Rocket, 
   RefreshCw,
   ArrowRight,
-  Zap
+  Zap,
+  Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +23,6 @@ const steps = [
     icon: Search,
     color: "bg-orange-500",
     hoverColor: "group-hover:bg-orange-600",
-    anim: "hover:rotate-2"
   },
   {
     num: "02",
@@ -31,7 +31,6 @@ const steps = [
     icon: Map,
     color: "bg-blue-600",
     hoverColor: "group-hover:bg-blue-700",
-    anim: "hover:-rotate-2"
   },
   {
     num: "03",
@@ -40,7 +39,6 @@ const steps = [
     icon: PenTool,
     color: "bg-emerald-600",
     hoverColor: "group-hover:bg-emerald-700",
-    anim: "hover:skew-x-2"
   },
   {
     num: "04",
@@ -49,7 +47,6 @@ const steps = [
     icon: Code2,
     color: "bg-indigo-600",
     hoverColor: "group-hover:bg-indigo-700",
-    anim: "hover:-skew-x-2"
   },
   {
     num: "05",
@@ -58,7 +55,6 @@ const steps = [
     icon: ShieldCheck,
     color: "bg-purple-600",
     hoverColor: "group-hover:bg-purple-700",
-    anim: "hover:scale-105"
   },
   {
     num: "06",
@@ -67,16 +63,14 @@ const steps = [
     icon: Rocket,
     color: "bg-pink-600",
     hoverColor: "group-hover:bg-pink-700",
-    anim: "hover:translate-y-[-10px]"
   },
   {
     num: "07",
     title: "Maintenance & Support",
-    desc: "Providing ongoing updates, improvements, and round-the-clock technical support.",
+    desc: "Providing ongoing updates, improvements, and round-the-clock technical support to keep your systems running perfectly.",
     icon: RefreshCw,
     color: "bg-primary",
     hoverColor: "group-hover:bg-primary-foreground group-hover:text-primary",
-    anim: "hover:scale-105"
   }
 ];
 
@@ -93,7 +87,7 @@ export function Process() {
               The <span className="text-primary italic">Process</span>
             </h2>
             <p className="text-2xl text-muted-foreground leading-relaxed font-semibold">
-              A systematic approach to building resilient digital products.
+              Hover over each step to see our detailed style of working.
             </p>
           </div>
           <div className="hidden lg:flex items-center gap-6 text-sm font-black text-muted-foreground uppercase tracking-widest">
@@ -110,13 +104,12 @@ export function Process() {
             <div 
               key={idx}
               className={cn(
-                "group relative p-12 rounded-[4rem] bg-white border-none shadow-2xl transition-all duration-700 overflow-hidden animate-in fade-in slide-in-from-bottom fill-mode-both",
-                step.anim
+                "group relative p-12 rounded-[4rem] bg-white border-none shadow-2xl transition-all duration-700 overflow-hidden min-h-[450px] flex flex-col cursor-help",
+                idx % 2 === 0 ? "hover:rotate-1" : "hover:-rotate-1"
               )}
-              style={{ animationDelay: `${idx * 100}ms` }}
             >
               <div className={cn(
-                "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0",
+                "absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none z-0",
                 step.hoverColor
               )} />
               
@@ -124,7 +117,7 @@ export function Process() {
                 {step.num}
               </div>
 
-              <div className="relative z-10 h-full flex flex-col">
+              <div className="relative z-10 h-full flex flex-col flex-1">
                 <div className={cn(
                   "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 group-hover:scale-125 group-hover:rotate-[360deg] shadow-2xl mb-12 text-white",
                   step.color
@@ -142,23 +135,33 @@ export function Process() {
                     {step.title}
                   </h3>
                   
-                  <p className="text-xl text-muted-foreground leading-relaxed font-semibold opacity-80 group-hover:opacity-100 group-hover:text-white/90 transition-all">
-                    {step.desc}
-                  </p>
+                  {/* Content revealed on hover */}
+                  <div className="overflow-hidden max-h-0 group-hover:max-h-60 transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
+                    <p className="text-xl text-muted-foreground leading-relaxed font-semibold group-hover:text-white transition-all pt-4">
+                      {step.desc}
+                    </p>
+                    
+                    {/* Special indicator for Step 7 */}
+                    {step.num === "07" && (
+                      <div className="mt-8 flex items-center gap-3 py-3 px-5 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white animate-pulse">
+                        <Activity className="w-5 h-5" />
+                        <span className="text-sm font-black uppercase tracking-widest">Active 24/7 Support</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-12 flex items-center gap-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                  <span className="relative flex h-4 w-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
-                  </span>
-                  <span className="text-sm font-black uppercase tracking-widest text-white">In Progress</span>
+                <div className="mt-auto pt-8 flex items-center gap-4 opacity-100 group-hover:opacity-0 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1" />
+                  </div>
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-400">Hover for Details</span>
                 </div>
               </div>
             </div>
           ))}
 
-          <div className="xl:col-span-1 p-12 rounded-[4rem] bg-gradient-to-br from-primary to-accent text-white flex flex-col justify-center items-center text-center space-y-10 animate-in fade-in zoom-in duration-700 delay-700 group overflow-hidden relative shadow-2xl">
+          <div className="xl:col-span-1 p-12 rounded-[4rem] bg-gradient-to-br from-primary to-accent text-white flex flex-col justify-center items-center text-center space-y-10 group overflow-hidden relative shadow-2xl">
             <div className="absolute inset-0 grid-bg opacity-10" />
             <div className="absolute -top-16 -right-16 w-64 h-64 bg-white/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700" />
             
@@ -168,8 +171,8 @@ export function Process() {
               </div>
               <h4 className="text-4xl font-black font-headline italic">Ready to Start?</h4>
               <p className="text-white/80 text-xl leading-relaxed font-medium">Let&apos;s turn your vision into a scalable digital product.</p>
-              <button className="w-full py-6 bg-white text-primary hover:bg-white/90 rounded-[2rem] text-2xl font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group">
-                Get in Touch <ArrowRight className="w-8 h-8 transition-transform group-hover:translate-x-3" />
+              <button className="w-full py-6 bg-white text-primary hover:bg-white/90 rounded-[2rem] text-2xl font-black transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4">
+                Get in Touch <ArrowRight className="w-8 h-8 group-hover:translate-x-3 transition-transform" />
               </button>
             </div>
           </div>
