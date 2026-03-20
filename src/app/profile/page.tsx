@@ -95,7 +95,7 @@ export default function ProfilePage() {
               User Portal
             </div>
             <h1 className="text-5xl md:text-7xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Profile <span className="italic text-yellow-300">Overview</span>
+              Profile
             </h1>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
               Welcome back, {profileData?.fullName || user.displayName || "Explorer"}. Manage your account details and security preferences.

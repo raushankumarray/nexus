@@ -181,7 +181,7 @@ export function Navbar() {
                             <DropdownMenuItem asChild className="rounded-xl px-4 py-3 cursor-pointer">
                               <Link href="/profile" className="flex items-center w-full">
                                 <User className="mr-2 h-4 w-4" />
-                                <span className="font-black uppercase text-[10px] tracking-widest">Profile Page</span>
+                                <span className="font-black uppercase text-[10px] tracking-widest">Profile</span>
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
@@ -265,7 +265,7 @@ export function Navbar() {
                 pathname === "/profile" ? "text-primary" : "text-foreground"
               )}
             >
-              <User className="w-5 h-5" /> Profile Page
+              <User className="w-5 h-5" /> Profile
             </Link>
           )}
 
