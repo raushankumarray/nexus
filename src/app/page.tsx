@@ -1,30 +1,17 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { MainOverview } from "@/components/sections/MainOverview";
-import { Services } from "@/components/sections/Services";
-import { Process } from "@/components/sections/Process";
-import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-background text-foreground overflow-x-hidden">
+    <main className="relative min-h-screen bg-background flex flex-col">
       <Navbar />
-      
-      {/* Hero Section */}
-      <Hero />
-
-      {/* Main Overview Section - AI & Uptime Features */}
-      <MainOverview />
-
-      {/* Core Services Preview */}
-      <Services />
-
-      {/* Strategic Workflow */}
-      <Process />
-
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-headline font-bold">Welcome to NPB Nexus</h1>
+          <p className="text-muted-foreground">The landing page is ready for your new content.</p>
+        </div>
+      </div>
       <Footer />
-      <Toaster />
     </main>
   );
 }
