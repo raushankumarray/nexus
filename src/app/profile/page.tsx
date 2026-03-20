@@ -45,7 +45,11 @@ import {
   Trash2,
   Upload,
   Eye,
-  IdCard
+  IdCard,
+  Facebook,
+  Github,
+  Linkedin,
+  ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -112,6 +116,14 @@ export default function ProfilePage() {
     idCardURL: ""
   });
 
+  // Social State
+  const [socialData, setSocialData] = useState({
+    linkedin: "",
+    github: "",
+    facebook: "",
+    portfolio: ""
+  });
+
   const [isUpdating, setIsUpdating] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
@@ -146,6 +158,12 @@ export default function ProfilePage() {
         idCardType: profileData.idCardType || "",
         idCardURL: profileData.idCardURL || ""
       });
+      setSocialData({
+        linkedin: profileData.socialLinks?.linkedin || "",
+        github: profileData.socialLinks?.github || "",
+        facebook: profileData.socialLinks?.facebook || "",
+        portfolio: profileData.socialLinks?.portfolio || ""
+      });
       if (profileData.education && profileData.education.length > 0) {
         setEducationData(profileData.education);
       }
@@ -178,6 +196,11 @@ export default function ProfilePage() {
   const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAddressData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSocialInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSocialData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEducationChange = (index: number, field: keyof EducationItem, value: string) => {
@@ -309,6 +332,23 @@ export default function ProfilePage() {
     setTimeout(() => {
       setIsUpdating(false);
       toast({ title: "Vault Synchronized", description: "Documents securely saved to your profile." });
+    }, 800);
+  };
+
+  const handleUpdateSocial = () => {
+    if (!userDocRef) return;
+    if (!socialData.linkedin.trim()) {
+      toast({ variant: "destructive", title: "LinkedIn Required", description: "LinkedIn profile is mandatory for professional verification." });
+      return;
+    }
+    setIsUpdating(true);
+    updateDocumentNonBlocking(userDocRef, {
+      socialLinks: socialData,
+      updatedAt: new Date().toISOString()
+    });
+    setTimeout(() => {
+      setIsUpdating(false);
+      toast({ title: "Social Profiles Updated", description: "Your digital footprint has been synchronized." });
     }, 800);
   };
 
@@ -711,29 +751,74 @@ export default function ProfilePage() {
                 </TabsContent>
 
                 <TabsContent value="social" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-3xl font-headline font-black italic">Social <span className="text-primary">Profiles</span></h3>
-                      <Button variant="outline" className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-xs">
-                        <Plus className="w-4 h-4 mr-2" /> Connect
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {[
-                        { platform: "LinkedIn", status: "Not Connected", icon: Globe },
-                        { platform: "GitHub", status: "Not Connected", icon: Share2 },
-                        { platform: "Twitter", status: "Not Connected", icon: Globe },
-                        { platform: "Portfolio", status: "Not Connected", icon: LinkIcon },
-                      ].map((social, i) => (
-                        <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-primary transition-all">
-                          <div className="flex items-center gap-4">
-                            <social.icon className="w-5 h-5 text-slate-400 group-hover:text-primary" />
-                            <span className="font-black text-sm uppercase tracking-widest">{social.platform}</span>
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
+                    <CardHeader className="p-10 md:p-16 pb-0 flex flex-row items-center justify-between">
+                      <h3 className="text-3xl font-headline font-black italic">Digital <span className="text-primary">Presence</span></h3>
+                      <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        <Globe className="w-4 h-4 text-blue-500" /> Public Profile Sync
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 space-y-10">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">LinkedIn Profile*</Label>
+                          <div className="relative group/input">
+                            <Input name="linkedin" value={socialData.linkedin} onChange={handleSocialInputChange} placeholder="https://linkedin.com/in/username" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14" />
+                            <Linkedin className="absolute left-5 top-1/2 -translate-y-1/2 text-[#0077B5] w-5 h-5" />
+                            {socialData.linkedin && (
+                              <Button asChild variant="ghost" size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-primary">
+                                <a href={socialData.linkedin} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                              </Button>
+                            )}
                           </div>
-                          <span className="text-[10px] font-black uppercase text-muted-foreground">{social.status}</span>
                         </div>
-                      ))}
-                    </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">GitHub Profile</Label>
+                          <div className="relative group/input">
+                            <Input name="github" value={socialData.github} onChange={handleSocialInputChange} placeholder="https://github.com/username" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14" />
+                            <Github className="absolute left-5 top-1/2 -translate-y-1/2 text-[#181717] w-5 h-5" />
+                            {socialData.github && (
+                              <Button asChild variant="ghost" size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-primary">
+                                <a href={socialData.github} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Facebook Profile</Label>
+                          <div className="relative group/input">
+                            <Input name="facebook" value={socialData.facebook} onChange={handleSocialInputChange} placeholder="https://facebook.com/username" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14" />
+                            <Facebook className="absolute left-5 top-1/2 -translate-y-1/2 text-[#1877F2] w-5 h-5" />
+                            {socialData.facebook && (
+                              <Button asChild variant="ghost" size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-primary">
+                                <a href={socialData.facebook} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Portfolio Website</Label>
+                          <div className="relative group/input">
+                            <Input name="portfolio" value={socialData.portfolio} onChange={handleSocialInputChange} placeholder="https://yourportfolio.com" className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6 pl-14" />
+                            <Globe className="absolute left-5 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
+                            {socialData.portfolio && (
+                              <Button asChild variant="ghost" size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 text-muted-foreground hover:text-primary">
+                                <a href={socialData.portfolio} target="_blank" rel="noopener noreferrer"><ExternalLink className="w-4 h-4" /></a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4">
+                        <Button onClick={handleUpdateSocial} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group">
+                          {isUpdating ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Update Social Links <Save className="ml-2 w-5 h-5 transition-transform group-hover:scale-110" /></>}
+                        </Button>
+                      </div>
+                    </CardContent>
                   </Card>
                 </TabsContent>
 
