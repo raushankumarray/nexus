@@ -1,27 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { 
   Mail, 
   Phone, 
@@ -30,13 +15,13 @@ import {
   MessageSquare, 
   Sparkles, 
   Clock,
-  CheckCircle2,
   CalendarDays,
   ShieldCheck,
   Zap,
   Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const contactInfo = [
   {
@@ -59,25 +44,7 @@ const contactInfo = [
   }
 ];
 
-const timeSlots = [
-  "10:00 AM - 10:30 AM",
-  "10:30 AM - 11:00 AM",
-  "11:00 AM - 11:30 AM",
-  "11:30 AM - 12:00 PM",
-  "12:00 PM - 12:30 PM",
-  "02:00 PM - 02:30 PM",
-  "02:30 PM - 03:00 PM",
-  "03:00 PM - 03:30 PM",
-  "03:30 PM - 04:00 PM",
-  "04:00 PM - 04:30 PM",
-  "04:30 PM - 05:00 PM",
-  "05:00 PM - 05:30 PM",
-  "05:30 PM - 06:00 PM"
-];
-
 export default function ContactPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Submission logic here
@@ -142,79 +109,20 @@ export default function ContactPage() {
                   </a>
                 ))}
 
-                {/* Virtual Meeting Dialog Trigger */}
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <div className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border-2 border-emerald-100 bg-emerald-50/30 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-emerald-600 cursor-pointer">
-                      <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-emerald-600 shrink-0 shadow-lg shadow-emerald-600/20">
-                        <Video className="w-8 h-8" />
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-white/60 transition-colors">Virtual Consultation</h4>
-                        <p className="text-xl font-headline font-black group-hover:text-white transition-colors">Schedule Virtual Meeting</p>
-                        <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">Book a 30-min discovery call with our tech leads.</p>
-                      </div>
-                      <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
+                {/* Virtual Meeting Page Link */}
+                <Link href="/contact/schedule-meeting" className="block">
+                  <div className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border-2 border-emerald-100 bg-emerald-50/30 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-emerald-600 cursor-pointer">
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-600 flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-emerald-600 shrink-0 shadow-lg shadow-emerald-600/20">
+                      <Video className="w-8 h-8" />
                     </div>
-                  </DialogTrigger>
-                  <DialogContent className="rounded-[3rem] p-10 max-w-2xl border-none">
-                    <DialogHeader className="space-y-4">
-                      <DialogTitle className="text-3xl font-headline font-black italic">Schedule Your <span className="text-emerald-600">Meeting</span></DialogTitle>
-                      <DialogDescription className="text-lg font-medium">
-                        Fill in your details and choose a 30-minute time slot for a technical consultation.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form className="space-y-6 pt-6" onSubmit={(e) => { e.preventDefault(); setIsDialogOpen(false); }}>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
-                          <Input placeholder="Enter Name" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Work Email</label>
-                          <Input placeholder="Enter Email" type="email" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
-                          <Input placeholder="Enter Phone No." type="tel" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Schedule Date</label>
-                          <Input type="date" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Time Slot (30 mins)</label>
-                          <Select>
-                            <SelectTrigger className="h-14 rounded-xl border-2 focus:ring-emerald-600">
-                              <SelectValue placeholder="Choose Time Slot" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-none shadow-2xl">
-                              {timeSlots.map((slot) => (
-                                <SelectItem key={slot} value={slot} className="py-3 rounded-lg">
-                                  {slot}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
-                          <Input placeholder="Enter Subject" className="h-14 rounded-xl border-2 focus:border-emerald-600" />
-                        </div>
-                      </div>
-
-                      <Button className="w-full h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-headline text-xl transition-all shadow-xl shadow-emerald-600/20 active:scale-95">
-                        Request Schedule <CalendarDays className="ml-2 w-6 h-6" />
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-white/60 transition-colors">Virtual Consultation</h4>
+                      <p className="text-xl font-headline font-black group-hover:text-white transition-colors">Schedule Virtual Meeting</p>
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">Book a 30-min discovery call with our tech leads.</p>
+                    </div>
+                    <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
+                  </div>
+                </Link>
               </div>
 
               {/* Business Hours Section */}
