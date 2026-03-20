@@ -60,7 +60,10 @@ export function Navbar() {
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link 
+          href={isAdminDashboard ? "/admin/dashboard" : "/"} 
+          className="flex items-center gap-3 group"
+        >
           <Logo className="transition-transform group-hover:scale-110 duration-500" />
           <span className="font-headline font-black text-2xl tracking-tight text-[#00008B]">
             Media
