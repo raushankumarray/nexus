@@ -44,17 +44,8 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 group">
           <Logo className="transition-transform group-hover:scale-110 duration-500" />
           
-          {/* Mobile view text: Just "Media" */}
-          <span className="font-headline font-black text-2xl tracking-tight block md:hidden">
-            <span className="text-[#00008B] italic">Media</span>
-          </span>
-
-          {/* Desktop view text: "NPB Media" */}
-          <span className="font-headline font-black text-2xl tracking-tight hidden md:block">
-            <span className="text-[#FF0000]">N</span>
-            <span className="text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">P</span>
-            <span className="text-[#008000]">B</span>
-            <span className="text-[#00008B] ml-2 italic">Media</span>
+          <span className="font-headline font-black text-2xl tracking-tight">
+            <span className="text-[#00008B]">Media</span>
           </span>
         </Link>
 

@@ -15,10 +15,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-4">
               <Logo />
               <span className="font-headline font-black text-3xl tracking-tight">
-                <span className="text-[#FF0000]">N</span>
-                <span className="text-white">P</span>
-                <span className="text-[#008000]">B</span>
-                <span className="text-[#00008B] ml-2 italic">Media</span>
+                <span className="text-[#00008B]">Media</span>
               </span>
             </Link>
             <p className="text-slate-400 text-lg max-w-md leading-relaxed font-medium">
