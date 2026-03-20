@@ -11,7 +11,7 @@ export default function MeetingManagementPage() {
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-6 pt-32 pb-20">
         <h1 className="text-4xl font-headline font-black italic text-slate-900">
-          Schedule Meeting <span className="text-primary">Videocall Page</span>
+          Manage <span className="text-primary">Meetings</span>
         </h1>
       </div>
       <Footer />

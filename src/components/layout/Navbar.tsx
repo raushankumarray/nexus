@@ -38,12 +38,12 @@ export function Navbar() {
   ];
 
   const adminLinks = [
-    { name: "Product management", href: "/admin/products" },
-    { name: "Career Management", href: "/admin/careers" },
-    { name: "Contact form Data management", href: "/admin/contacts" },
-    { name: "Shedule meeting videocall Page", href: "/admin/meetings" },
-    { name: "Profile management", href: "/admin/profiles" },
-    { name: "User Data", href: "/admin/users" },
+    { name: "Products", href: "/admin/products" },
+    { name: "Careers", href: "/admin/careers" },
+    { name: "Inquiries", href: "/admin/contacts" },
+    { name: "Meetings", href: "/admin/meetings" },
+    { name: "Profiles", href: "/admin/profiles" },
+    { name: "Users", href: "/admin/users" },
   ];
 
   const handleSignOut = () => {

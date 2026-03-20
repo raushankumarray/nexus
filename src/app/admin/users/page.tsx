@@ -11,7 +11,7 @@ export default function UserDataPage() {
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-6 pt-32 pb-20">
         <h1 className="text-4xl font-headline font-black italic text-slate-900">
-          User <span className="text-primary">Data</span>
+          Manage <span className="text-primary">Users</span>
         </h1>
       </div>
       <Footer />

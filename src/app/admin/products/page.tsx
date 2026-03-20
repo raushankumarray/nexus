@@ -11,7 +11,7 @@ export default function ProductManagementPage() {
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-6 pt-32 pb-20">
         <h1 className="text-4xl font-headline font-black italic text-slate-900">
-          Product <span className="text-primary">Management</span>
+          Manage <span className="text-primary">Products</span>
         </h1>
       </div>
       <Footer />
