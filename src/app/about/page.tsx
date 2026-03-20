@@ -5,7 +5,6 @@ import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { 
   Rocket, 
   Target, 
@@ -17,9 +16,14 @@ import {
   MapPin,
   ArrowRight,
   Zap,
-  Globe
+  Globe,
+  Users,
+  Award,
+  BarChart,
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const values = [
   {
@@ -42,6 +46,38 @@ const values = [
     icon: Heart,
     color: "bg-emerald-600",
     shadow: "shadow-emerald-600/20"
+  },
+  {
+    title: "Integrity",
+    description: "Honesty and transparency are the foundations of our professional relationships and project delivery.",
+    icon: ShieldAlert,
+    color: "bg-purple-600",
+    shadow: "shadow-purple-600/20"
+  }
+];
+
+const milestones = [
+  { label: "Founded in", value: "2023", icon: Rocket },
+  { label: "Projects Delivered", value: "10+", icon: Award },
+  { label: "Global Clients", value: "7+", icon: Globe },
+  { label: "Success Rate", value: "100%", icon: BarChart },
+];
+
+const benefits = [
+  {
+    title: "Bespoke Engineering",
+    desc: "We don't believe in one-size-fits-all. Every line of code is written to solve your specific business problem.",
+    icon: Zap
+  },
+  {
+    title: "Scalable Infrastructure",
+    desc: "Our solutions are built to grow with you, ensuring your tech stack never becomes a bottleneck for expansion.",
+    icon: Target
+  },
+  {
+    title: "Dedicated Support",
+    desc: "We provide round-the-clock technical monitoring and support to keep your operations running smoothly.",
+    icon: Users
   }
 ];
 
@@ -97,20 +133,52 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission Section */}
+      {/* Milestones / Stats Section */}
+      <section className="py-20 bg-white relative z-10 border-b">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {milestones.map((m, i) => (
+              <div key={i} className="text-center space-y-2 group">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  <m.icon className="w-8 h-8" />
+                </div>
+                <h4 className="text-4xl font-headline font-black text-foreground">{m.value}</h4>
+                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{m.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission & Vision Section */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative group animate-in fade-in slide-in-from-bottom duration-1000">
-              <div className="absolute -inset-4 bg-primary/10 rounded-[3rem] blur-2xl group-hover:bg-primary/20 transition-all" />
-              <div className="relative bg-white p-12 rounded-[3rem] border-4 border-primary/20 shadow-2xl">
-                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-primary/20">
-                  <Target className="text-white w-8 h-8" />
+            <div className="space-y-8">
+              <div className="relative group animate-in fade-in slide-in-from-bottom duration-1000">
+                <div className="absolute -inset-4 bg-primary/10 rounded-[3rem] blur-2xl group-hover:bg-primary/20 transition-all" />
+                <div className="relative bg-white p-12 rounded-[3rem] border-4 border-primary/20 shadow-2xl">
+                  <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-primary/20">
+                    <Target className="text-white w-8 h-8" />
+                  </div>
+                  <h2 className="text-4xl font-headline font-black italic mb-6">Our Mission</h2>
+                  <p className="text-xl text-muted-foreground leading-relaxed font-semibold">
+                    To empower businesses through cutting-edge software development, ensuring our clients stay ahead in an ever-evolving digital landscape. We believe in building technology that is not only functional but also intuitive and future-proof.
+                  </p>
                 </div>
-                <h2 className="text-4xl font-headline font-black italic mb-6">Our Mission</h2>
-                <p className="text-xl text-muted-foreground leading-relaxed font-semibold">
-                  To empower businesses through cutting-edge software development, ensuring our clients stay ahead in an ever-evolving digital landscape. We believe in building technology that is not only functional but also intuitive and future-proof.
-                </p>
+              </div>
+
+              <div className="relative group animate-in fade-in slide-in-from-bottom duration-1000 delay-200">
+                <div className="absolute -inset-4 bg-secondary/10 rounded-[3rem] blur-2xl group-hover:bg-secondary/20 transition-all" />
+                <div className="relative bg-white p-12 rounded-[3rem] border-4 border-secondary/20 shadow-2xl">
+                  <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-secondary/20">
+                    <Zap className="text-foreground w-8 h-8" />
+                  </div>
+                  <h2 className="text-4xl font-headline font-black italic mb-6">Our Vision</h2>
+                  <p className="text-xl text-muted-foreground leading-relaxed font-semibold">
+                    To become a trusted global technology partner, recognized for our commitment to excellence, innovation, and local empowerment right from Begusarai.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -121,6 +189,9 @@ export default function AboutPage() {
                   Core Principles
                 </div>
                 <h2 className="text-5xl font-headline font-black italic">Our <span className="text-primary">Values</span></h2>
+                <p className="text-muted-foreground text-lg font-medium max-w-lg">
+                  These core values define who we are and guide every decision we make as a company.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 gap-6">
@@ -148,6 +219,30 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Why Choose Us Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-6 mb-20">
+            <h2 className="text-5xl md:text-7xl font-headline font-black italic">Why Partner With <span className="text-primary">NPB Media?</span></h2>
+            <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium">
+              We combine global engineering standards with local dedication to deliver unparalleled value.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {benefits.map((benefit, i) => (
+              <div key={i} className="group p-10 bg-background rounded-[3rem] border-2 border-slate-100 hover:border-primary transition-all duration-500 text-center space-y-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto text-primary group-hover:bg-primary group-hover:text-white group-hover:rotate-[360deg] transition-all duration-700">
+                  <benefit.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-headline font-black italic">{benefit.title}</h3>
+                <p className="text-muted-foreground font-semibold leading-relaxed">{benefit.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Founder Section */}
       <section className="py-24 bg-foreground text-white relative overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-10" />
@@ -169,7 +264,7 @@ export default function AboutPage() {
               </p>
 
               <div className="flex flex-col items-center gap-4 border-t border-white/10 pt-12">
-                <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center border-4 border-white/20 shadow-2xl">
+                <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center border-4 border-white/20 shadow-2xl transition-transform hover:scale-110">
                   <span className="text-4xl font-black italic">R</span>
                 </div>
                 <div className="text-center">
@@ -181,9 +276,11 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-24 text-center">
-            <Button size="lg" className="rounded-full px-16 h-20 text-xl font-headline bg-primary text-white hover:bg-white hover:text-primary transition-all duration-500 shadow-2xl group active:scale-95 border-none">
-              Start Your Project With Us <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-4" />
-            </Button>
+            <Link href="/contact">
+              <Button size="lg" className="rounded-full px-16 h-20 text-xl font-headline bg-primary text-white hover:bg-white hover:text-primary transition-all duration-500 shadow-2xl group active:scale-95 border-none">
+                Start Your Project With Us <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
