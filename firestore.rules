@@ -1,0 +1,124 @@
+/**
+ * NPB Media Firestore Security Rules
+ * 
+ * Core Philosophy: 
+ * This ruleset implements a robust, role-based and ownership-based authorization model for NPB Media. 
+ * It prioritizes strict access control to protect user data and administrative functions while 
+ * maintaining high performance by avoiding complex nested lookups.
+ *
+ * Data Structure:
+ * - /users/{userId}: Private user profiles, accessible only by the owner.
+ * - /services/{serviceId}: Publicly readable service offerings.
+ * - /caseStudies/{caseStudyId}: Publicly readable portfolio items.
+ * - /contactSubmissions/{submissionId}: Publicly writable lead capture, restricted to admins for reading.
+ * - /roles_admin/{userId}: Internal administrative role mapping.
+ *
+ * Key Security Decisions:
+ * - Authorization Independence: Rules rely on path-based ownership or simple existence checks 
+ *   in the 'roles_admin' collection to determine permissions without traversing large data trees.
+ * - Admin Role Management: Administrative privileges are granted via the presence of a document 
+ *   in the /roles_admin collection, providing a centralized and performant DBAC (Database Access Control) mechanism.
+ * - Public vs. Private Segregation: Content intended for the showcase (Services, Case Studies) is 
+ *   explicitly marked for public read, while sensitive user and inquiry data is tightly restricted.
+ * - Relational Integrity: In prototyping mode, we strictly enforce that a user's ID in the path 
+ *   matches the internal 'id' field to prevent data drifting or identity spoofing within the user collection.
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- HELPER FUNCTIONS ---
+
+    /** Checks if the user is authenticated. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** Checks if the authenticated user's UID matches the provided userId. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** Checks if the authenticated user is registered in the admin roles collection. */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /** Combined check for ownership and document existence for updates and deletes. */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /** Combined check for admin status and document existence for updates and deletes. */
+    function isExistingAdmin() {
+      return isAdmin() && resource != null;
+    }
+
+    // --- COLLECTIONS ---
+
+    /**
+     * @description Rules for user-specific profiles. Restricted to the owner.
+     * @path /users/{userId}
+     * @allow (get, list, create) if auth.uid == userId
+     * @deny (get) if auth.uid != userId
+     * @principle Enforces path-based ownership and relational integrity for user data.
+     */
+    match /users/{userId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Publicly readable service definitions. Updates restricted to admins.
+     * @path /services/{serviceId}
+     * @allow (get, list) if true; (update) if isAdmin()
+     * @deny (create, update, delete) if not an admin
+     * @principle Public read access for marketing content with protected administrative writes.
+     */
+    match /services/{serviceId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update, delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Detailed case studies and portfolio projects. Publicly readable.
+     * @path /caseStudies/{caseStudyId}
+     * @allow (get, list) if true; (delete) if isAdmin()
+     * @deny (create) if not an admin
+     * @principle Ensures portfolio visibility while securing content management functions.
+     */
+    match /caseStudies/{caseStudyId} {
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update, delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Contact form submissions. Open for creation, admin-only for processing.
+     * @path /contactSubmissions/{submissionId}
+     * @allow (create) if true; (list) if isAdmin()
+     * @deny (get) if not an admin
+     * @principle Anonymous lead capture with restricted internal access for inquiry management.
+     */
+    match /contactSubmissions/{submissionId} {
+      allow get, list: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isExistingAdmin();
+    }
+
+    /**
+     * @description Internal administrative role collection. No client-side access.
+     * @path /roles_admin/{userId}
+     * @allow none
+     * @deny (read, write) if any client request
+     * @principle Protects the integrity of the role-based access control system.
+     */
+    match /roles_admin/{userId} {
+      allow read, write: if false;
+    }
+  }
+}
