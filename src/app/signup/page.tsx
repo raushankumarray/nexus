@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,9 +14,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UserPlus, ShieldCheck, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
-import { useAuth, useFirestore } from "@/firebase";
+import { useAuth, useFirestore, useUser } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, serverTimestamp } from "firebase/firestore";
+import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,6 +40,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
   const db = useFirestore();
+  const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -46,34 +48,39 @@ export default function SignupPage() {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = async (values: SignupValues) => {
-    setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
-
-      // Create user profile in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        id: user.uid,
-        email: values.email,
-        fullName: values.fullName,
-        mobile: values.mobile,
-        dob: values.dob,
-        provider: "password",
-        createdAt: serverTimestamp(),
-      });
-
-      toast({ title: "Account created!", description: "Welcome to NPB Media." });
+  // Redirect on successful auth
+  useEffect(() => {
+    if (user) {
       router.push("/");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Signup Failed",
-        description: error.message,
-      });
-    } finally {
-      setIsLoading(false);
     }
+  }, [user, router]);
+
+  const onSubmit = (values: SignupValues) => {
+    setIsLoading(true);
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then((userCredential) => {
+        const firebaseUser = userCredential.user;
+        // Non-blocking firestore write
+        setDocumentNonBlocking(doc(db, "users", firebaseUser.uid), {
+          id: firebaseUser.uid,
+          email: values.email,
+          fullName: values.fullName,
+          mobile: values.mobile,
+          dob: values.dob,
+          provider: "password",
+          createdAt: serverTimestamp(),
+        }, { merge: true });
+
+        toast({ title: "Account created!", description: "Welcome to NPB Media." });
+      })
+      .catch((error: any) => {
+        setIsLoading(false);
+        toast({
+          variant: "destructive",
+          title: "Signup Failed",
+          description: error.message,
+        });
+      });
   };
 
   return (

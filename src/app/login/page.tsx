@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, Sparkles, ShieldCheck, UserPlus, Lock, Chrome } from "lucide-react";
-import { useAuth } from "@/firebase";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { LogIn, UserPlus, Lock, Chrome, Loader2 } from "lucide-react";
+import { useAuth, useUser } from "@/firebase";
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,40 +21,43 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
+  const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Handle redirect in a separate effect once user is authenticated
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: "Welcome back!", description: "Successfully logged in." });
-      router.push("/");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message,
+    // Non-blocking sign in
+    signInWithEmailAndPassword(auth, email, password)
+      .catch((error: any) => {
+        setIsLoading(false);
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: error.message,
+        });
       });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      toast({ title: "Welcome back!", description: "Successfully logged in with Google." });
-      router.push("/");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Google Login Failed",
-        description: error.message,
+    // Non-blocking popup login
+    signInWithPopup(auth, provider)
+      .catch((error: any) => {
+        toast({
+          variant: "destructive",
+          title: "Google Login Failed",
+          description: error.message,
+        });
       });
-    }
   };
 
   return (
@@ -110,7 +113,7 @@ export default function LoginPage() {
                 </div>
                 
                 <Button disabled={isLoading} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl shadow-primary/20 group relative overflow-hidden border-none">
-                   {isLoading ? "Signing In..." : "Sign In"} <LogIn className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                   {isLoading ? <Loader2 className="animate-spin" /> : "Sign In"} <LogIn className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </form>
               
