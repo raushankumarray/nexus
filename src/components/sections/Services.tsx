@@ -71,37 +71,37 @@ const services = [
 
 export function Services() {
   return (
-    <section id="services" className="py-32 bg-background relative overflow-hidden">
+    <section id="services" className="py-20 bg-background relative overflow-hidden">
       <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/20 rounded-full blur-[150px] animate-pulse" />
       <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-accent/20 rounded-full blur-[150px] animate-pulse delay-700" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20">
-          <div className="max-w-3xl space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-16">
+          <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/20 border-2 border-primary/30 text-primary text-sm font-black uppercase tracking-widest shadow-md">
               <Sparkles className="w-5 h-5" />
               Our Expertise
             </div>
-            <h2 className="text-6xl md:text-8xl font-headline font-black leading-tight">
+            <h2 className="text-5xl md:text-7xl font-headline font-black leading-tight">
               Our <span className="text-primary italic">Services</span>
             </h2>
-            <p className="text-2xl text-muted-foreground leading-relaxed font-semibold">
-              Hover over our expertise to see how we deliver powerful, results-driven software solutions.
+            <p className="text-xl text-muted-foreground leading-relaxed font-semibold">
+              Explore our expertise and see how we deliver powerful, results-driven software solutions.
             </p>
           </div>
           <div className="hidden md:block">
-            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center animate-spin-slow">
-              <Zap className="w-12 h-12 text-primary" />
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center animate-spin-slow">
+              <Zap className="w-10 h-10 text-primary" />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <Card 
               key={index} 
               className={cn(
-                "group relative border-none transition-all duration-500 rounded-[4rem] overflow-hidden bg-white shadow-2xl p-4 min-h-[480px] flex flex-col justify-center cursor-pointer",
+                "group relative border-none transition-all duration-500 rounded-[3.5rem] overflow-hidden bg-white shadow-xl p-4 min-h-[420px] flex flex-col justify-center cursor-pointer",
                 service.anim
               )}
             >
@@ -110,30 +110,30 @@ export function Services() {
                 service.hoverBg
               )} />
               
-              <div className="relative z-10 p-8 flex flex-col items-center text-center transition-all duration-500 group-hover:-translate-y-6">
+              <div className="relative z-10 p-6 flex flex-col items-center text-center transition-all duration-500 group-hover:-translate-y-4">
                 <div className={cn(
-                  "w-24 h-24 rounded-[2.5rem] flex items-center justify-center transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg] shadow-2xl text-white mb-10",
+                  "w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-700 group-hover:scale-110 group-hover:rotate-[360deg] shadow-2xl text-white mb-8",
                   service.color,
                   service.shadow
                 )}>
-                  <service.icon className="w-12 h-12" />
+                  <service.icon className="w-10 h-10" />
                 </div>
                 
-                <h3 className="text-3xl font-headline font-black group-hover:text-white transition-colors mb-4">
+                <h3 className="text-2xl font-headline font-black group-hover:text-white transition-colors mb-4">
                   {service.title}
                 </h3>
 
                 <div className="overflow-hidden max-h-0 group-hover:max-h-[300px] transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100">
-                  <p className="text-lg leading-relaxed text-white/90 font-medium px-4 mb-8">
+                  <p className="text-base leading-relaxed text-white/90 font-medium px-2 mb-6">
                     {service.description}
                   </p>
                   
                   <Button 
                     variant="outline" 
-                    className="rounded-full px-8 py-6 h-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-foreground transition-all duration-300 font-black uppercase tracking-widest text-sm flex items-center gap-2 group/btn"
+                    className="rounded-full px-8 py-5 h-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-foreground transition-all duration-300 font-black uppercase tracking-widest text-xs flex items-center gap-2 group/btn mx-auto"
                   >
                     Explore Service 
-                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
+                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
                   </Button>
                 </div>
               </div>

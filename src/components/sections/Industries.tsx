@@ -84,69 +84,68 @@ const industries = [
 
 export function Industries() {
   return (
-    <section id="industries" className="py-32 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden relative">
+    <section id="industries" className="py-20 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden relative">
       {/* Dynamic colorful background blobs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[180px] -z-10 animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/20 rounded-full blur-[180px] -z-10 animate-pulse delay-1000" />
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[150px] -z-10 animate-pulse" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/20 rounded-full blur-[150px] -z-10 animate-pulse delay-1000" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-          <div className="space-y-12">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white border-2 border-primary text-primary text-sm font-black uppercase tracking-widest shadow-xl animate-bounce">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white border-2 border-primary text-primary text-sm font-black uppercase tracking-widest shadow-xl">
                 <Globe className="w-5 h-5" />
                 Sector Expertise
               </div>
-              <h2 className="text-6xl md:text-8xl font-headline font-black leading-tight italic">
+              <h2 className="text-5xl md:text-7xl font-headline font-black leading-tight italic">
                 Industries We <span className="text-primary drop-shadow-lg">Serve</span>
               </h2>
-              <p className="text-2xl text-muted-foreground leading-relaxed max-w-xl font-semibold">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl font-semibold">
                 NPB Media develops tailored software solutions for diverse global industries with engineering precision and vibrant innovation.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-10">
-              <div className="p-8 bg-white rounded-[2.5rem] shadow-xl border-l-8 border-primary group hover:bg-primary hover:text-white transition-all duration-500">
-                <span className="text-6xl font-black italic">10+</span>
-                <p className="font-black uppercase tracking-widest text-sm opacity-60">Projects Delivered</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="p-6 bg-white rounded-[2rem] shadow-lg border-l-8 border-primary group hover:bg-primary hover:text-white transition-all duration-500">
+                <span className="text-4xl font-black italic">10+</span>
+                <p className="font-black uppercase tracking-widest text-[10px] opacity-60">Projects Delivered</p>
               </div>
-              <div className="p-8 bg-white rounded-[2.5rem] shadow-xl border-l-8 border-secondary group hover:bg-secondary hover:text-white transition-all duration-500">
-                <span className="text-6xl font-black italic">7+</span>
-                <p className="font-black uppercase tracking-widest text-sm opacity-60">Global Partners</p>
+              <div className="p-6 bg-white rounded-[2rem] shadow-lg border-l-8 border-secondary group hover:bg-secondary hover:text-white transition-all duration-500">
+                <span className="text-4xl font-black italic">7+</span>
+                <p className="font-black uppercase tracking-widest text-[10px] opacity-60">Global Partners</p>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2 gap-6">
             {industries.map((industry, idx) => (
               <div 
                 key={idx} 
                 className={cn(
-                  "group p-10 bg-white border-2 rounded-[3.5rem] shadow-lg transition-all duration-700 relative overflow-hidden",
+                  "group p-8 bg-white border-2 rounded-[2.5rem] shadow-md transition-all duration-700 relative overflow-hidden",
                   industry.border,
                   industry.anim
                 )}
               >
-                {/* Randomly styled accent background on hover */}
                 <div className={cn(
                   "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10",
                   industry.color
                 )} />
 
                 <div className={cn(
-                  "w-16 h-16 rounded-[1.8rem] flex items-center justify-center text-white mb-8 group-hover:scale-125 group-hover:rotate-[360deg] transition-all duration-700 shadow-2xl",
+                  "w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 shadow-xl",
                   industry.color
                 )}>
-                  <industry.icon className="w-8 h-8" />
+                  <industry.icon className="w-6 h-6" />
                 </div>
                 
-                <h3 className="font-black text-2xl group-hover:text-white transition-colors font-headline italic">
+                <h3 className="font-black text-xl group-hover:text-white transition-colors font-headline italic">
                   {industry.name}
                 </h3>
                 
-                <div className="flex items-center gap-3 mt-6 text-primary group-hover:text-white transition-colors">
-                  <span className="text-xs font-black uppercase tracking-widest">Industry Expertise</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-3 transition-transform duration-500" />
+                <div className="flex items-center gap-2 mt-4 text-primary group-hover:text-white transition-colors">
+                  <span className="text-[10px] font-black uppercase tracking-widest">Industry Expertise</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                 </div>
               </div>
             ))}
