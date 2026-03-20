@@ -3,17 +3,22 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, UserCircle, LogOut } from "lucide-react";
+import { Menu, X, UserCircle, LogOut, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/button";
+import { useAuth, useUser } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,8 +51,27 @@ export function Navbar() {
     { name: "Users", href: "/admin/users" },
   ];
 
-  const handleSignOut = () => {
-    router.push("/admin/login");
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      if (isAdminDashboard) {
+        router.push("/admin/login");
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const getInitials = (name: string | null) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -112,23 +136,59 @@ export function Navbar() {
                       {link.name}
                     </Link>
                   ))}
-                  <Link href="/login" title="Login">
-                    <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all">
-                      <UserCircle className="w-6 h-6" />
-                    </Button>
-                  </Link>
+                  
+                  <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    {isUserLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                    ) : user ? (
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10 border-2 border-primary/20">
+                          <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                          <AvatarFallback className="bg-primary text-white font-black">
+                            {getInitials(user.displayName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <Button 
+                          onClick={handleSignOut}
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-full text-foreground/70 hover:text-destructive hover:bg-destructive/10 transition-all"
+                          title="Sign Out"
+                        >
+                          <LogOut className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Link href="/login" title="Login">
+                        <Button variant="ghost" size="icon" className="rounded-full text-foreground/70 hover:text-primary hover:bg-primary/10 transition-all">
+                          <UserCircle className="w-6 h-6" />
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </>
               )}
             </div>
 
             {/* Mobile Nav Actions */}
             <div className="flex items-center gap-2 md:hidden">
-              {!isAdminDashboard && (
-                <Link href="/login">
-                  <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
-                    <UserCircle className="w-6 h-6" />
-                  </Button>
-                </Link>
+              {!isAdminDashboard && !isUserLoading && (
+                user ? (
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-8 h-8 border border-primary/20">
+                      <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                      <AvatarFallback className="bg-primary text-white text-[10px] font-black">
+                        {getInitials(user.displayName)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                ) : (
+                  <Link href="/login">
+                    <Button variant="ghost" size="icon" className="rounded-full text-foreground/70">
+                      <UserCircle className="w-6 h-6" />
+                    </Button>
+                  </Link>
+                )
               )}
               <button
                 className="p-2 text-foreground"
@@ -157,7 +217,7 @@ export function Navbar() {
               {link.name}
             </Link>
           ))}
-          {isAdminDashboard && (
+          {(isAdminDashboard || user) && (
             <Button 
               onClick={handleSignOut}
               variant="destructive" 
