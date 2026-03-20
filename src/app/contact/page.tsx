@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -7,25 +6,26 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { 
   Mail, 
   Phone, 
-  MapPin, 
+  Video, 
   Send, 
   MessageSquare, 
   Sparkles, 
   Zap, 
   Globe,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  CalendarDays
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const contactInfo = [
   {
     title: "Email Us",
-    value: "hello@npbmedia.io",
+    value: "helpdesk.npbmedia@gmail.com",
     description: "Our support team will get back to you within 24 hours.",
     icon: Mail,
     color: "bg-orange-500",
@@ -33,19 +33,20 @@ const contactInfo = [
   },
   {
     title: "Call Us",
-    value: "+91 98765 43210",
+    value: "8877300114",
     description: "Mon-Fri from 9am to 6pm IST.",
     icon: Phone,
     color: "bg-blue-600",
     shadow: "shadow-blue-600/20"
   },
   {
-    title: "Visit Our Studio",
-    value: "Innovation Hub, Begusarai, Bihar",
-    description: "Come say hello at our local engineering lab.",
-    icon: MapPin,
+    title: "Virtual Consultation",
+    value: "Schedule Virtual Meeting",
+    description: "Book a 1-on-1 discovery call with our tech leads.",
+    icon: Video,
     color: "bg-emerald-600",
-    shadow: "shadow-emerald-600/20"
+    shadow: "shadow-emerald-600/20",
+    isButton: true
   }
 ];
 
@@ -88,7 +89,7 @@ export default function ContactPage() {
               <div className="space-y-6">
                 <h2 className="text-4xl font-headline font-black italic">Contact <span className="text-primary">Information</span></h2>
                 <p className="text-muted-foreground text-lg font-medium leading-relaxed">
-                  We're here to help you navigate your digital transformation. Reach out through any of these channels or visit our office.
+                  We're here to help you navigate your digital transformation. Reach out through any of these channels.
                 </p>
               </div>
 
@@ -96,7 +97,10 @@ export default function ContactPage() {
                 {contactInfo.map((info, idx) => (
                   <div 
                     key={idx} 
-                    className="group relative p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-primary"
+                    className={cn(
+                      "group relative p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-100 transition-all duration-500 overflow-hidden flex items-center gap-8 hover:-translate-y-2 hover:shadow-2xl hover:bg-primary cursor-pointer",
+                      info.isButton && "border-2 border-emerald-100 bg-emerald-50/30"
+                    )}
                   >
                     <div className={cn(
                       "w-16 h-16 rounded-2xl flex items-center justify-center text-white transition-all duration-500 group-hover:bg-white group-hover:text-primary shrink-0",
@@ -110,6 +114,9 @@ export default function ContactPage() {
                       <p className="text-xl font-headline font-black group-hover:text-white transition-colors">{info.value}</p>
                       <p className="text-sm text-muted-foreground font-medium group-hover:text-white/80 transition-colors">{info.description}</p>
                     </div>
+                    {info.isButton && (
+                      <CalendarDays className="absolute right-8 text-emerald-500 w-10 h-10 opacity-20 group-hover:opacity-100 group-hover:text-white transition-all group-hover:rotate-12" />
+                    )}
                   </div>
                 ))}
               </div>
@@ -166,7 +173,7 @@ export default function ContactPage() {
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
                         <Input 
                           type="tel" 
-                          placeholder="+91 00000 00000" 
+                          placeholder="+91 88773 00114" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
                       </div>
