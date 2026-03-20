@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   User, 
   Mail, 
@@ -19,9 +20,13 @@ import {
   Sparkles,
   ArrowLeft,
   Loader2,
-  Settings,
-  CreditCard,
-  Bell
+  MapPin,
+  GraduationCap,
+  FileText,
+  Briefcase,
+  ShoppingBag,
+  Plus,
+  ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 
@@ -48,7 +53,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-10 h-10 animate-spin text-primary" />
-          <p className="font-headline font-black uppercase tracking-widest text-xs">Accessing Portal...</p>
+          <p className="font-headline font-black uppercase tracking-widest text-xs text-primary">Synchronizing Profile...</p>
         </div>
       </div>
     );
@@ -66,11 +71,14 @@ export default function ProfilePage() {
       .slice(0, 2);
   };
 
-  const infoItems = [
-    { label: "Full Name", value: profileData?.fullName || user.displayName || "N/A", icon: User },
-    { label: "Email Address", value: user.email, icon: Mail },
-    { label: "Mobile Number", value: profileData?.mobile || "N/A", icon: Phone },
-    { label: "Date of Birth", value: profileData?.dob || "N/A", icon: Calendar },
+  const sections = [
+    { id: "profile", label: "Profile", icon: User },
+    { id: "address", label: "Address", icon: MapPin },
+    { id: "contact", label: "Contact", icon: Phone },
+    { id: "education", label: "Education", icon: GraduationCap },
+    { id: "documents", label: "Documents", icon: FileText },
+    { id: "career", label: "Career", icon: Briefcase },
+    { id: "order", label: "Order", icon: ShoppingBag },
   ];
 
   return (
@@ -99,120 +107,193 @@ export default function ProfilePage() {
       {/* Profile Content */}
       <section className="py-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <Tabs defaultValue="profile" className="space-y-12">
             
-            {/* Left Sidebar: Profile Summary */}
-            <div className="lg:col-span-4 space-y-8">
-              <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
-                <CardContent className="p-10 text-center space-y-6">
-                  <div className="relative mx-auto w-32 h-32">
-                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                    <Avatar className="w-32 h-32 border-4 border-primary/20 shadow-xl relative z-10">
-                      <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                      <AvatarFallback className="bg-primary text-white text-4xl font-black">
-                        {getInitials(user.displayName || profileData?.fullName)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <h3 className="text-2xl font-headline font-black italic">{profileData?.fullName || user.displayName || "NPB User"}</h3>
-                    <p className="text-muted-foreground font-medium text-sm">{user.email}</p>
-                  </div>
-
-                  <div className="pt-6 border-t border-slate-100 flex justify-center gap-4">
-                    <Button variant="outline" size="icon" className="rounded-full h-12 w-12 border-2 hover:border-primary hover:text-primary">
-                      <Settings className="w-5 h-5" />
-                    </Button>
-                    <Button variant="outline" size="icon" className="rounded-full h-12 w-12 border-2 hover:border-blue-600 hover:text-blue-600">
-                      <Bell className="w-5 h-5" />
-                    </Button>
-                    <Button variant="outline" size="icon" className="rounded-full h-12 w-12 border-2 hover:border-emerald-600 hover:text-emerald-600">
-                      <CreditCard className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
-                <div className="absolute inset-0 grid-bg opacity-10" />
-                <div className="relative z-10 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="text-primary w-6 h-6" />
-                    <h4 className="text-xl font-headline font-black italic">Security Guard</h4>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                      <span className="font-bold text-slate-300">Provider</span> 
-                      <span className="font-black text-primary uppercase text-xs">{profileData?.provider || "OAuth"}</span>
-                    </div>
-                    <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                      <span className="font-bold text-slate-300">Status</span> 
-                      <span className="text-emerald-400 font-black text-xs uppercase">Active</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-500 pt-2">
-                      <Clock className="w-4 h-4" /> Member since {profileData?.createdAt ? new Date(profileData.createdAt.seconds * 1000).toLocaleDateString() : 'Recent'}
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Horizontal Scrollable Menu */}
+            <div className="flex justify-start lg:justify-center overflow-x-auto pb-4 no-scrollbar">
+              <TabsList className="bg-slate-100 p-2 h-auto rounded-[2rem] border-2 border-slate-200 inline-flex">
+                {sections.map((sec) => (
+                  <TabsTrigger 
+                    key={sec.id}
+                    value={sec.id} 
+                    className="rounded-full px-8 py-4 font-headline font-black text-sm data-[state=active]:bg-primary data-[state=active]:text-white transition-all flex items-center gap-2 whitespace-nowrap"
+                  >
+                    <sec.icon className="w-4 h-4" />
+                    {sec.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
             </div>
 
-            {/* Right Side: Detailed Information */}
-            <div className="lg:col-span-8 space-y-8">
-              <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
-                <CardHeader className="p-10 md:p-16 pb-0">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest border border-primary/20 mb-4">
-                    <User className="w-4 h-4" />
-                    Personal Details
-                  </div>
-                  <CardTitle className="text-3xl font-headline font-black italic">Manage Your <span className="text-primary">Identity</span></CardTitle>
-                </CardHeader>
-                
-                <CardContent className="p-10 md:p-16 space-y-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {infoItems.map((item, idx) => (
-                      <div key={idx} className="group relative p-8 bg-slate-50 rounded-[2.5rem] border-2 border-transparent hover:border-primary/20 hover:bg-white transition-all duration-500">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                            <item.icon className="w-5 h-5" />
-                          </div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{item.label}</span>
-                        </div>
-                        <p className="text-xl font-headline font-black break-words">{item.value}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              
+              {/* Left Sidebar: Profile Summary */}
+              <div className="lg:col-span-4 space-y-8">
+                <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
+                  <CardContent className="p-10 text-center space-y-6">
+                    <div className="relative mx-auto w-32 h-32">
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                      <Avatar className="w-32 h-32 border-4 border-primary/20 shadow-xl relative z-10">
+                        <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                        <AvatarFallback className="bg-primary text-white text-4xl font-black">
+                          {getInitials(user.displayName || profileData?.fullName)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h3 className="text-2xl font-headline font-black italic">{profileData?.fullName || user.displayName || "NPB User"}</h3>
+                      <p className="text-muted-foreground font-medium text-sm">{user.email}</p>
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-100">
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                        <ShieldCheck className="w-3 h-3" /> Identity Verified
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  <div className="pt-8 border-t border-slate-100 space-y-6">
-                    <h4 className="text-xl font-headline font-black italic">Account Controls</h4>
-                    <div className="flex flex-wrap gap-4">
-                      <Button className="rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs bg-primary hover:bg-foreground shadow-lg border-none">
-                        Edit Profile
-                      </Button>
-                      <Button variant="outline" className="rounded-full px-8 h-14 font-black uppercase tracking-widest text-xs border-2 hover:bg-slate-50">
-                        Update Password
-                      </Button>
+                <div className="p-10 rounded-[3rem] bg-foreground text-white space-y-6 relative overflow-hidden group">
+                  <div className="absolute inset-0 grid-bg opacity-10" />
+                  <div className="relative z-10 space-y-6">
+                    <h4 className="text-xl font-headline font-black italic">Account Status</h4>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span className="font-bold text-slate-300">Member Since</span> 
+                        <span className="font-black text-primary uppercase text-xs">
+                          {profileData?.createdAt ? new Date(profileData.createdAt.seconds * 1000).getFullYear() : '2025'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span className="font-bold text-slate-300">Level</span> 
+                        <span className="text-secondary font-black text-xs uppercase">Elite Member</span>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Data Export / Privacy Feature */}
-              <div className="relative group p-1 md:p-1.5 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-[3rem] shadow-2xl overflow-hidden">
-                <div className="bg-white rounded-[2.8rem] p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div className="absolute inset-0 grid-bg opacity-5" />
-                  <div className="relative z-10 space-y-2 text-center md:text-left">
-                    <h4 className="text-2xl font-headline font-black italic">Security Hub</h4>
-                    <p className="text-muted-foreground font-semibold">Your data is encrypted with AES-256 standards right here in India.</p>
-                  </div>
-                  <Button className="relative z-10 rounded-full px-10 h-16 font-headline text-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-600/20 border-none">
-                    Security Dashboard
-                  </Button>
                 </div>
               </div>
+
+              {/* Right Side: Tab Contents */}
+              <div className="lg:col-span-8 space-y-8">
+                
+                <TabsContent value="profile" className="mt-0 space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-2">
+                    <CardHeader className="p-10 md:p-16 pb-0">
+                      <CardTitle className="text-3xl font-headline font-black italic">Personal <span className="text-primary">Identity</span></CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-10 md:p-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {[
+                        { label: "Full Name", value: profileData?.fullName || user.displayName || "N/A", icon: User },
+                        { label: "Email Address", value: user.email, icon: Mail },
+                        { label: "Mobile Number", value: profileData?.mobile || "N/A", icon: Phone },
+                        { label: "Date of Birth", value: profileData?.dob || "N/A", icon: Calendar },
+                      ].map((item, idx) => (
+                        <div key={idx} className="p-8 bg-slate-50 rounded-[2.5rem] border-2 border-transparent hover:border-primary/20 hover:bg-white transition-all duration-500">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">{item.label}</p>
+                          <p className="text-lg font-headline font-black break-words">{item.value}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="address" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-3xl font-headline font-black italic">Registered <span className="text-primary">Addresses</span></h3>
+                      <Button variant="outline" className="rounded-full h-12 px-6 border-2 font-black uppercase tracking-widest text-xs">
+                        <Plus className="w-4 h-4 mr-2" /> Add New
+                      </Button>
+                    </div>
+                    <div className="p-8 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center space-y-4">
+                      <MapPin className="w-12 h-12 text-slate-300 mx-auto" />
+                      <p className="text-muted-foreground font-semibold">No addresses saved yet. Start by adding your first one.</p>
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="contact" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <h3 className="text-3xl font-headline font-black italic">Communication <span className="text-primary">Preferences</span></h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      {[
+                        { label: "Primary Email", value: user.email, status: "Verified" },
+                        { label: "Alternate Phone", value: "Not provided", status: "Add Now" }
+                      ].map((c, i) => (
+                        <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl">
+                          <div>
+                            <p className="text-xs font-black uppercase text-muted-foreground">{c.label}</p>
+                            <p className="font-bold">{c.value}</p>
+                          </div>
+                          <span className="text-[10px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">{c.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="education" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <h3 className="text-3xl font-headline font-black italic">Academic <span className="text-primary">Portfolio</span></h3>
+                    <p className="text-muted-foreground font-semibold">Keep your education history up to date for potential career advancements within NPB Media.</p>
+                    <Button className="rounded-full h-14 px-10 font-headline text-lg bg-primary hover:bg-foreground shadow-xl border-none">
+                      Manage Education <ChevronRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="documents" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <h3 className="text-3xl font-headline font-black italic">Digital <span className="text-primary">Vault</span></h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {["Resume", "Degree", "ID Card", "Certifications"].map((doc) => (
+                        <div key={doc} className="group p-6 bg-slate-50 border-2 border-transparent hover:border-primary rounded-2xl text-center cursor-pointer transition-all">
+                          <FileText className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-primary transition-colors" />
+                          <p className="text-xs font-black uppercase tracking-widest">{doc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="career" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <h3 className="text-3xl font-headline font-black italic">Your <span className="text-primary">NPB Career</span></h3>
+                    <div className="space-y-4">
+                      <div className="p-8 bg-slate-50 rounded-[2.5rem] border-l-8 border-primary">
+                        <h4 className="font-headline font-black text-xl italic mb-2">No Active Applications</h4>
+                        <p className="text-muted-foreground">You haven't applied for any positions yet. Explore our opportunities to join the team.</p>
+                      </div>
+                      <Link href="/career/opportunities">
+                        <Button variant="outline" className="w-full rounded-full h-14 border-2 font-black uppercase tracking-widest text-xs">
+                          Explore Career Opportunities
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="order" className="mt-0 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <Card className="border-none shadow-2xl rounded-[3rem] bg-white p-10 md:p-16 space-y-8">
+                    <h3 className="text-3xl font-headline font-black italic">Service <span className="text-primary">History</span></h3>
+                    <div className="space-y-4">
+                      <div className="text-center py-10">
+                        <ShoppingBag className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+                        <p className="text-muted-foreground font-semibold">No services purchased yet. Check out our high-performance products.</p>
+                      </div>
+                      <Link href="/products">
+                        <Button className="w-full rounded-full h-14 bg-foreground text-white font-black uppercase tracking-widest text-xs border-none hover:bg-primary transition-all">
+                          View Products
+                        </Button>
+                      </Link>
+                    </div>
+                  </Card>
+                </TabsContent>
+
+              </div>
             </div>
-          </div>
+          </Tabs>
         </div>
       </section>
 
