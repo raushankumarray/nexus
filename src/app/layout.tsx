@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import { CookieConsent } from "@/components/ui/CookieConsent";
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: 'NPB Media | Modern Software Solutions',
@@ -26,6 +27,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           {children}
           <CookieConsent />
+          <WhatsAppButton />
           <Toaster />
         </FirebaseClientProvider>
       </body>
