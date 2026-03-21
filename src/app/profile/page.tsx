@@ -74,7 +74,7 @@ export default function ProfilePage() {
           <h1 className="text-5xl md:text-7xl font-headline font-black italic text-slate-900 leading-none">
             User <span className="text-primary">Profile</span>
           </h1>
-          <p className="text-muted-foreground text-xl font-medium uppercase tracking-widest text-xs">Professional Nexus</p>
+          <p className="text-muted-foreground text-xl font-medium uppercase tracking-widest text-xs">Personal Profile</p>
         </div>
 
         {/* User Info Card */}
