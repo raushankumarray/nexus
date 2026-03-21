@@ -8,6 +8,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   User, 
   Mail, 
@@ -24,7 +25,11 @@ import {
   Building2,
   Navigation,
   Globe,
-  Hash
+  Hash,
+  FileText,
+  CreditCard,
+  Image as ImageIcon,
+  ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -39,6 +44,7 @@ export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [isDocsOpen, setIsDocsOpen] = useState(false);
 
   const profileRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -62,7 +68,7 @@ export default function ProfilePage() {
           <UserCircle className="w-12 h-12 text-primary" />
         </div>
         <h1 className="text-4xl font-headline font-black italic">Access Denied</h1>
-        <p className="text-muted-foreground max-w-sm">Please sign in to view your professional Media profile.</p>
+        <p className="text-muted-foreground max-sm">Please sign in to view your professional Media profile.</p>
         <Link href="/login">
           <Button size="lg" className="rounded-full px-12 h-16 bg-primary text-white">Sign In</Button>
         </Link>
@@ -78,7 +84,6 @@ export default function ProfilePage() {
     <main className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
       <Navbar />
       
-      {/* Background Decor */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -z-10" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-[120px] -z-10" />
 
@@ -90,12 +95,15 @@ export default function ProfilePage() {
           <p className="text-muted-foreground text-xl font-medium uppercase tracking-widest text-xs">Personal Profile</p>
         </div>
 
-        {/* User Info Card */}
         <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[3rem] bg-white overflow-hidden animate-in fade-in slide-in-from-bottom duration-700">
           <CardContent className="p-8 md:p-12">
             <div className="flex flex-col md:flex-row items-center gap-10">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-slate-100 flex items-center justify-center shrink-0 border-4 border-white shadow-xl">
-                <User className="w-16 h-16 md:w-20 md:h-20 text-slate-300" />
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-slate-100 flex items-center justify-center shrink-0 border-4 border-white shadow-xl overflow-hidden relative">
+                {profileData?.photoURL ? (
+                  <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-16 h-16 md:w-20 md:h-20 text-slate-300" />
+                )}
               </div>
               
               <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
@@ -130,7 +138,6 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
           <Link href="/profile/edit" className="block">
             <Button className="w-full h-20 rounded-[2rem] bg-white border-2 border-slate-100 hover:border-primary hover:bg-slate-50 transition-all shadow-xl group justify-between px-10 text-slate-900 overflow-hidden relative">
@@ -149,6 +156,16 @@ export default function ProfilePage() {
               <MapPin className="w-6 h-6 text-emerald-500" /> Saved Address
             </span>
             <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-2 transition-all" />
+          </Button>
+
+          <Button 
+            onClick={() => setIsDocsOpen(true)}
+            className="w-full h-20 rounded-[2rem] bg-white border-2 border-slate-100 hover:border-blue-600 hover:bg-blue-50 transition-all shadow-xl group justify-between px-10 text-slate-900 overflow-hidden relative"
+          >
+            <span className="flex items-center gap-4 text-xl font-headline font-black italic">
+              <FileText className="w-6 h-6 text-blue-600" /> Documents
+            </span>
+            <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-blue-600 group-hover:translate-x-2 transition-all" />
           </Button>
 
           <Link href="/career/opportunities" className="block">
@@ -239,6 +256,105 @@ export default function ProfilePage() {
           </div>
           <div className="p-8 bg-slate-50 border-t flex justify-center">
             <Button variant="ghost" onClick={() => setIsAddressOpen(false)} className="rounded-full font-black uppercase tracking-widest text-[10px]">Close Viewer</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Documents Dialog */}
+      <Dialog open={isDocsOpen} onOpenChange={setIsDocsOpen}>
+        <DialogContent className="max-w-3xl rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="vibrant-gradient p-10 text-white space-y-2">
+            <DialogTitle className="text-3xl font-headline font-black italic">Professional Credentials</DialogTitle>
+            <p className="text-white/80 font-medium text-xs uppercase tracking-widest">Verified Work Documents</p>
+          </div>
+          <div className="p-10 space-y-6">
+            {profileData?.resumeURL || profileData?.photoURL || profileData?.idCardURL ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Resume Card */}
+                {profileData?.resumeURL && (
+                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-blue-600 transition-all">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                          <FileText className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Document</p>
+                          <p className="text-lg font-black italic">Resume</p>
+                        </div>
+                      </div>
+                      <a href={profileData.resumeURL} target="_blank" rel="noopener noreferrer" className="block">
+                        <Button className="w-full rounded-xl bg-white border border-slate-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
+                          View Resume <ExternalLink className="ml-2 w-3 h-3" />
+                        </Button>
+                      </a>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Photo Card */}
+                {profileData?.photoURL && (
+                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-orange-500 transition-all">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Photo</p>
+                          <p className="text-lg font-black italic">Profile Picture</p>
+                        </div>
+                      </div>
+                      <a href={profileData.photoURL} target="_blank" rel="noopener noreferrer" className="block">
+                        <Button className="w-full rounded-xl bg-white border border-slate-200 hover:bg-orange-500 hover:text-white hover:border-orange-500 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
+                          View Photo <ExternalLink className="ml-2 w-3 h-3" />
+                        </Button>
+                      </a>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Identity Card */}
+                {profileData?.idCardURL && (
+                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-emerald-600 transition-all col-span-1 md:col-span-2">
+                    <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                          <CreditCard className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ID Proof</p>
+                          <p className="text-lg font-black italic">{profileData.idCardType || 'Identity Document'}</p>
+                        </div>
+                      </div>
+                      <a href={profileData.idCardURL} target="_blank" rel="noopener noreferrer" className="shrink-0 w-full md:w-auto">
+                        <Button className="px-8 rounded-xl bg-white border border-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
+                          View Identity Proof <ExternalLink className="ml-2 w-3 h-3" />
+                        </Button>
+                      </a>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-16 space-y-6">
+                <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto">
+                  <FileText className="w-12 h-12 text-slate-200" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-headline font-black italic">No Documents Found</h3>
+                  <p className="text-muted-foreground font-medium max-w-xs mx-auto">You haven't uploaded your professional credentials yet.</p>
+                </div>
+                <Link href="/profile/edit" className="inline-block">
+                  <Button className="rounded-full px-8 bg-primary text-white font-black uppercase tracking-widest text-xs h-12">
+                    Upload Credentials Now
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+          <div className="p-8 bg-slate-50 border-t flex justify-center">
+            <Button variant="ghost" onClick={() => setIsDocsOpen(false)} className="rounded-full font-black uppercase tracking-widest text-[10px]">Close Viewer</Button>
           </div>
         </DialogContent>
       </Dialog>

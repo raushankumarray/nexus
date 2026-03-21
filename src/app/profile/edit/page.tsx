@@ -29,7 +29,11 @@ import {
   Globe,
   Navigation,
   Building2,
-  Hash
+  Hash,
+  FileText,
+  Image as ImageIcon,
+  CreditCard,
+  Upload
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -37,6 +41,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -52,6 +63,11 @@ const profileSchema = z.object({
   state: z.string().min(1, "State is required"),
   country: z.string().min(1, "Country is required"),
   pincode: z.string().min(6, "Valid pincode is required"),
+  // Document Fields
+  resumeURL: z.string().url("Valid Resume URL is required"),
+  photoURL: z.string().url("Valid Photo URL is required"),
+  idCardType: z.string().min(1, "ID Card type is required"),
+  idCardURL: z.string().url("Valid ID Card URL is required"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -76,10 +92,16 @@ export default function ProfileEditPage() {
     handleSubmit, 
     reset,
     setValue,
+    watch,
     formState: { errors } 
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      idCardType: "Aadhar Card"
+    }
   });
+
+  const selectedIdType = watch("idCardType");
 
   // Sync form with fetched data
   useEffect(() => {
@@ -95,6 +117,10 @@ export default function ProfileEditPage() {
         state: profileData.state || "",
         country: profileData.country || "India",
         pincode: profileData.pincode || "",
+        resumeURL: profileData.resumeURL || "",
+        photoURL: profileData.photoURL || "",
+        idCardType: profileData.idCardType || "Aadhar Card",
+        idCardURL: profileData.idCardURL || "",
       });
     }
   }, [profileData, reset]);
@@ -151,12 +177,11 @@ export default function ProfileEditPage() {
       updatedAt: new Date().toISOString()
     });
 
-    // Simulate a short delay for UX before showing success and redirecting
     setTimeout(() => {
       setIsUpdating(false);
       toast({
         title: "Profile Updated",
-        description: "Your professional profile has been synchronized successfully.",
+        description: "Your professional profile and documents have been synchronized.",
       });
       router.push("/profile");
     }, 800);
@@ -203,18 +228,24 @@ export default function ProfileEditPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <Tabs defaultValue="personal" className="w-full">
             <div className="flex justify-center mb-10">
-              <TabsList className="bg-white p-1.5 h-auto rounded-full border-2 border-slate-100 shadow-xl w-full max-w-lg grid grid-cols-2">
+              <TabsList className="bg-white p-1.5 h-auto rounded-full border-2 border-slate-100 shadow-xl w-full max-w-2xl grid grid-cols-3">
                 <TabsTrigger 
                   value="personal" 
-                  className="rounded-full px-8 py-3 font-headline font-black text-[10px] md:text-xs uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
+                  className="rounded-full px-4 py-3 font-headline font-black text-[10px] md:text-xs uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
                 >
-                  Personal Details
+                  Personal
                 </TabsTrigger>
                 <TabsTrigger 
                   value="address" 
-                  className="rounded-full px-8 py-3 font-headline font-black text-[10px] md:text-xs uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
+                  className="rounded-full px-4 py-3 font-headline font-black text-[10px] md:text-xs uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
                 >
-                  Address Details
+                  Address
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="documents" 
+                  className="rounded-full px-4 py-3 font-headline font-black text-[10px] md:text-xs uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white transition-all"
+                >
+                  Documents
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -393,6 +424,85 @@ export default function ProfileEditPage() {
                         />
                       </div>
                       {errors.pincode && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.pincode.message}</p>}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="documents" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden p-2">
+                <CardContent className="p-8 md:p-12 space-y-10">
+                  <div className="space-y-1 pb-6 border-b border-slate-100">
+                    <h3 className="text-2xl font-headline font-black italic">Professional Credentials</h3>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Upload your documents in PDF or JPEG format</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Professional Resume (PDF/JPEG) *</Label>
+                      <div className="relative">
+                        <FileText className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        <Input 
+                          {...register("resumeURL")}
+                          placeholder="Link to your resume" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                        />
+                      </div>
+                      {errors.resumeURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.resumeURL.message}</p>}
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Profile Photo (JPEG) *</Label>
+                      <div className="relative">
+                        <ImageIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        <Input 
+                          {...register("photoURL")}
+                          placeholder="Link to your profile photo" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                        />
+                      </div>
+                      {errors.photoURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.photoURL.message}</p>}
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Identity Card Type *</Label>
+                      <Select 
+                        value={selectedIdType} 
+                        onValueChange={(val) => setValue("idCardType", val)}
+                      >
+                        <SelectTrigger className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:ring-primary text-lg font-medium px-6">
+                          <SelectValue placeholder="Select ID Type" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                          {["Aadhar Card", "Pan Card", "Voter Card", "Driving License", "Passport"].map((type) => (
+                            <SelectItem key={type} value={type} className="py-4 rounded-xl text-base font-medium">
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">{selectedIdType} Document *</Label>
+                      <div className="relative">
+                        <CreditCard className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        <Input 
+                          {...register("idCardURL")}
+                          placeholder="Link to identity document" 
+                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                        />
+                      </div>
+                      {errors.idCardURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.idCardURL.message}</p>}
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem] flex items-start gap-4">
+                    <Upload className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+                    <div className="space-y-1">
+                      <p className="text-xs font-black text-blue-600 uppercase tracking-widest">Information Security</p>
+                      <p className="text-sm font-medium text-blue-800 leading-relaxed">Your documents are processed through our encrypted verification pipeline. Only authorized NPB Media hiring leads can access these credentials.</p>
                     </div>
                   </div>
                 </CardContent>
