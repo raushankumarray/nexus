@@ -6,7 +6,7 @@ import { summarizeContent } from "@/ai/flows/summarize-content-flow";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BrainCircuit, Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { BrainCircuit, Loader2, Sparkles, Copy, Check, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function AISummarizer() {
@@ -14,6 +14,7 @@ export function AISummarizer() {
   const [summary, setSummary] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
   const { toast } = useToast();
 
   const handleSummarize = async () => {
@@ -27,6 +28,7 @@ export function AISummarizer() {
     }
 
     setIsLoading(true);
+    setIsRateLimited(false);
     try {
       const result = await summarizeContent({ text });
       setSummary(result.summary);
@@ -34,12 +36,22 @@ export function AISummarizer() {
         title: "Success",
         description: "Summary generated successfully!",
       });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate summary. Please try again.",
-        variant: "destructive"
-      });
+    } catch (error: any) {
+      const errorMessage = error.message || "";
+      if (errorMessage.includes("429") || errorMessage.includes("Resource exhausted")) {
+        setIsRateLimited(true);
+        toast({
+          title: "Quota Exhausted",
+          description: "The AI engine is currently at its limit. Please try again in 60 seconds.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to generate summary. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +78,7 @@ export function AISummarizer() {
           </div>
           <h2 className="text-4xl font-headline font-bold">NPB AI <span className="text-primary">Summarizer</span></h2>
           <p className="text-slate-300 max-w-xl mx-auto">
-            Leverage our proprietary Generative AI to distill complex project documentation into impactful summaries for case studies and service briefs.
+            Leverage our proprietary Generative AI to distill complex project documentation into impactful summaries.
           </p>
         </div>
 
@@ -82,6 +94,14 @@ export function AISummarizer() {
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
+            
+            {isRateLimited && (
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm animate-in fade-in zoom-in duration-300">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">The AI API quota has been reached (429). Please wait a minute before requesting another summary.</p>
+              </div>
+            )}
+
             <Button 
               className="w-full h-14 rounded-xl text-lg font-headline bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
               onClick={handleSummarize}
