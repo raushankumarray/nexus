@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, UserPlus, Lock, Chrome, Loader2 } from "lucide-react";
+import { LogIn, UserPlus, Chrome, Loader2 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -25,7 +25,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Handle redirect in a separate effect once user is authenticated
   useEffect(() => {
     if (user) {
       router.push("/");
@@ -35,7 +34,6 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Non-blocking sign in
     signInWithEmailAndPassword(auth, email, password)
       .catch((error: any) => {
         setIsLoading(false);
@@ -49,7 +47,6 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     const provider = new GoogleAuthProvider();
-    // Non-blocking popup login
     signInWithPopup(auth, provider)
       .catch((error: any) => {
         toast({
@@ -132,12 +129,6 @@ export default function LoginPage() {
                     <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-primary hover:bg-primary/5 font-black uppercase tracking-widest text-xs group">
                       <UserPlus className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
                       Create New Account
-                    </Button>
-                  </Link>
-                  <Link href="/admin/login">
-                    <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 bg-slate-800 text-white hover:bg-slate-900 font-black uppercase tracking-widest text-xs group">
-                      <Lock className="mr-2 w-4 h-4 text-primary" />
-                      Internal Login Page
                     </Button>
                   </Link>
                 </div>
