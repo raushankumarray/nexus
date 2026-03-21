@@ -125,6 +125,29 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["fullName", "email", "date", "timeSlot"]
+    },
+    "Cart": {
+      "title": "Cart",
+      "type": "object",
+      "description": "User shopping cart.",
+      "properties": {
+        "userId": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "title": { "type": "string" },
+              "price": { "type": "number" },
+              "quantity": { "type": "number" },
+              "image": { "type": "string" }
+            }
+          }
+        },
+        "totalAmount": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -150,6 +173,10 @@
     "/meetings/{meetingId}": {
       "schema": { "$ref": "#/entities/MeetingRequest" },
       "description": "Scheduled meeting requests."
+    },
+    "/carts/{userId}": {
+      "schema": { "$ref": "#/entities/Cart" },
+      "description": "User shopping carts."
     }
   }
 }
