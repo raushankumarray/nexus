@@ -1,6 +1,7 @@
+
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -18,10 +19,14 @@ import {
   CalendarDays,
   ShieldCheck,
   Zap,
-  Globe
+  Globe,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useFirestore, addDocumentNonBlocking } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 const contactInfo = [
   {
@@ -45,9 +50,47 @@ const contactInfo = [
 ];
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const db = useFirestore();
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Submission logic here
+    
+    if (!formData.fullName || !formData.email || !formData.message) {
+      toast({ 
+        variant: "destructive", 
+        title: "Required Fields", 
+        description: "Please fill in your name, email, and message." 
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    addDocumentNonBlocking(collection(db, "inquiries"), {
+      ...formData,
+      createdAt: new Date().toISOString()
+    }).then(() => {
+      setIsSubmitting(false);
+      setFormData({ fullName: "", email: "", phone: "", subject: "", message: "" });
+      toast({ 
+        title: "Inquiry Sent Successfully", 
+        description: "Thank you for reaching out. Our team will contact you shortly." 
+      });
+    });
   };
 
   return (
@@ -167,16 +210,24 @@ export default function ContactPage() {
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
                         <Input 
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleInputChange}
                           placeholder="Enter Name" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          required
                         />
                       </div>
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Email Address</label>
                         <Input 
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
                           type="email" 
                           placeholder="Enter Email" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
+                          required
                         />
                       </div>
                     </div>
@@ -185,6 +236,9 @@ export default function ContactPage() {
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
                         <Input 
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
                           type="tel" 
                           placeholder="Enter Phone No." 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
@@ -193,6 +247,9 @@ export default function ContactPage() {
                       <div className="space-y-3">
                         <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
                         <Input 
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleInputChange}
                           placeholder="Enter Subject" 
                           className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium px-6"
                         />
@@ -202,14 +259,25 @@ export default function ContactPage() {
                     <div className="space-y-3">
                       <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Your Message</label>
                       <Textarea 
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
                         placeholder="Tell us about your project requirements..." 
                         className="min-h-[200px] rounded-3xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium p-6 resize-none"
+                        required
                       />
                     </div>
 
-                    <Button className="w-full h-20 rounded-[2rem] text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-2xl group relative overflow-hidden">
+                    <Button 
+                      disabled={isSubmitting}
+                      className="w-full h-20 rounded-[2rem] text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-2xl group relative overflow-hidden"
+                    >
                       <span className="relative z-10 flex items-center gap-3">
-                        Send Message <Send className="w-6 h-6 transition-transform group-hover:translate-x-2 group-hover:-translate-y-2" />
+                        {isSubmitting ? (
+                          <><Loader2 className="w-6 h-6 animate-spin" /> Processing...</>
+                        ) : (
+                          <>Send Message <Send className="w-6 h-6 transition-transform group-hover:translate-x-2 group-hover:-translate-y-2" /></>
+                        )}
                       </span>
                       <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-0 group-hover:opacity-20 transition-opacity" />
                     </Button>

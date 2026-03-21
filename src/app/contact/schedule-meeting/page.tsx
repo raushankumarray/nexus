@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -20,9 +21,13 @@ import {
   Sparkles,
   ShieldCheck,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
+import { useFirestore, addDocumentNonBlocking } from "@/firebase";
+import { collection } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 const timeSlots = [
   "10:00 AM - 10:30 AM",
@@ -41,10 +46,52 @@ const timeSlots = [
 ];
 
 export default function ScheduleMeetingPage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    date: "",
+    timeSlot: "",
+    subject: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const db = useFirestore();
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({ ...prev, timeSlot: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to handle meeting request
-    alert("Meeting Request Sent! Our team will confirm shortly.");
+    
+    if (!formData.fullName || !formData.email || !formData.date || !formData.timeSlot) {
+      toast({ 
+        variant: "destructive", 
+        title: "Required Information", 
+        description: "Please complete all mandatory fields to schedule your call." 
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    addDocumentNonBlocking(collection(db, "meetings"), {
+      ...formData,
+      createdAt: new Date().toISOString()
+    }).then(() => {
+      setIsSubmitting(false);
+      setFormData({ fullName: "", email: "", phone: "", date: "", timeSlot: "", subject: "" });
+      toast({ 
+        title: "Request Received", 
+        description: "Your session request has been logged. A tech lead will confirm shortly." 
+      });
+    });
   };
 
   return (
@@ -96,6 +143,9 @@ export default function ScheduleMeetingPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</label>
                     <Input 
                       required
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
                       placeholder="Enter Name" 
                       className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-emerald-600 focus:bg-white transition-all text-lg font-medium px-6"
                     />
@@ -104,6 +154,9 @@ export default function ScheduleMeetingPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Work Email</label>
                     <Input 
                       required
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       type="email" 
                       placeholder="Enter Email" 
                       className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-emerald-600 focus:bg-white transition-all text-lg font-medium px-6"
@@ -116,6 +169,9 @@ export default function ScheduleMeetingPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Phone No.</label>
                     <Input 
                       required
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                       type="tel" 
                       placeholder="Enter Phone No." 
                       className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-emerald-600 focus:bg-white transition-all text-lg font-medium px-6"
@@ -125,6 +181,9 @@ export default function ScheduleMeetingPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Schedule Date</label>
                     <Input 
                       required
+                      name="date"
+                      value={formData.date}
+                      onChange={handleInputChange}
                       type="date" 
                       className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-emerald-600 focus:bg-white transition-all text-lg font-medium px-6"
                     />
@@ -134,9 +193,9 @@ export default function ScheduleMeetingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Available Time Slot</label>
-                    <Select required>
+                    <Select required value={formData.timeSlot} onValueChange={handleSelectChange}>
                       <SelectTrigger className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:ring-emerald-600 text-lg font-medium px-6">
-                        <SelectValue placeholder="Chose Time Slot" />
+                        <SelectValue placeholder="Choose Time Slot" />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-none shadow-2xl">
                         {timeSlots.map((slot) => (
@@ -151,15 +210,25 @@ export default function ScheduleMeetingPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Subject</label>
                     <Input 
                       required
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
                       placeholder="Enter Subject" 
                       className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-emerald-600 focus:bg-white transition-all text-lg font-medium px-6"
                     />
                   </div>
                 </div>
 
-                <Button className="w-full h-20 rounded-[2rem] text-xl font-headline bg-emerald-600 text-white hover:bg-emerald-700 transition-all duration-500 shadow-2xl shadow-emerald-600/20 group relative overflow-hidden">
+                <Button 
+                  disabled={isSubmitting}
+                  className="w-full h-20 rounded-[2rem] text-xl font-headline bg-emerald-600 text-white hover:bg-emerald-700 transition-all duration-500 shadow-2xl shadow-emerald-600/20 group relative overflow-hidden"
+                >
                   <span className="relative z-10 flex items-center gap-3">
-                    Request Schedule <CalendarDays className="w-6 h-6 transition-transform group-hover:scale-110" />
+                    {isSubmitting ? (
+                      <><Loader2 className="w-6 h-6 animate-spin" /> Requesting...</>
+                    ) : (
+                      <>Request Schedule <CalendarDays className="w-6 h-6 transition-transform group-hover:scale-110" /></>
+                    )}
                   </span>
                 </Button>
               </form>

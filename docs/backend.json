@@ -96,6 +96,35 @@
         },
         "appliedAt": { "type": "string", "format": "date-time" }
       }
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "type": "object",
+      "description": "General contact inquiries from visitors.",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "message"]
+    },
+    "MeetingRequest": {
+      "title": "MeetingRequest",
+      "type": "object",
+      "description": "Virtual consultation requests.",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "subject": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "email", "date", "timeSlot"]
     }
   },
   "auth": {
@@ -113,6 +142,14 @@
     "/jobApplications/{applicationId}": {
       "schema": { "$ref": "#/entities/JobApplication" },
       "description": "Candidate applications."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": { "$ref": "#/entities/Inquiry" },
+      "description": "Contact form submissions."
+    },
+    "/meetings/{meetingId}": {
+      "schema": { "$ref": "#/entities/MeetingRequest" },
+      "description": "Scheduled meeting requests."
     }
   }
 }
