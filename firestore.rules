@@ -2,18 +2,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    /**
+     * Firebase Permission System
+     * To check or modify permissions, you can visit the Firebase Console -> Firestore -> Rules.
+     */
+
+    // Basic check: Is the user logged in?
     function isSignedIn() {
       return request.auth != null;
     }
     
+    // Ownership check: Is this the user's own data?
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // MASTER ADMIN CLEARANCE:
+    // This is the core Firebase security check. 
+    // It verifies the email address encoded in the secure user token.
     function isAdmin() {
       return isSignedIn() && request.auth.token.email == "adminr@npbmedia.com";
     }
     
+    // PUBLIC ACCESS RULES
     match /users/{userId} {
       allow read, write: if isOwner(userId) || isAdmin();
     }

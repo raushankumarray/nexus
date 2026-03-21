@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirestore, useCollection, useMemoFirebase, useUser } from "@/firebase";
 import { collection } from "firebase/firestore";
 import { 
   Users, 
@@ -15,13 +15,15 @@ import {
   Zap,
   ShieldCheck,
   Globe,
-  Loader2
+  Loader2,
+  Lock
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export default function AdminDashboard() {
   const db = useFirestore();
+  const { user } = useUser();
 
   // Fetch real-time data for counters
   const usersQuery = useMemoFirebase(() => collection(db, "users"), [db]);
@@ -71,22 +73,34 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* System Health Card */}
+        {/* System Health & Auth Verification Card */}
         <Card className="lg:col-span-2 border-none shadow-2xl rounded-[3rem] bg-slate-950 text-white overflow-hidden p-2">
           <div className="p-10 space-y-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-primary text-[10px] font-black uppercase tracking-widest">
-                <Activity className="w-4 h-4 animate-pulse" /> Live Infrastructure
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-primary text-[10px] font-black uppercase tracking-widest">
+                  <Activity className="w-4 h-4 animate-pulse" /> Live Infrastructure
+                </div>
+                <h2 className="text-4xl font-headline font-black italic">NPB <span className="text-primary">Health</span></h2>
               </div>
-              <h2 className="text-4xl font-headline font-black italic">Nexus <span className="text-primary">Health</span></h2>
+              
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                  <ShieldCheck className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Admin Clearance Level 04</p>
+                  <p className="text-xs font-bold text-white truncate max-w-[150px]">{user?.email}</p>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[
-                { label: "Auth Server", status: "Active", icon: ShieldCheck, color: "text-emerald-400" },
-                { label: "Firestore DB", status: "Active", icon: Zap, color: "text-yellow-400" },
-                { label: "Global CDN", status: "Active", icon: Globe, color: "text-blue-400" },
+                { label: "Auth Permission", status: "Verified", icon: Lock, color: "text-emerald-400" },
+                { label: "Firestore Access", status: "Authorized", icon: Zap, color: "text-yellow-400" },
+                { label: "Cloud Sync", status: "Syncing", icon: Globe, color: "text-blue-400" },
               ].map((item, i) => (
                 <div key={i} className="p-6 rounded-[2rem] bg-white/5 border border-white/5 space-y-4">
                   <item.icon className={cn("w-8 h-8", item.color)} />
@@ -108,10 +122,10 @@ export default function AdminDashboard() {
             </h3>
             <div className="space-y-4">
               {[
-                "Schedule onboarding for new users",
-                "Review pending career applications",
+                "Audit global infrastructure access",
                 "Verify secure meeting credentials",
-                "Audit global infrastructure access"
+                "Review pending career applications",
+                "Analyze monthly user engagement"
               ].map((task, i) => (
                 <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 group cursor-pointer hover:border-primary transition-all">
                   <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
