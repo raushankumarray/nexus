@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { 
@@ -33,7 +33,9 @@ import {
   FileText,
   Image as ImageIcon,
   CreditCard,
-  Upload
+  Upload,
+  CheckCircle2,
+  FileUp
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -50,6 +52,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -63,11 +66,11 @@ const profileSchema = z.object({
   state: z.string().min(1, "State is required"),
   country: z.string().min(1, "Country is required"),
   pincode: z.string().min(6, "Valid pincode is required"),
-  // Document Fields
-  resumeURL: z.string().url("Valid Resume URL is required"),
-  photoURL: z.string().url("Valid Photo URL is required"),
+  // Document Fields (Now storing data URIs)
+  resumeURL: z.string().min(1, "Professional Resume is required"),
+  photoURL: z.string().min(1, "Profile Photo is required"),
   idCardType: z.string().min(1, "ID Card type is required"),
-  idCardURL: z.string().url("Valid ID Card URL is required"),
+  idCardURL: z.string().min(1, "ID Card Document is required"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -79,6 +82,11 @@ export default function ProfileEditPage() {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
+  // File Input Refs
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const idCardInputRef = useRef<HTMLInputElement>(null);
 
   const profileRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -102,6 +110,9 @@ export default function ProfileEditPage() {
   });
 
   const selectedIdType = watch("idCardType");
+  const watchResume = watch("resumeURL");
+  const watchPhoto = watch("photoURL");
+  const watchIdCard = watch("idCardURL");
 
   // Sync form with fetched data
   useEffect(() => {
@@ -165,6 +176,32 @@ export default function ProfileEditPage() {
         toast({ variant: "destructive", title: "Permission Denied", description: "Please allow location access to use this feature." });
       }
     );
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: keyof ProfileFormValues) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (limit to ~800KB for Firestore documents)
+    if (file.size > 800 * 1024) {
+      toast({
+        variant: "destructive",
+        title: "File Too Large",
+        description: "Please upload a file smaller than 800KB for processing.",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setValue(field, base64String, { shouldValidate: true });
+      toast({
+        title: "File Loaded",
+        description: `${file.name} is ready for upload.`,
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const onSubmit = (values: ProfileFormValues) => {
@@ -435,36 +472,75 @@ export default function ProfileEditPage() {
                 <CardContent className="p-8 md:p-12 space-y-10">
                   <div className="space-y-1 pb-6 border-b border-slate-100">
                     <h3 className="text-2xl font-headline font-black italic">Professional Credentials</h3>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Upload your documents in PDF or JPEG format</p>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Upload your documents directly from your device</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Resume Upload */}
                     <div className="space-y-3">
                       <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Professional Resume (PDF/JPEG) *</Label>
-                      <div className="relative">
-                        <FileText className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
-                        <Input 
-                          {...register("resumeURL")}
-                          placeholder="Link to your resume" 
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                      <div 
+                        onClick={() => resumeInputRef.current?.click()}
+                        className={cn(
+                          "h-32 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:bg-slate-50",
+                          watchResume ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"
+                        )}
+                      >
+                        <input 
+                          type="file" 
+                          ref={resumeInputRef} 
+                          className="hidden" 
+                          accept=".pdf,image/jpeg,image/png"
+                          onChange={(e) => handleFileChange(e, "resumeURL")}
                         />
+                        {watchResume ? (
+                          <>
+                            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                            <span className="text-[10px] font-black text-emerald-600 uppercase">File Selected</span>
+                          </>
+                        ) : (
+                          <>
+                            <FileUp className="w-8 h-8 text-slate-300" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase">Click to Browse</span>
+                          </>
+                        )}
                       </div>
                       {errors.resumeURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.resumeURL.message}</p>}
                     </div>
 
+                    {/* Photo Upload */}
                     <div className="space-y-3">
                       <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Profile Photo (JPEG) *</Label>
-                      <div className="relative">
-                        <ImageIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
-                        <Input 
-                          {...register("photoURL")}
-                          placeholder="Link to your profile photo" 
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                      <div 
+                        onClick={() => photoInputRef.current?.click()}
+                        className={cn(
+                          "h-32 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:bg-slate-50",
+                          watchPhoto ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"
+                        )}
+                      >
+                        <input 
+                          type="file" 
+                          ref={photoInputRef} 
+                          className="hidden" 
+                          accept="image/jpeg,image/png"
+                          onChange={(e) => handleFileChange(e, "photoURL")}
                         />
+                        {watchPhoto ? (
+                          <>
+                            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                            <span className="text-[10px] font-black text-emerald-600 uppercase">File Selected</span>
+                          </>
+                        ) : (
+                          <>
+                            <ImageIcon className="w-8 h-8 text-slate-300" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase">Click to Browse</span>
+                          </>
+                        )}
                       </div>
                       {errors.photoURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.photoURL.message}</p>}
                     </div>
 
+                    {/* ID Card Type Selection */}
                     <div className="space-y-3">
                       <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Identity Card Type *</Label>
                       <Select 
@@ -484,15 +560,34 @@ export default function ProfileEditPage() {
                       </Select>
                     </div>
 
+                    {/* ID Card Upload */}
                     <div className="space-y-3">
                       <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">{selectedIdType} Document *</Label>
-                      <div className="relative">
-                        <CreditCard className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
-                        <Input 
-                          {...register("idCardURL")}
-                          placeholder="Link to identity document" 
-                          className="h-16 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary focus:bg-white transition-all text-lg font-medium pl-14 pr-6"
+                      <div 
+                        onClick={() => idCardInputRef.current?.click()}
+                        className={cn(
+                          "h-16 border-2 border-dashed rounded-2xl flex items-center justify-center gap-3 cursor-pointer transition-all hover:bg-slate-50 px-6",
+                          watchIdCard ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"
+                        )}
+                      >
+                        <input 
+                          type="file" 
+                          ref={idCardInputRef} 
+                          className="hidden" 
+                          accept=".pdf,image/jpeg,image/png"
+                          onChange={(e) => handleFileChange(e, "idCardURL")}
                         />
+                        {watchIdCard ? (
+                          <>
+                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                            <span className="text-[10px] font-black text-emerald-600 uppercase">Document Selected</span>
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-5 h-5 text-slate-300" />
+                            <span className="text-[10px] font-black text-slate-400 uppercase">Click to Select ID File</span>
+                          </>
+                        )}
                       </div>
                       {errors.idCardURL && <p className="text-[10px] text-destructive font-black ml-4 uppercase">{errors.idCardURL.message}</p>}
                     </div>
