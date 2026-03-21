@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const auth = useAuth();
 
   useEffect(() => {
-    // Permission Verification Logic
+    // Master Admin Clearance Logic
     if (!isUserLoading && (!user || user.email !== ADMIN_EMAIL)) {
       if (pathname !== "/admin/login") {
         router.push("/admin/login");
@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
-  // Security Wall for Unauthorized Access
+  // Security Barrier for Non-Admin Traffic
   if (!user || user.email !== ADMIN_EMAIL) {
     return (
       <main className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center space-y-8">
@@ -61,14 +61,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         <div className="space-y-2">
           <h1 className="text-4xl font-headline font-black italic text-white">Access Denied</h1>
-          <p className="text-slate-500 font-medium">Your credentials do not have NPB Admin Clearance.</p>
-          <div className="pt-4 p-4 bg-white/5 rounded-xl border border-white/10">
-            <p className="text-[10px] font-black uppercase text-slate-400">Authorized Personnel Only</p>
+          <p className="text-slate-500 font-medium text-lg">Your credentials lack NPB Master Level Clearance.</p>
+          <div className="pt-4 p-6 bg-white/5 rounded-2xl border border-white/10 max-w-sm mx-auto">
+            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Authorized ID Required</p>
             <p className="text-xs text-primary font-bold">{ADMIN_EMAIL}</p>
           </div>
         </div>
         <Link href="/login">
-          <Button variant="outline" className="rounded-full px-8 text-white border-white/10 hover:bg-white/5">Return to Portal</Button>
+          <Button variant="outline" className="rounded-full px-10 h-14 text-white border-white/10 hover:bg-white/5 font-black uppercase tracking-widest text-[10px]">Return to Public Portal</Button>
         </Link>
       </main>
     );
@@ -120,7 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-6 mt-auto border-t border-white/5 space-y-4">
           <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/5">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Verified Session</span>
+            <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Verified Master Session</span>
           </div>
           <Button 
             onClick={handleSignOut}
@@ -136,12 +136,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 ml-72">
         <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-10 sticky top-0 z-40 shadow-sm">
           <div className="flex items-center gap-4">
-            <Menu className="w-5 h-5 text-slate-400 cursor-pointer lg:hidden" />
             <h2 className="font-headline font-black italic text-slate-900 capitalize">{pathname.split('/').pop()}</h2>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Master Admin</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Master Administrator</p>
               <p className="text-xs font-bold text-slate-900">{user?.email}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden">

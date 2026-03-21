@@ -2,12 +2,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/ui/Logo";
-import { ShieldCheck, Loader2, ArrowLeft, Lock } from "lucide-react";
+import { ShieldCheck, Loader2, ArrowLeft, Lock, KeyRound } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -38,9 +37,9 @@ export default function AdminLoginPage() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         if (userCredential.user.email !== ADMIN_EMAIL) {
-          throw new Error("Unauthorized Access: This portal is for NPB Management only.");
+          throw new Error("Unauthorized: Access restricted to Master Administrator.");
         }
-        toast({ title: "Welcome Administrator", description: "NPB Admin Nexus established." });
+        toast({ title: "Nexus Established", description: "Welcome, Master Administrator." });
         router.push("/admin/dashboard");
       })
       .catch((error: any) => {
@@ -61,7 +60,7 @@ export default function AdminLoginPage() {
       
       <div className="w-full max-w-md space-y-8 relative z-10">
         <Link href="/login" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors group">
-          <ArrowLeft className="mr-2 w-4 h-4 transition-transform group-hover:-translate-x-1" /> Standard Login
+          <ArrowLeft className="mr-2 w-4 h-4 transition-transform group-hover:-translate-x-1" /> Standard Portal
         </Link>
 
         <Card className="border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-[3rem] overflow-hidden text-white">
@@ -74,27 +73,31 @@ export default function AdminLoginPage() {
                 <CardTitle className="text-3xl font-headline font-black italic">
                   NPB <span className="text-primary">Admin</span>
                 </CardTitle>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Security Level 04 Access</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Master Level 04 Clearance</p>
               </div>
             </div>
           </CardHeader>
           
           <CardContent className="p-10 pt-6 space-y-8">
-            <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl">
-              <p className="text-[10px] font-bold text-primary leading-relaxed uppercase tracking-wider text-center">
-                Credential Hint: {ADMIN_EMAIL} | Admin@88
-              </p>
+            <div className="p-6 bg-primary/10 border border-primary/20 rounded-3xl space-y-3">
+              <div className="flex items-center gap-2 text-primary font-black uppercase text-[10px] tracking-widest justify-center">
+                <KeyRound className="w-3 h-3" /> System Credentials
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-xs font-bold text-white/90">{ADMIN_EMAIL}</p>
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Password: Admin@88</p>
+              </div>
             </div>
 
             <form onSubmit={handleAdminLogin} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Secure ID</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Administrator ID</Label>
                   <Input 
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Admin Username" 
+                    placeholder="admin@npbmedia.com" 
                     className="h-14 rounded-2xl border-white/10 bg-white/5 focus:border-primary focus:bg-white/10 text-white transition-all font-medium px-6" 
                     required
                   />
@@ -114,7 +117,7 @@ export default function AdminLoginPage() {
               </div>
               
               <Button disabled={isLoading} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-white hover:text-primary transition-all duration-500 shadow-2xl group border-none">
-                 {isLoading ? <Loader2 className="animate-spin" /> : "Establish Connection"} <ShieldCheck className="ml-2 w-5 h-5" />
+                 {isLoading ? <Loader2 className="animate-spin" /> : "Authorize Link"} <ShieldCheck className="ml-2 w-5 h-5" />
               </Button>
             </form>
           </CardContent>
