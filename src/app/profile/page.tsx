@@ -8,7 +8,6 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   User, 
   Mail, 
@@ -29,7 +28,8 @@ import {
   FileText,
   CreditCard,
   Image as ImageIcon,
-  ExternalLink
+  ExternalLink,
+  Eye
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -76,6 +76,42 @@ export default function ProfilePage() {
     );
   }
 
+  // Helper to open documents safely (especially large base64/data URIs)
+  const openDocument = (dataUri: string) => {
+    if (!dataUri) return;
+    
+    try {
+      // Split the data URI to extract mime type and base64 data
+      const parts = dataUri.split(';');
+      if (parts.length < 2) {
+        window.open(dataUri, '_blank');
+        return;
+      }
+      
+      const mimeType = parts[0].split(':')[1];
+      const base64Data = parts[1].split(',')[1];
+      
+      // Convert base64 to binary bytes
+      const binaryString = atob(base64Data);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Create a Blob and Object URL for cleaner browser handling
+      const blob = new Blob([bytes], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      
+      window.open(url, '_blank');
+      // Note: We don't revoke immediately to allow the window to load
+    } catch (error) {
+      console.error("Error processing document view:", error);
+      // Fallback to direct opening if Blob conversion fails
+      window.open(dataUri, '_blank');
+    }
+  };
+
   const memberSince = user.metadata.creationTime 
     ? new Date(user.metadata.creationTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'N/A';
@@ -95,14 +131,23 @@ export default function ProfilePage() {
           <p className="text-muted-foreground text-xl font-medium uppercase tracking-widest text-xs">Personal Profile</p>
         </div>
 
+        {/* Main Profile Info Card */}
         <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[3rem] bg-white overflow-hidden animate-in fade-in slide-in-from-bottom duration-700">
           <CardContent className="p-8 md:p-12">
             <div className="flex flex-col md:flex-row items-center gap-10">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-slate-100 flex items-center justify-center shrink-0 border-4 border-white shadow-xl overflow-hidden relative">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-slate-100 flex items-center justify-center shrink-0 border-4 border-white shadow-xl overflow-hidden relative group">
                 {profileData?.photoURL ? (
                   <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <User className="w-16 h-16 md:w-20 md:h-20 text-slate-300" />
+                )}
+                {profileData?.photoURL && (
+                  <div 
+                    onClick={() => openDocument(profileData.photoURL)}
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+                  >
+                    <Eye className="text-white w-8 h-8" />
+                  </div>
                 )}
               </div>
               
@@ -138,6 +183,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
+        {/* Action Buttons */}
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
           <Link href="/profile/edit" className="block">
             <Button className="w-full h-20 rounded-[2rem] bg-white border-2 border-slate-100 hover:border-primary hover:bg-slate-50 transition-all shadow-xl group justify-between px-10 text-slate-900 overflow-hidden relative">
@@ -267,13 +313,13 @@ export default function ProfilePage() {
             <DialogTitle className="text-3xl font-headline font-black italic">Professional Credentials</DialogTitle>
             <p className="text-white/80 font-medium text-xs uppercase tracking-widest">Verified Work Documents</p>
           </div>
-          <div className="p-10 space-y-6">
+          <div className="p-10 space-y-6 max-h-[60vh] overflow-y-auto">
             {profileData?.resumeURL || profileData?.photoURL || profileData?.idCardURL ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Resume Card */}
                 {profileData?.resumeURL && (
-                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-blue-600 transition-all">
-                    <CardContent className="p-6 space-y-4">
+                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-blue-600 transition-all flex flex-col">
+                    <CardContent className="p-6 space-y-4 flex-1">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                           <FileText className="w-6 h-6" />
@@ -283,33 +329,41 @@ export default function ProfilePage() {
                           <p className="text-lg font-black italic">Resume</p>
                         </div>
                       </div>
-                      <a href={profileData.resumeURL} target="_blank" rel="noopener noreferrer" className="block">
-                        <Button className="w-full rounded-xl bg-white border border-slate-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
-                          View Resume <ExternalLink className="ml-2 w-3 h-3" />
-                        </Button>
-                      </a>
+                      <div className="h-24 bg-white rounded-xl border border-slate-100 flex items-center justify-center opacity-50">
+                        <FileText className="w-10 h-10 text-slate-200" />
+                      </div>
+                      <Button 
+                        onClick={() => openDocument(profileData.resumeURL!)}
+                        className="w-full rounded-xl bg-white border border-slate-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12"
+                      >
+                        View Full Resume <ExternalLink className="ml-2 w-3 h-3" />
+                      </Button>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* Photo Card */}
                 {profileData?.photoURL && (
-                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-orange-500 transition-all">
-                    <CardContent className="p-6 space-y-4">
+                  <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-orange-500 transition-all flex flex-col">
+                    <CardContent className="p-6 space-y-4 flex-1">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
                           <ImageIcon className="w-6 h-6" />
                         </div>
                         <div className="space-y-0.5">
                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Photo</p>
-                          <p className="text-lg font-black italic">Profile Picture</p>
+                          <p className="text-lg font-black italic">Profile Pic</p>
                         </div>
                       </div>
-                      <a href={profileData.photoURL} target="_blank" rel="noopener noreferrer" className="block">
-                        <Button className="w-full rounded-xl bg-white border border-slate-200 hover:bg-orange-500 hover:text-white hover:border-orange-500 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
-                          View Photo <ExternalLink className="ml-2 w-3 h-3" />
-                        </Button>
-                      </a>
+                      <div className="h-24 bg-white rounded-xl border border-slate-100 overflow-hidden relative">
+                        <img src={profileData.photoURL} alt="Preview" className="w-full h-full object-cover opacity-80" />
+                      </div>
+                      <Button 
+                        onClick={() => openDocument(profileData.photoURL!)}
+                        className="w-full rounded-xl bg-white border border-slate-200 hover:bg-orange-500 hover:text-white hover:border-orange-500 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12"
+                      >
+                        View Full Photo <ExternalLink className="ml-2 w-3 h-3" />
+                      </Button>
                     </CardContent>
                   </Card>
                 )}
@@ -318,20 +372,26 @@ export default function ProfilePage() {
                 {profileData?.idCardURL && (
                   <Card className="border-2 border-slate-100 shadow-none rounded-[2rem] overflow-hidden bg-slate-50 group hover:border-emerald-600 transition-all col-span-1 md:col-span-2">
                     <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4 w-full">
                         <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                           <CreditCard className="w-6 h-6" />
                         </div>
-                        <div className="space-y-0.5">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ID Proof</p>
-                          <p className="text-lg font-black italic">{profileData.idCardType || 'Identity Document'}</p>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Identity Proof</p>
+                          <p className="text-lg font-black italic">{profileData.idCardType || 'ID Document'}</p>
                         </div>
+                        {profileData.idCardURL.startsWith('data:image') && (
+                          <div className="w-16 h-12 rounded-lg border border-slate-200 overflow-hidden shrink-0 hidden sm:block">
+                            <img src={profileData.idCardURL} alt="ID Preview" className="w-full h-full object-cover" />
+                          </div>
+                        )}
                       </div>
-                      <a href={profileData.idCardURL} target="_blank" rel="noopener noreferrer" className="shrink-0 w-full md:w-auto">
-                        <Button className="px-8 rounded-xl bg-white border border-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12">
-                          View Identity Proof <ExternalLink className="ml-2 w-3 h-3" />
-                        </Button>
-                      </a>
+                      <Button 
+                        onClick={() => openDocument(profileData.idCardURL!)}
+                        className="px-8 rounded-xl bg-white border border-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 text-slate-900 font-black uppercase tracking-widest text-[10px] h-12 shrink-0 w-full md:w-auto"
+                      >
+                        View Document <ExternalLink className="ml-2 w-3 h-3" />
+                      </Button>
                     </CardContent>
                   </Card>
                 )}
