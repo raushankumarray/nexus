@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, UserPlus, Chrome, Loader2, ShieldAlert } from "lucide-react";
+import { LogIn, UserPlus, Chrome, Loader2 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -129,12 +129,6 @@ export default function LoginPage() {
                     <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-primary hover:bg-primary/5 font-black uppercase tracking-widest text-xs group">
                       <UserPlus className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
                       Create New Account
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/admin/login">
-                    <Button variant="ghost" className="w-full h-12 rounded-2xl border-2 border-dashed border-slate-200 hover:border-primary hover:text-primary font-black uppercase tracking-widest text-[10px] group">
-                      <ShieldAlert className="mr-2 w-4 h-4" /> Internal Admin Portal
                     </Button>
                   </Link>
                 </div>
