@@ -3,67 +3,145 @@
 
 import React from "react";
 import Link from "next/link";
-import { Twitter, Linkedin, Github, ArrowUpRight } from "lucide-react";
+import { 
+  Twitter, 
+  Linkedin, 
+  Github, 
+  ArrowUpRight, 
+  ShieldCheck, 
+  Globe, 
+  Lock,
+  Mail,
+  Phone,
+  MapPin,
+  ChevronRight
+} from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { Button } from "@/components/ui/button";
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-foreground text-white pt-24 pb-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-20">
-          <div className="col-span-1 lg:col-span-2 space-y-8">
-            <Link href="/" className="flex items-center gap-4">
-              <Logo />
+    <footer className="bg-foreground text-white pt-24 pb-12 relative overflow-hidden">
+      {/* Background Accents */}
+      <div className="absolute inset-0 grid-bg opacity-5" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+          {/* Brand Column */}
+          <div className="space-y-8">
+            <Link href="/" className="flex items-center gap-4 group">
+              <Logo className="transition-transform group-hover:scale-110 duration-500" />
               <span className="font-headline font-black text-3xl tracking-tight">
-                <span className="text-[#00008B]">Media</span>
+                <span className="text-white">NPB </span>
+                <span className="text-primary italic">Media</span>
               </span>
             </Link>
-            <p className="text-slate-400 text-lg max-w-md leading-relaxed font-medium">
-              Pioneering the next generation of digital infrastructure. We build high-impact software that powers the world's most innovative companies from Begusarai to the World.
+            <p className="text-slate-400 text-lg leading-relaxed font-medium">
+              Pioneering high-impact digital solutions and software infrastructure from Begusarai to the global stage.
             </p>
             <div className="flex gap-4">
               {[Twitter, Linkedin, Github].map((Icon, idx) => (
-                <Link key={idx} href="#" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary transition-colors duration-300 group">
+                <Link 
+                  key={idx} 
+                  href="#" 
+                  className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300 group"
+                >
                   <Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="space-y-6">
-            <h4 className="font-headline font-black text-xl italic text-primary">Quick Links</h4>
+          {/* Ecosystem Column */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Ecosystem</h4>
             <ul className="space-y-4">
               {["Services", "Technology", "Products", "Career"].map((item) => (
                 <li key={item}>
-                  <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 group font-black uppercase text-xs tracking-widest">
-                    {item} <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="space-y-6">
-            <h4 className="font-headline font-black text-xl italic text-primary">Support</h4>
-            <ul className="space-y-4">
-              {["About", "Contact", "Career"].map((item) => (
-                <li key={item}>
-                  <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-slate-400 hover:text-white transition-colors font-black uppercase text-xs tracking-widest">
+                  <Link 
+                    href={`/${item.toLowerCase().replace(" ", "-")}`} 
+                    className="text-slate-400 hover:text-white transition-all flex items-center gap-2 group font-black uppercase text-xs tracking-widest"
+                  >
+                    <ChevronRight className="w-3 h-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                     {item}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/* Company Column */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Company</h4>
+            <ul className="space-y-4">
+              {["About", "Contact", "Schedule Meeting", "Privacy Policy"].map((item) => (
+                <li key={item}>
+                  <Link 
+                    href={item === "Schedule Meeting" ? "/contact/schedule-meeting" : `/${item.toLowerCase().replace(" ", "-")}`} 
+                    className="text-slate-400 hover:text-white transition-all flex items-center gap-2 group font-black uppercase text-xs tracking-widest"
+                  >
+                    <ChevronRight className="w-3 h-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect Column */}
+          <div className="space-y-8">
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Connect</h4>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary shrink-0 border border-white/10">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase text-slate-500">Email Inquiry</p>
+                  <p className="text-sm font-bold">helpdesk.npbmedia@gmail.com</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary shrink-0 border border-white/10">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black uppercase text-slate-500">Support Call</p>
+                  <p className="text-sm font-bold">+91 8877300114</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
-            © {new Date().getFullYear()} NPB Media. All rights reserved.
-          </p>
-          <div className="flex gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
-            <span>Made in India</span>
-            <span>Security Certified</span>
+        {/* Bottom Bar */}
+        <div className="pt-12 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <p className="text-slate-500 text-xs font-black uppercase tracking-widest">
+              © {currentYear} NPB Media. All rights reserved.
+            </p>
+            <div className="flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+              <span className="flex items-center gap-2"><Globe className="w-3 h-3" /> Made in India</span>
+              <span className="flex items-center gap-2"><ShieldCheck className="w-3 h-3" /> Security Certified</span>
+            </div>
+          </div>
+
+          {/* Admin Login Button */}
+          <div className="flex items-center gap-4">
+            <Link href="/admin/login">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="rounded-full bg-white/5 border-white/10 text-white hover:bg-primary hover:text-white hover:border-primary transition-all font-black uppercase tracking-widest text-[10px] h-10 px-6 group"
+              >
+                <Lock className="w-3 h-3 mr-2 group-hover:rotate-12 transition-transform" />
+                Admin Portal
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
