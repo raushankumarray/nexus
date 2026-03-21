@@ -13,13 +13,14 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserPlus, ShieldCheck, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { UserPlus, ShieldCheck, Sparkles, ArrowLeft, Loader2, Check, Circle, X } from "lucide-react";
 import { useAuth, useFirestore, useUser } from "@/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, serverTimestamp } from "firebase/firestore";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const signupSchema = z.object({
   fullName: z.string().min(2, "Name is required"),
@@ -44,9 +45,21 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<SignupValues>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
+    mode: "onChange"
   });
+
+  const passwordValue = watch("password", "");
+
+  // Password requirement checks
+  const requirements = [
+    { label: "Minimum 6 characters", met: passwordValue.length >= 6 },
+    { label: "At least one uppercase letter (A-Z)", met: /[A-Z]/.test(passwordValue) },
+    { label: "At least one lowercase letter (a-z)", met: /[a-z]/.test(passwordValue) },
+    { label: "At least one number (0-9)", met: /[0-9]/.test(passwordValue) },
+    { label: "Special character (@$!%*?&)", met: /[@$!%*?&]/.test(passwordValue) },
+  ];
 
   // Redirect on successful auth
   useEffect(() => {
@@ -137,10 +150,38 @@ export default function SignupPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Create Password</Label>
-                  <Input {...register("password")} type="password" placeholder="Min 6 chars (A, a, 1, @)" className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" />
-                  {errors.password && <p className="text-[10px] text-destructive font-black ml-2">{errors.password.message}</p>}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-2">Enter Password</Label>
+                    <Input 
+                      {...register("password")} 
+                      type="password" 
+                      placeholder="Enter Secure Password" 
+                      className="h-14 rounded-2xl border-2 border-slate-100 bg-slate-50 focus:border-primary px-6" 
+                    />
+                  </div>
+
+                  {/* Password Validation Requirements */}
+                  <div className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Password Requirements:</p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {requirements.map((req, i) => (
+                        <div key={i} className="flex items-center gap-2 transition-all">
+                          {req.met ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          ) : (
+                            <Circle className="w-3.5 h-3.5 text-slate-300" />
+                          )}
+                          <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-wider",
+                            req.met ? "text-emerald-600" : "text-slate-400"
+                          )}>
+                            {req.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 
                 <Button disabled={isLoading} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-xl group relative border-none">
