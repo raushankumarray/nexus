@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -10,9 +11,9 @@
         "fullName": { "type": "string" },
         "fathersName": { "type": "string" },
         "mobile": { "type": "string" },
-        "alternateMobile": { "type": "string", "description": "Secondary contact number." },
+        "alternateMobile": { "type": "string" },
         "dob": { "type": "string" },
-        "photoURL": { "type": "string", "description": "Base64 or URL for the profile picture." },
+        "photoURL": { "type": "string" },
         "fullAddress": { "type": "string" },
         "block": { "type": "string" },
         "district": { "type": "string" },
@@ -33,9 +34,9 @@
             }
           }
         },
-        "resumeURL": { "type": "string", "description": "Base64 string of the user's PDF resume." },
-        "idCardType": { "type": "string", "enum": ["Aadhar", "Pan", "Voter", "Driving"] },
-        "idCardURL": { "type": "string", "description": "Base64 string of the user's ID card." },
+        "resumeURL": { "type": "string" },
+        "idCardType": { "type": "string" },
+        "idCardURL": { "type": "string" },
         "socialLinks": {
           "type": "object",
           "properties": {
@@ -48,21 +49,7 @@
         "provider": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "email", "fullName", "createdAt"]
-    },
-    "Service": {
-      "title": "Service",
-      "type": "object",
-      "description": "Product/Service details managed by admins.",
-      "properties": {
-        "id": { "type": "string" },
-        "title": { "type": "string" },
-        "description": { "type": "string" },
-        "category": { "type": "string" },
-        "price": { "type": "number" },
-        "isActive": { "type": "boolean" }
-      },
-      "required": ["id", "title", "description", "isActive"]
+      "required": ["id", "email", "fullName"]
     },
     "CareerOpportunity": {
       "title": "CareerOpportunity",
@@ -73,42 +60,59 @@
         "title": { "type": "string" },
         "category": { "type": "string" },
         "type": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "closed"] }
+        "experience": { "type": "string" },
+        "technologies": { "type": "string" },
+        "qualification": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "closed"] },
+        "closeDate": { "type": "string" }
       },
       "required": ["id", "title", "status"]
     },
-    "Inquiry": {
-      "title": "Inquiry",
+    "JobApplication": {
+      "title": "JobApplication",
       "type": "object",
-      "description": "Contact form submissions.",
+      "description": "User applications for career roles.",
       "properties": {
         "id": { "type": "string" },
-        "name": { "type": "string" },
-        "email": { "type": "string" },
-        "message": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" }
+        "userId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "jobTitle": { "type": "string" },
+        "experience": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "review", "screening", "shortlisted", "test_scheduled", "interview", "document_verification", "onboarding", "rejected"] },
+        "applicantSnapshot": { "type": "object" },
+        "hiringContext": {
+          "type": "object",
+          "properties": {
+            "examLink": { "type": "string" },
+            "examDate": { "type": "string" },
+            "interviewLink": { "type": "string" },
+            "interviewDate": { "type": "string" },
+            "verificationFormLink": { "type": "string" },
+            "deadline": { "type": "string" },
+            "rejectionReason": { "type": "string" }
+          }
+        },
+        "appliedAt": { "type": "string", "format": "date-time" }
       }
     }
   },
   "auth": {
-    "providers": ["password", "google.com", "anonymous"]
+    "providers": ["password", "google.com"]
   },
   "firestore": {
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
       "description": "Private user profiles."
     },
-    "/services/{serviceId}": {
-      "schema": { "$ref": "#/entities/Service" },
-      "description": "Public services/products."
-    },
     "/careers/{careerId}": {
       "schema": { "$ref": "#/entities/CareerOpportunity" },
-      "description": "Public career listings."
+      "description": "Job listings."
     },
-    "/inquiries/{inquiryId}": {
-      "schema": { "$ref": "#/entities/Inquiry" },
-      "description": "Private contact submissions."
+    "/jobApplications/{applicationId}": {
+      "schema": { "$ref": "#/entities/JobApplication" },
+      "description": "Candidate applications."
     }
   }
 }
