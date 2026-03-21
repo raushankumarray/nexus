@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
@@ -18,14 +18,27 @@ import {
   Edit3, 
   Briefcase, 
   ShoppingBag,
-  ArrowRight
+  ArrowRight,
+  MapPin,
+  Home,
+  Building2,
+  Navigation,
+  Globe,
+  Hash
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
+  const [isAddressOpen, setIsAddressOpen] = useState(false);
 
   const profileRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -128,6 +141,16 @@ export default function ProfilePage() {
             </Button>
           </Link>
 
+          <Button 
+            onClick={() => setIsAddressOpen(true)}
+            className="w-full h-20 rounded-[2rem] bg-white border-2 border-slate-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-xl group justify-between px-10 text-slate-900 overflow-hidden relative"
+          >
+            <span className="flex items-center gap-4 text-xl font-headline font-black italic">
+              <MapPin className="w-6 h-6 text-emerald-500" /> Saved Address
+            </span>
+            <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-2 transition-all" />
+          </Button>
+
           <Link href="/career/opportunities" className="block">
             <Button className="w-full h-20 rounded-[2rem] bg-white border-2 border-slate-100 hover:border-secondary hover:bg-slate-50 transition-all shadow-xl group justify-between px-10 text-slate-900 overflow-hidden relative">
               <span className="flex items-center gap-4 text-xl font-headline font-black italic">
@@ -147,6 +170,78 @@ export default function ProfilePage() {
           </Link>
         </div>
       </div>
+
+      {/* Address Dialog */}
+      <Dialog open={isAddressOpen} onOpenChange={setIsAddressOpen}>
+        <DialogContent className="max-w-2xl rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="vibrant-gradient p-10 text-white space-y-2">
+            <DialogTitle className="text-3xl font-headline font-black italic">Saved Address</DialogTitle>
+            <p className="text-white/80 font-medium text-xs uppercase tracking-widest">Primary Residence Details</p>
+          </div>
+          <div className="p-10 space-y-8">
+            {profileData?.fullAddress ? (
+              <Card className="border-2 border-slate-100 shadow-none rounded-[2.5rem] overflow-hidden bg-slate-50">
+                <CardContent className="p-8 space-y-8">
+                  <div className="flex items-start gap-6">
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center shrink-0">
+                      <Home className="w-7 h-7 text-emerald-600" />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Postal Address</p>
+                      <p className="text-lg font-bold text-slate-800 leading-relaxed">{profileData.fullAddress}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate-200/60">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                        <Building2 className="w-3 h-3" /> Block / Area
+                      </div>
+                      <p className="text-base font-bold text-slate-700">{profileData.block || 'Not Set'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                        <Navigation className="w-3 h-3" /> District
+                      </div>
+                      <p className="text-base font-bold text-slate-700">{profileData.district || 'Not Set'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                        <Globe className="w-3 h-3" /> State & Country
+                      </div>
+                      <p className="text-base font-bold text-slate-700">{profileData.state}, {profileData.country}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                        <Hash className="w-3 h-3" /> Pincode
+                      </div>
+                      <p className="text-base font-bold text-slate-700">{profileData.pincode || 'Not Set'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="text-center py-16 space-y-6">
+                <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto">
+                  <MapPin className="w-12 h-12 text-slate-200" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-headline font-black italic">No Address Found</h3>
+                  <p className="text-muted-foreground font-medium max-w-xs mx-auto">You haven't saved a residential address to your profile yet.</p>
+                </div>
+                <Link href="/profile/edit" className="inline-block">
+                  <Button className="rounded-full px-8 bg-primary text-white font-black uppercase tracking-widest text-xs h-12">
+                    Update Profile Now
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+          <div className="p-8 bg-slate-50 border-t flex justify-center">
+            <Button variant="ghost" onClick={() => setIsAddressOpen(false)} className="rounded-full font-black uppercase tracking-widest text-[10px]">Close Viewer</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </main>
