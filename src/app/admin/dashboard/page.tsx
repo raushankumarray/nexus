@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   Globe,
   Loader2,
-  Lock
+  Lock,
+  ShieldAlert
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";

@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 
+const ADMIN_EMAIL = "adminr@npbmedia.com";
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +26,7 @@ export default function AdminLoginPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user && user.email === "adminr@npbmedia.com") {
+    if (user && user.email === ADMIN_EMAIL) {
       router.push("/admin/dashboard");
     }
   }, [user, router]);
@@ -35,7 +37,7 @@ export default function AdminLoginPage() {
     
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        if (userCredential.user.email !== "adminr@npbmedia.com") {
+        if (userCredential.user.email !== ADMIN_EMAIL) {
           throw new Error("Unauthorized Access: This portal is for NPB Management only.");
         }
         toast({ title: "Welcome Administrator", description: "NPB Admin Nexus established." });
@@ -80,7 +82,7 @@ export default function AdminLoginPage() {
           <CardContent className="p-10 pt-6 space-y-8">
             <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl">
               <p className="text-[10px] font-bold text-primary leading-relaxed uppercase tracking-wider text-center">
-                Credential Hint: adminr@npbmedia.com | Admin@88
+                Credential Hint: {ADMIN_EMAIL} | Admin@88
               </p>
             </div>
 

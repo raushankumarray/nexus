@@ -64,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <p className="text-slate-500 font-medium">Your credentials do not have NPB Admin Clearance.</p>
           <div className="pt-4 p-4 bg-white/5 rounded-xl border border-white/10">
             <p className="text-[10px] font-black uppercase text-slate-400">Authorized Personnel Only</p>
-            <p className="text-xs text-primary font-bold">raushankumarray96@gmail.com | adminr@npbmedia.com</p>
+            <p className="text-xs text-primary font-bold">{ADMIN_EMAIL}</p>
           </div>
         </div>
         <Link href="/login">
@@ -142,7 +142,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-6">
             <div className="text-right hidden sm:block">
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Master Admin</p>
-              <p className="text-xs font-bold text-slate-900">{user.email}</p>
+              <p className="text-xs font-bold text-slate-900">{user?.email}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden">
               <ShieldCheck className="w-5 h-5 text-primary" />
