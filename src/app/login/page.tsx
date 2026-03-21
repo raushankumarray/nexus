@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -10,9 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, UserPlus, Chrome, Loader2 } from "lucide-react";
+import { LogIn, UserPlus, Loader2 } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -40,18 +39,6 @@ export default function LoginPage() {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: error.message,
-        });
-      });
-  };
-
-  const handleGoogleLogin = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .catch((error: any) => {
-        toast({
-          variant: "destructive",
-          title: "Google Login Failed",
           description: error.message,
         });
       });
@@ -115,15 +102,6 @@ export default function LoginPage() {
               </form>
               
               <div className="text-center space-y-4">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-100" /></div>
-                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-4 text-muted-foreground font-black tracking-widest">Or</span></div>
-                </div>
-
-                <Button onClick={handleGoogleLogin} variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:bg-slate-50 font-black uppercase tracking-widest text-xs">
-                  <Chrome className="mr-2 w-4 h-4 text-primary" /> Login with Google
-                </Button>
-
                 <div className="grid grid-cols-1 gap-3 pt-2">
                   <Link href="/signup">
                     <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-primary hover:bg-primary/5 font-black uppercase tracking-widest text-xs group">
