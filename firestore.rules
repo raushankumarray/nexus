@@ -27,7 +27,10 @@ service cloud.firestore {
     }
     
     match /jobApplications/{applicationId} {
+      // Prioritize Admin access for global listing and management
       allow read, list, write: if isAdmin();
+      
+      // User access for their own applications
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow read, list: if isSignedIn() && (resource.data.userId == request.auth.uid);
     }
@@ -43,7 +46,7 @@ service cloud.firestore {
     }
 
     match /carts/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, write: if isOwner(userId) || isAdmin();
     }
   }
 }

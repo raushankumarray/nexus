@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,43 +15,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
   User, 
   Mail, 
   Phone, 
   Calendar, 
   ShieldCheck, 
-  ArrowLeft,
   Loader2,
   MapPin,
   GraduationCap,
   FileText,
   Briefcase,
-  ShoppingBag,
-  Plus,
-  Camera,
-  Save,
   Navigation,
   Trash2,
-  Upload,
-  Eye,
-  IdCard,
-  Facebook,
-  Github,
-  Linkedin,
-  ExternalLink,
   History,
   AlertCircle,
   CheckCircle2,
   Video,
   ClipboardList,
-  FileCheck
+  FileCheck,
+  Share2,
+  ArrowUpRight
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -71,9 +54,7 @@ export default function ProfilePage() {
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
-  const profilePhotoRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
-  const idCardInputRef = useRef<HTMLInputElement>(null);
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -89,9 +70,8 @@ export default function ProfilePage() {
   }, [db, user]);
   const { data: userApplications, isLoading: isAppsLoading } = useCollection(applicationsQuery);
 
-  // Form States...
+  // Form States
   const [formData, setFormData] = useState({ fullName: "", fathersName: "", mobile: "", dob: "", photoURL: "" });
-  const [contactData, setContactData] = useState({ alternateMobile: "" });
   const [addressData, setAddressData] = useState({ fullAddress: "", block: "", district: "", state: "", pincode: "", country: "" });
   const [educationData, setEducationData] = useState<EducationItem[]>([{ qualification: "", institution: "", passingYear: "", university: "", subject: "", percentage: "" }]);
   const [docData, setDocData] = useState({ resumeURL: "", idCardType: "", idCardURL: "" });
@@ -112,7 +92,6 @@ export default function ProfilePage() {
         dob: profileData.dob || "",
         photoURL: profileData.photoURL || user?.photoURL || ""
       });
-      setContactData({ alternateMobile: profileData.alternateMobile || "" });
       setAddressData({
         fullAddress: profileData.fullAddress || "",
         block: profileData.block || "",
@@ -141,7 +120,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-10 h-10 animate-spin text-primary" />
-          <p className="font-headline font-black uppercase tracking-widest text-xs text-primary">Synchronizing Profile...</p>
+          <p className="font-headline font-black uppercase tracking-widest text-xs text-primary">Synchronizing Media Profile...</p>
         </div>
       </div>
     );
@@ -152,11 +131,6 @@ export default function ProfilePage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleContactInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setContactData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,15 +153,6 @@ export default function ProfilePage() {
   const removeEducationRow = (index: number) => {
     if (educationData.length === 1) return;
     setEducationData(educationData.filter((_, i) => i !== index));
-  };
-
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setFormData(prev => ({ ...prev, photoURL: reader.result as string }));
-      reader.readAsDataURL(file);
-    }
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'resume' | 'idCard') => {
@@ -282,7 +247,7 @@ export default function ProfilePage() {
       <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
         <div className="absolute inset-0 grid-bg opacity-10" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <h1 className="text-5xl md:text-7xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">Profile</h1>
+          <h1 className="text-5xl md:text-7xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">Media <span className="italic text-yellow-300">Profile</span></h1>
         </div>
       </section>
 
@@ -298,7 +263,7 @@ export default function ProfilePage() {
                       <AvatarFallback className="bg-primary text-white text-4xl font-black">{getInitials(formData.fullName)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="text-2xl font-headline font-black italic">{formData.fullName || "NPB User"}</h3>
+                      <h3 className="text-2xl font-headline font-black italic">{formData.fullName || "Media User"}</h3>
                       <p className="text-muted-foreground font-medium text-sm">{user.email}</p>
                     </div>
                   </CardContent>
@@ -337,7 +302,7 @@ export default function ProfilePage() {
                         <Input name="dob" value={formData.dob} onChange={handleInputChange} type="date" className="h-16 rounded-2xl border-2 bg-slate-50" />
                       </div>
                     </div>
-                    <Button onClick={handleUpdateProfile} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white">Update Profile</Button>
+                    <Button onClick={handleUpdateProfile} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all border-none">Update Profile</Button>
                   </Card>
                 </TabsContent>
 
@@ -357,7 +322,7 @@ export default function ProfilePage() {
                       <Input name="district" value={addressData.district} onChange={handleAddressInputChange} placeholder="District" className="h-16 rounded-2xl border-2 bg-slate-50" />
                       <Input name="state" value={addressData.state} onChange={handleAddressInputChange} placeholder="State" className="h-16 rounded-2xl border-2 bg-slate-50" />
                     </div>
-                    <Button onClick={handleUpdateAddress} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white">Update Address</Button>
+                    <Button onClick={handleUpdateAddress} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all border-none">Update Address</Button>
                   </Card>
                 </TabsContent>
 
@@ -377,7 +342,7 @@ export default function ProfilePage() {
                         {educationData.length > 1 && <Button variant="ghost" size="icon" onClick={() => removeEducationRow(idx)} className="absolute top-2 right-2 text-destructive"><Trash2 className="w-4 h-4" /></Button>}
                       </div>
                     ))}
-                    <Button onClick={handleUpdateEducation} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white">Update Education</Button>
+                    <Button onClick={handleUpdateEducation} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all border-none">Update Education</Button>
                   </Card>
                 </TabsContent>
 
@@ -392,10 +357,10 @@ export default function ProfilePage() {
                           <p className="text-xs text-muted-foreground">{docData.resumeURL ? "File Attached" : "Not Uploaded"}</p>
                         </div>
                       </div>
-                      <Button onClick={() => resumeInputRef.current?.click()} className="rounded-full bg-primary text-white">{docData.resumeURL ? "Replace" : "Upload"}</Button>
+                      <Button onClick={() => resumeInputRef.current?.click()} className="rounded-full bg-primary text-white hover:bg-foreground transition-all border-none">{docData.resumeURL ? "Replace" : "Upload"}</Button>
                       <input type="file" ref={resumeInputRef} onChange={(e) => handleDocumentUpload(e, 'resume')} className="hidden" accept=".pdf" />
                     </div>
-                    <Button onClick={handleUpdateDocuments} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white">Update Vault</Button>
+                    <Button onClick={handleUpdateDocuments} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all border-none">Update Vault</Button>
                   </Card>
                 </TabsContent>
 
@@ -406,7 +371,7 @@ export default function ProfilePage() {
                       <Input name="linkedin" value={socialData.linkedin} onChange={handleSocialInputChange} placeholder="LinkedIn URL" className="h-14 rounded-xl border-2 bg-slate-50" />
                       <Input name="github" value={socialData.github} onChange={handleSocialInputChange} placeholder="GitHub URL" className="h-14 rounded-xl border-2 bg-slate-50" />
                     </div>
-                    <Button onClick={handleUpdateSocial} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white">Save Socials</Button>
+                    <Button onClick={handleUpdateSocial} disabled={isUpdating} className="w-full h-16 rounded-2xl text-xl font-headline bg-primary text-white hover:bg-foreground transition-all border-none">Save Socials</Button>
                   </Card>
                 </TabsContent>
 
