@@ -3,45 +3,48 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     /**
-     * Firebase Permission System
-     * Standardized security rules for public user ecosystem.
+     * Firebase Permission System - Decommissioned Admin Edition
+     * Strictly enforces user ownership. No administrative overrides allowed.
      */
 
-    // Basic check: Is the user logged in?
     function isSignedIn() {
       return request.auth != null;
     }
     
-    // Ownership check: Is this the user's own data?
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // PUBLIC ACCESS RULES
+    // USER PROFILES: Only the owner can manage their own data.
     match /users/{userId} {
       allow read, write: if isOwner(userId);
     }
     
+    // CAREERS: Publicly readable, write access is completely disabled.
     match /careers/{careerId} {
       allow read: if true;
-      allow write: if false; // Admin functionality decommissioned
+      allow write: if false; 
     }
     
+    // JOB APPLICATIONS: Users can only see/manage their own applications.
     match /jobApplications/{applicationId} {
       allow create: if isSignedIn();
       allow read, list, write: if (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
+    // INQUIRIES: Visitors can submit, but no one can read them via the client.
     match /inquiries/{inquiryId} {
       allow create: if true;
-      allow read, list, write: if false; // Admin functionality decommissioned
+      allow read, list, write: if false;
     }
 
+    // MEETINGS: Visitors can request, but no one can read them via the client.
     match /meetings/{meetingId} {
       allow create: if true;
-      allow read, list, write: if false; // Admin functionality decommissioned
+      allow read, list, write: if false;
     }
 
+    // CARTS: Strictly private shopping experience.
     match /carts/{userId} {
       allow read, write: if isOwner(userId);
     }
