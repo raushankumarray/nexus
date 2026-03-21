@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
+import { CookieConsent } from "@/components/ui/CookieConsent";
 
 export const metadata: Metadata = {
   title: 'NPB Media | Modern Software Solutions',
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className="font-body antialiased min-h-screen">
         <FirebaseClientProvider>
           {children}
+          <CookieConsent />
           <Toaster />
         </FirebaseClientProvider>
       </body>

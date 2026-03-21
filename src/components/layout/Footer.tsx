@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -128,20 +127,6 @@ export function Footer() {
               <span className="flex items-center gap-2"><Globe className="w-3 h-3" /> Made in India</span>
               <span className="flex items-center gap-2"><ShieldCheck className="w-3 h-3" /> Security Certified</span>
             </div>
-          </div>
-
-          {/* Admin Login Button */}
-          <div className="flex items-center gap-4">
-            <Link href="/admin/login">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="rounded-full bg-white/5 border-white/10 text-white hover:bg-primary hover:text-white hover:border-primary transition-all font-black uppercase tracking-widest text-[10px] h-10 px-6 group"
-              >
-                <Lock className="w-3 h-3 mr-2 group-hover:rotate-12 transition-transform" />
-                Admin Portal
-              </Button>
-            </Link>
           </div>
         </div>
       </div>
