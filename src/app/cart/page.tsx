@@ -53,7 +53,7 @@ export default function CartPage() {
         </div>
         <div className="space-y-2">
           <h1 className="text-4xl font-headline font-black italic">Sign In Required</h1>
-          <p className="text-muted-foreground font-medium max-w-sm mx-auto">Please log in to your account to view your Nexus Cart and manage your selections.</p>
+          <p className="text-muted-foreground font-medium max-w-sm mx-auto">Please log in to your account to view your Media Cart and manage your selections.</p>
         </div>
         <Link href="/login">
           <Button size="lg" className="rounded-full px-12 h-16 text-lg font-headline bg-primary text-white shadow-xl shadow-primary/20">
@@ -91,29 +91,7 @@ export default function CartPage() {
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <Navbar />
 
-      <section className="relative pt-32 pb-20 overflow-hidden vibrant-gradient text-white">
-        <div className="absolute inset-0 grid-bg opacity-10" />
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-6 group font-black uppercase text-[10px] tracking-widest">
-            <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            Back to Hub
-          </Link>
-          <div className="max-w-3xl space-y-4 animate-in fade-in slide-in-from-bottom duration-1000">
-            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/20 border-2 border-white/30 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
-              <ShoppingBag className="w-5 h-5 text-yellow-300" />
-              Nexus Cart
-            </div>
-            <h1 className="text-6xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Checkout <span className="italic text-yellow-300">Hub</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
-              Review your enterprise selections and finalize your digital acquisition.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 bg-background relative z-10">
+      <section className="pt-32 pb-24 bg-background relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           {items.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">

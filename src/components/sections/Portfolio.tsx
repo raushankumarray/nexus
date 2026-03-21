@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -15,7 +16,7 @@ export function Portfolio() {
   const projects = useMemo(() => [
     {
       id: 1,
-      title: "NexPay Fintech Solution",
+      title: "MediaPay Fintech Solution",
       category: "Fintech",
       image: PlaceHolderImages?.find(p => p.id === "portfolio-fintech"),
       tags: ["Mobile App", "Security", "Real-time"],

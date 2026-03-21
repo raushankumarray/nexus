@@ -254,7 +254,7 @@ export default function OpportunitiesPage() {
               Back to Careers
             </Link>
             <h1 className="text-5xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Career <span className="italic text-yellow-300">Nexus</span>
+              Career <span className="italic text-yellow-300">Media</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
               Your professional journey starts here. Explore live opportunities and track your growth within the NPB ecosystem.

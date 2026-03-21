@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
         
         <div className="w-full max-w-md space-y-6">
           <Link href="/login" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors group">
-            <ArrowLeft className="mr-2 w-4 h-4 transition-transform group-hover:-translate-x-1" /> Back to Nexus Login
+            <ArrowLeft className="mr-2 w-4 h-4 transition-transform group-hover:-translate-x-1" /> Back to Media Login
           </Link>
 
           <Card className="border-none shadow-2xl rounded-[3rem] bg-slate-800 text-white overflow-hidden animate-in fade-in zoom-in duration-700">

@@ -18,7 +18,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const UPTIME_PROJECTS = [
-  { name: "NexPay Gateway", uptime: "99.99%", status: "online" },
+  { name: "MediaPay Gateway", uptime: "99.99%", status: "online" },
   { name: "OmniSight AI", uptime: "99.95%", status: "online" },
   { name: "CloudScale ERP", uptime: "100%", status: "online" },
   { name: "SafeSync Vault", uptime: "99.98%", status: "maintenance" },

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -34,7 +35,7 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Email us at</p>
-                  <p className="text-xl font-bold">hello@npbnexus.io</p>
+                  <p className="text-xl font-bold">hello@npbmedia.com</p>
                 </div>
               </div>
 
