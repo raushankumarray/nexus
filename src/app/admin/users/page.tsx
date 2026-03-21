@@ -40,21 +40,22 @@ export default function UserDataPage() {
   const { user: authUser, isUserLoading } = useUser();
   const db = useFirestore();
 
+  const isAdmin = authUser && ADMIN_EMAILS.includes(authUser.email || "");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  const usersQuery = useMemoFirebase(() => db ? collection(db, "users") : null, [db]);
+  // Guard query with isAdmin check to prevent permission errors on load
+  const usersQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "users") : null, [db, isAdmin]);
   const { data: users, isLoading } = useCollection(usersQuery);
-
-  const isAdmin = authUser && ADMIN_EMAILS.includes(authUser.email || "");
 
   const filteredUsers = users?.filter(u => 
     u.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
     u.email?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || (isAdmin && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -141,7 +142,7 @@ export default function UserDataPage() {
           ))}
         </div>
 
-        {filteredUsers.length === 0 && (
+        {filteredUsers.length === 0 && !isLoading && (
           <div className="text-center py-32 space-y-6 bg-white rounded-[3rem] shadow-inner border-2 border-dashed border-slate-200">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto">
               <Users className="w-10 h-10 text-slate-200" />

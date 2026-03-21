@@ -43,15 +43,16 @@ export default function MeetingManagementPage() {
   const db = useFirestore();
   const { toast } = useToast();
 
+  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
+
   const [selectedMeeting, setSelectedMeeting] = useState<any>(null);
   const [meetLink, setMeetLink] = useState("");
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const meetingsQuery = useMemoFirebase(() => db ? collection(db, "meetings") : null, [db]);
+  // Guard query with isAdmin check to prevent permission errors on load
+  const meetingsQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "meetings") : null, [db, isAdmin]);
   const { data: meetings, isLoading } = useCollection(meetingsQuery);
-
-  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
 
   const handleUpdateLink = () => {
     if (!selectedMeeting || !meetLink.trim()) return;
@@ -73,7 +74,7 @@ export default function MeetingManagementPage() {
     setIsDeleteDialogOpen(false);
   };
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || (isAdmin && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />

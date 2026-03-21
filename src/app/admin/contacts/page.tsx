@@ -40,13 +40,14 @@ export default function ContactManagementPage() {
   const db = useFirestore();
   const { toast } = useToast();
 
+  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
+
   const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const inquiriesQuery = useMemoFirebase(() => db ? collection(db, "inquiries") : null, [db]);
+  // Guard query with isAdmin check to prevent permission errors on load
+  const inquiriesQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "inquiries") : null, [db, isAdmin]);
   const { data: inquiries, isLoading } = useCollection(inquiriesQuery);
-
-  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
 
   const handleDelete = () => {
     if (!selectedInquiry) return;
@@ -55,7 +56,7 @@ export default function ContactManagementPage() {
     setIsDeleteDialogOpen(false);
   };
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || (isAdmin && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />

@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const ADMIN_EMAILS = ["raushankumarray96@gmail.com", "admin@npbmedia.com"];
 
@@ -28,11 +29,13 @@ export default function AdminDashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
 
-  // Fetch counts for dashboard stats
-  const usersQuery = useMemoFirebase(() => db ? collection(db, "users") : null, [db]);
-  const inquiriesQuery = useMemoFirebase(() => db ? collection(db, "inquiries") : null, [db]);
-  const meetingsQuery = useMemoFirebase(() => db ? collection(db, "meetings") : null, [db]);
-  const careersQuery = useMemoFirebase(() => db ? collection(db, "careers") : null, [db]);
+  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
+
+  // Guard queries with isAdmin check to prevent permission errors on load
+  const usersQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "users") : null, [db, isAdmin]);
+  const inquiriesQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "inquiries") : null, [db, isAdmin]);
+  const meetingsQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "meetings") : null, [db, isAdmin]);
+  const careersQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "careers") : null, [db, isAdmin]);
 
   const { data: users } = useCollection(usersQuery);
   const { data: inquiries } = useCollection(inquiriesQuery);
@@ -46,8 +49,6 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
-  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
 
   if (!isAdmin) {
     return (

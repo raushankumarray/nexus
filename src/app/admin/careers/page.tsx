@@ -44,6 +44,8 @@ export default function CareerManagementPage() {
   const db = useFirestore();
   const { toast } = useToast();
 
+  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
+
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -59,10 +61,9 @@ export default function CareerManagementPage() {
     status: "active" as const
   });
 
-  const careersQuery = useMemoFirebase(() => db ? collection(db, "careers") : null, [db]);
+  // Guard query with isAdmin check to prevent permission errors on load
+  const careersQuery = useMemoFirebase(() => (db && isAdmin) ? collection(db, "careers") : null, [db, isAdmin]);
   const { data: careers, isLoading } = useCollection(careersQuery);
-
-  const isAdmin = user && ADMIN_EMAILS.includes(user.email || "");
 
   const handlePostJob = () => {
     if (!newJob.title || !newJob.description) {
@@ -89,7 +90,7 @@ export default function CareerManagementPage() {
     setIsDeleteDialogOpen(false);
   };
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || (isAdmin && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
