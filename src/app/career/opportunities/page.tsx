@@ -19,7 +19,6 @@ import {
   Loader2,
   History,
   GraduationCap,
-  Cpu,
   User,
   ShieldCheck,
   Calendar,
@@ -29,7 +28,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useFirestore, useCollection, useUser, useMemoFirebase, useDoc } from "@/firebase";
-import { collection, query, where, doc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, doc } from "firebase/firestore";
 import { 
   Dialog,
   DialogContent,
@@ -94,25 +93,6 @@ export default function OpportunitiesPage() {
       return;
     }
 
-    // Profile Completion Check
-    const isProfileComplete = 
-      userProfile?.fullName && 
-      userProfile?.fathersName && 
-      userProfile?.dob && 
-      userProfile?.mobile && 
-      userProfile?.resumeURL && 
-      userProfile?.fullAddress;
-
-    if (!isProfileComplete) {
-      toast({ 
-        variant: "destructive", 
-        title: "Profile Incomplete", 
-        description: "Please complete your professional profile (Personal, Address, and Documents) before applying." 
-      });
-      router.push("/profile");
-      return;
-    }
-
     setSelectedJob(job);
     setIsAppModalOpen(true);
   };
@@ -135,13 +115,13 @@ export default function OpportunitiesPage() {
       status: "pending",
       appliedAt: new Date().toISOString(),
       applicantSnapshot: {
-        fullName: userProfile?.fullName,
-        email: userProfile?.email,
-        mobile: userProfile?.mobile,
-        fathersName: userProfile?.fathersName,
-        dob: userProfile?.dob,
-        resumeURL: userProfile?.resumeURL,
-        address: userProfile?.fullAddress
+        fullName: userProfile?.fullName || user?.displayName || "Applicant",
+        email: userProfile?.email || user?.email,
+        mobile: userProfile?.mobile || "Not Provided",
+        fathersName: userProfile?.fathersName || "Not Provided",
+        dob: userProfile?.dob || "Not Provided",
+        resumeURL: userProfile?.resumeURL || "",
+        address: userProfile?.fullAddress || "Not Provided"
       }
     }, { merge: true });
 
@@ -257,7 +237,7 @@ export default function OpportunitiesPage() {
               Career <span className="italic text-yellow-300">Media</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
-              Your professional journey starts here. Explore live opportunities and track your growth within the NPB ecosystem.
+              Your professional journey starts here. Explore live opportunities and track your growth within the Media ecosystem.
             </p>
           </div>
         </div>
@@ -343,38 +323,16 @@ export default function OpportunitiesPage() {
           <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name (Locked)</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</Label>
                 <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <User className="w-4 h-4" /> {userProfile?.fullName}
+                  <User className="w-4 h-4" /> {userProfile?.fullName || user?.displayName || 'Auth User'}
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Email (Locked)</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Email</Label>
                 <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <ShieldCheck className="w-4 h-4" /> {userProfile?.email}
+                  <ShieldCheck className="w-4 h-4" /> {userProfile?.email || user?.email}
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Date of Birth (Locked)</Label>
-                <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <Calendar className="w-4 h-4" /> {userProfile?.dob}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Mobile (Locked)</Label>
-                <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <Phone className="w-4 h-4" /> {userProfile?.mobile}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Professional Resume (Attached)</Label>
-              <div className="h-14 bg-emerald-50 border-2 border-emerald-100 rounded-xl px-4 flex items-center justify-between text-xs font-bold text-emerald-700">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" /> profile_resume_latest.pdf
-                </div>
-                <Badge className="bg-emerald-600 text-white text-[8px] border-none">Verified</Badge>
               </div>
             </div>
 
@@ -386,6 +344,10 @@ export default function OpportunitiesPage() {
                 placeholder="e.g. 3 Years in React development, previously at..."
                 className="h-14 rounded-xl border-2 border-slate-100 focus:border-primary px-4 font-medium"
               />
+            </div>
+            
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+              <p className="text-[10px] font-bold text-blue-600 leading-relaxed uppercase tracking-wider">Note: Your contact details and professional summary provided during registration will be attached to this application automatically.</p>
             </div>
           </div>
           <DialogFooter className="p-8 bg-slate-50 flex flex-row items-center justify-between">
