@@ -29,7 +29,8 @@ import {
   CreditCard,
   Image as ImageIcon,
   ExternalLink,
-  Eye
+  Eye,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PlaceHolderImages } from "@/app/lib/placeholder-images";
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
@@ -76,38 +78,27 @@ export default function ProfilePage() {
     );
   }
 
-  // Helper to open documents safely (especially large base64/data URIs)
   const openDocument = (dataUri: string) => {
     if (!dataUri) return;
-    
     try {
-      // Split the data URI to extract mime type and base64 data
       const parts = dataUri.split(';');
       if (parts.length < 2) {
         window.open(dataUri, '_blank');
         return;
       }
-      
       const mimeType = parts[0].split(':')[1];
       const base64Data = parts[1].split(',')[1];
-      
-      // Convert base64 to binary bytes
       const binaryString = atob(base64Data);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
       for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
       }
-      
-      // Create a Blob and Object URL for cleaner browser handling
       const blob = new Blob([bytes], { type: mimeType });
       const url = URL.createObjectURL(blob);
-      
       window.open(url, '_blank');
-      // Note: We don't revoke immediately to allow the window to load
     } catch (error) {
       console.error("Error processing document view:", error);
-      // Fallback to direct opening if Blob conversion fails
       window.open(dataUri, '_blank');
     }
   };
@@ -115,6 +106,8 @@ export default function ProfilePage() {
   const memberSince = user.metadata.creationTime 
     ? new Date(user.metadata.creationTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'N/A';
+
+  const vibrantBg = PlaceHolderImages.find(p => p.id === "profile-vibrant-bg")?.imageUrl || "https://picsum.photos/seed/profile-bg/1200/800";
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
@@ -131,20 +124,32 @@ export default function ProfilePage() {
           <p className="text-muted-foreground text-xl font-medium uppercase tracking-widest text-xs">Personal Profile</p>
         </div>
 
-        {/* Main Profile Info Card */}
-        <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[3rem] bg-white overflow-hidden animate-in fade-in slide-in-from-bottom duration-700">
-          <CardContent className="p-8 md:p-12">
+        {/* Main Profile Info Card with Animated Background */}
+        <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] rounded-[3rem] overflow-hidden animate-in fade-in slide-in-from-bottom duration-700 relative group">
+          {/* Animated Background Layer */}
+          <div 
+            className="absolute inset-0 z-0 opacity-90 animate-gradient"
+            style={{ 
+              backgroundImage: `linear-gradient(135deg, rgba(242, 140, 48, 0.8) 0%, rgba(233, 78, 119, 0.8) 50%, rgba(74, 144, 226, 0.8) 100%), url(${vibrantBg})`,
+              backgroundSize: '200% 200%, cover',
+              backgroundPosition: 'center'
+            }}
+          />
+          <div className="absolute inset-0 bg-black/10 z-0" />
+          <div className="absolute inset-0 grid-bg opacity-10 z-0" />
+
+          <CardContent className="p-8 md:p-12 relative z-10 text-white">
             <div className="flex flex-col md:flex-row items-center gap-10">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-slate-100 flex items-center justify-center shrink-0 border-4 border-white shadow-xl overflow-hidden relative group">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 border-4 border-white/30 shadow-2xl overflow-hidden relative group/avatar">
                 {profileData?.photoURL ? (
                   <img src={profileData.photoURL} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="w-16 h-16 md:w-20 md:h-20 text-slate-300" />
+                  <User className="w-16 h-16 md:w-20 md:h-20 text-white/50" />
                 )}
                 {profileData?.photoURL && (
                   <div 
                     onClick={() => openDocument(profileData.photoURL)}
-                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
                   >
                     <Eye className="text-white w-8 h-8" />
                   </div>
@@ -153,30 +158,33 @@ export default function ProfilePage() {
               
               <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Full Name</p>
-                  <p className="text-2xl font-headline font-black italic text-slate-900">{profileData?.fullName || user.displayName || 'Not Set'}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Full Name</p>
+                  <p className="text-2xl font-headline font-black italic text-white drop-shadow-md">{profileData?.fullName || user.displayName || 'Not Set'}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Email Address</p>
-                  <div className="flex items-center gap-2 text-slate-700 font-bold">
-                    <Mail className="w-4 h-4 text-primary" /> {user.email}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Email Address</p>
+                  <div className="flex items-center gap-2 text-white font-bold drop-shadow-sm">
+                    <Mail className="w-4 h-4 text-white/80" /> {user.email}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mobile Number</p>
-                  <div className="flex items-center gap-2 text-slate-700 font-bold">
-                    <Phone className="w-4 h-4 text-primary" /> {profileData?.mobile || 'Not Linked'}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Mobile Number</p>
+                  <div className="flex items-center gap-2 text-white font-bold drop-shadow-sm">
+                    <Phone className="w-4 h-4 text-white/80" /> {profileData?.mobile || 'Not Linked'}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date of Birth</p>
-                  <div className="flex items-center gap-2 text-slate-700 font-bold">
-                    <Calendar className="w-4 h-4 text-primary" /> {profileData?.dob || 'Not Provided'}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Date of Birth</p>
+                  <div className="flex items-center gap-2 text-white font-bold drop-shadow-sm">
+                    <Calendar className="w-4 h-4 text-white/80" /> {profileData?.dob || 'Not Provided'}
                   </div>
                 </div>
-                <div className="col-span-1 md:col-span-2 pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Member Since</p>
-                  <p className="text-sm font-black text-primary uppercase">{memberSince}</p>
+                <div className="col-span-1 md:col-span-2 pt-4 border-t border-white/20 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-white/60 animate-pulse" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Verified Member</p>
+                  </div>
+                  <p className="text-sm font-black text-white/90 uppercase bg-white/10 px-4 py-1 rounded-full backdrop-blur-sm">{memberSince}</p>
                 </div>
               </div>
             </div>
