@@ -16,7 +16,8 @@ import {
   Zap, 
   Loader2,
   PackageOpen,
-  ChevronLeft
+  ChevronLeft,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -77,14 +78,22 @@ export default function CartPage() {
       }
       return item;
     });
-    updateDocumentNonBlocking(cartRef, { items: newItems, totalAmount: subtotal, updatedAt: new Date().toISOString() });
+    const newSubtotal = newItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+    updateDocumentNonBlocking(cartRef, { items: newItems, totalAmount: newSubtotal, updatedAt: new Date().toISOString() });
   };
 
   const removeItem = (productId: string) => {
     if (!cartRef) return;
     const newItems = items.filter((item: any) => item.productId !== productId);
-    updateDocumentNonBlocking(cartRef, { items: newItems, totalAmount: subtotal, updatedAt: new Date().toISOString() });
+    const newSubtotal = newItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+    updateDocumentNonBlocking(cartRef, { items: newItems, totalAmount: newSubtotal, updatedAt: new Date().toISOString() });
     toast({ title: "Item Removed", description: "The product has been cleared from your cart." });
+  };
+
+  const clearCart = () => {
+    if (!cartRef) return;
+    updateDocumentNonBlocking(cartRef, { items: [], totalAmount: 0, updatedAt: new Date().toISOString() });
+    toast({ title: "Cart Cleared", description: "All items have been removed from your selection." });
   };
 
   return (
@@ -97,16 +106,25 @@ export default function CartPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
               {/* Left Side: Items List */}
               <div className="lg:col-span-8 space-y-8">
-                <div className="flex items-center justify-between border-b pb-6">
-                  <h2 className="text-3xl font-headline font-black italic">Selected <span className="text-primary">Packages</span></h2>
-                  <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">{items.length} Modules in Cart</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-6 gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-3xl font-headline font-black italic">Selected <span className="text-primary">Packages</span></h2>
+                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{items.length} Modules in Cart</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={clearCart}
+                    className="rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/5 font-black uppercase tracking-widest text-[10px] h-10 px-6 border-2 border-transparent hover:border-destructive/20 transition-all self-start sm:self-center"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-2" /> Clear Entire Cart
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
                   {items.map((item: any) => (
                     <Card key={item.productId} className="border-none shadow-2xl rounded-[2.5rem] bg-white overflow-hidden group hover:-translate-y-1 transition-all duration-500">
-                      <CardContent className="p-8 flex items-center gap-8">
-                        <div className="w-24 h-24 rounded-2xl bg-slate-100 relative overflow-hidden flex-shrink-0">
+                      <CardContent className="p-8 flex flex-col md:flex-row items-center gap-8">
+                        <div className="w-24 h-24 rounded-2xl bg-slate-100 relative overflow-hidden flex-shrink-0 border-2 border-slate-50">
                           <Image 
                             src={item.image || "https://picsum.photos/seed/cart/200/200"} 
                             alt={item.title}
@@ -116,40 +134,41 @@ export default function CartPage() {
                           />
                         </div>
                         
-                        <div className="flex-1 space-y-2">
+                        <div className="flex-1 space-y-2 text-center md:text-left">
                           <h3 className="text-2xl font-headline font-black italic transition-colors group-hover:text-primary">{item.title}</h3>
-                          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Premium Module</p>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Enterprise Module</p>
                           <div className="text-primary font-black text-xl">₹{item.price.toLocaleString()}</div>
                         </div>
 
-                        <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border-2 border-slate-100">
+                        <div className="flex flex-col items-center md:items-end gap-4 w-full md:w-auto">
+                          <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border-2 border-slate-100">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => updateQuantity(item.productId, -1)}
+                              className="rounded-xl hover:bg-white transition-all h-10 w-10 shadow-sm"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                            <span className="w-8 text-center font-black text-lg">{item.quantity}</span>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => updateQuantity(item.productId, 1)}
+                              className="rounded-xl hover:bg-white transition-all h-10 w-10 shadow-sm"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+
                           <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => updateQuantity(item.productId, -1)}
-                            className="rounded-xl hover:bg-white transition-all h-10 w-10"
+                            variant="outline" 
+                            onClick={() => removeItem(item.productId)}
+                            className="rounded-xl border-slate-200 hover:bg-destructive hover:text-white hover:border-destructive transition-all font-black uppercase text-[10px] tracking-widest h-10 px-6 w-full md:w-auto"
                           >
-                            <Minus className="w-4 h-4" />
-                          </Button>
-                          <span className="w-8 text-center font-black text-lg">{item.quantity}</span>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => updateQuantity(item.productId, 1)}
-                            className="rounded-xl hover:bg-white transition-all h-10 w-10"
-                          >
-                            <Plus className="w-4 h-4" />
+                            <X className="w-3 h-3 mr-2" /> Remove Product
                           </Button>
                         </div>
-
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => removeItem(item.productId)}
-                          className="text-muted-foreground hover:text-destructive transition-colors h-12 w-12 rounded-2xl"
-                        >
-                          <Trash2 className="w-6 h-6" />
-                        </Button>
                       </CardContent>
                     </Card>
                   ))}
