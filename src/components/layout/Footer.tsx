@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -6,17 +7,14 @@ import {
   Twitter, 
   Linkedin, 
   Github, 
-  ArrowUpRight, 
   ShieldCheck, 
   Globe, 
-  Lock,
   Mail,
   Phone,
-  MapPin,
-  ChevronRight
+  ChevronRight,
+  Scale
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
-import { Button } from "@/components/ui/button";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -73,18 +71,26 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Company Column */}
+          {/* Legal Column */}
           <div className="space-y-8">
-            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Company</h4>
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+              <Scale className="w-4 h-4" /> Legal
+            </h4>
             <ul className="space-y-4">
-              {["About", "Contact", "Schedule Meeting", "Privacy Policy"].map((item) => (
-                <li key={item}>
+              {[
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "T & C", href: "/terms-and-conditions" },
+                { name: "Disclaimer", href: "/disclaimer" },
+                { name: "Refund Policy", href: "/refund-policy" },
+                { name: "Cookie Policy", href: "/cookie-policy" }
+              ].map((item) => (
+                <li key={item.name}>
                   <Link 
-                    href={item === "Schedule Meeting" ? "/contact/schedule-meeting" : `/${item.toLowerCase().replace(" ", "-")}`} 
+                    href={item.href} 
                     className="text-slate-400 hover:text-white transition-all flex items-center gap-2 group font-black uppercase text-xs tracking-widest"
                   >
                     <ChevronRight className="w-3 h-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                    {item}
+                    {item.name}
                   </Link>
                 </li>
               ))}
