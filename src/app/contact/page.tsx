@@ -82,6 +82,7 @@ export default function ContactPage() {
     
     addDocumentNonBlocking(collection(db, "inquiries"), {
       ...formData,
+      status: "new",
       createdAt: new Date().toISOString()
     }).then(() => {
       setIsSubmitting(false);
