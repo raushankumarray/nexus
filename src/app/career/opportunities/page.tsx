@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -23,6 +22,7 @@ import {
   ShieldCheck,
   Calendar,
   Phone,
+  Mail,
   FileText,
   DollarSign,
   Search,
@@ -389,7 +389,7 @@ export default function OpportunitiesPage() {
               <Zap className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Protocol Sync</p>
-                <p className="text-[11px] font-medium text-blue-800 leading-relaxed">Your professional resume and profile credentials will be automatically attached to this application from your Media profile.</p>
+                <p className="text-sm font-medium text-blue-800 leading-relaxed">Your professional resume and profile credentials will be automatically attached to this application from your Media profile.</p>
               </div>
             </div>
           </div>
