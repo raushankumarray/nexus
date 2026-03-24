@@ -24,7 +24,8 @@ import {
   Zap,
   Layout,
   Briefcase,
-  Trash2
+  Trash2,
+  Users
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -199,7 +200,10 @@ export default function AdminJobApplicationsPage() {
                     
                     <div className="space-y-4 flex-1">
                       <div className="flex flex-wrap items-center gap-4">
-                        <h4 className="text-3xl font-headline font-black italic text-white leading-none">{app.applicantSnapshot?.fullName}</h4>
+                        <div className="space-y-1">
+                          <h4 className="text-3xl font-headline font-black italic text-white leading-none">{app.applicantSnapshot?.fullName}</h4>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">S/o: {app.applicantSnapshot?.fathersName || 'N/A'}</p>
+                        </div>
                         <Badge className={cn(
                           "text-[8px] font-black uppercase tracking-widest border-none px-3 py-1",
                           STATUS_PIPELINE.find(s => s.value === app.status)?.color || "bg-slate-600"

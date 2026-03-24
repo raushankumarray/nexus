@@ -26,7 +26,9 @@ import {
   FileText,
   DollarSign,
   Search,
-  Sparkles
+  Sparkles,
+  Users,
+  ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -42,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -129,6 +132,7 @@ export default function OpportunitiesPage() {
       appliedAt: new Date().toISOString(),
       applicantSnapshot: {
         fullName: userProfile?.fullName || user?.displayName || "Applicant",
+        fathersName: userProfile?.fathersName || "Not Provided",
         email: userProfile?.email || user?.email,
         mobile: userProfile?.mobile || "Not Provided",
         photoURL: userProfile?.photoURL || "",
@@ -341,18 +345,33 @@ export default function OpportunitiesPage() {
             <DialogDescription className="text-white/80 font-medium">Provisioning role for: <span className="text-yellow-300 font-bold">{selectedJob?.title}</span></DialogDescription>
           </div>
           <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Verified Name</Label>
-                <div className="h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <User className="w-4 h-4 text-primary" /> {userProfile?.fullName}
+            <div className="p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] space-y-6">
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary">Verified Candidate Profile</p>
+              <div className="flex items-center gap-6">
+                <div className="w-20 h-20 rounded-2xl border-2 border-white shadow-xl overflow-hidden bg-slate-200">
+                  {userProfile?.photoURL ? (
+                    <img src={userProfile.photoURL} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10 m-auto text-slate-400 mt-5" />
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-xl font-headline font-black italic">{userProfile?.fullName}</h4>
+                  <p className="text-xs font-bold text-muted-foreground">S/o: {userProfile?.fathersName || 'Not Set'}</p>
+                  <div className="flex gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest pt-1">
+                    <span className="flex items-center gap-1"><Mail className="w-3 h-3 text-primary" /> {userProfile?.email}</span>
+                    <span className="flex items-center gap-1"><Phone className="w-3 h-3 text-primary" /> {userProfile?.mobile}</span>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Portal Email</Label>
-                <div className="h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> {userProfile?.email}
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200/50">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-emerald-500" />
+                  <span className="text-[10px] font-black uppercase text-slate-500">Resume Attached</span>
                 </div>
+                {userProfile?.resumeURL && (
+                  <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-emerald-200 bg-emerald-50 text-emerald-600">Encrypted Source Sync</Badge>
+                )}
               </div>
             </div>
 
@@ -367,7 +386,7 @@ export default function OpportunitiesPage() {
             </div>
             
             <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem] flex items-start gap-4">
-              <FileText className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+              <Zap className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Protocol Sync</p>
                 <p className="text-[11px] font-medium text-blue-800 leading-relaxed">Your professional resume and profile credentials will be automatically attached to this application from your Media profile.</p>
