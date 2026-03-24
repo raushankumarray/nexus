@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { useFirestore, useCollection, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase";
+import { useFirestore, useCollection, useDoc, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
 import { collection, query, where, doc } from "firebase/firestore";
 import { 
   Loader2, 
@@ -23,7 +23,8 @@ import {
   Video,
   Zap,
   Layout,
-  Briefcase
+  Briefcase,
+  Trash2
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,18 @@ export default function AdminJobApplicationsPage() {
     setSelectedApp(app);
     setHiringContext(app.hiringContext || { decision: "pending" });
     setIsUpdateModalOpen(true);
+  };
+
+  const handleDeleteApplication = (id: string) => {
+    if (!db) return;
+    if (confirm("Are you sure you want to permanently purge this candidate application record?")) {
+      deleteDocumentNonBlocking(doc(db, "jobApplications", id));
+      toast({ 
+        variant: "destructive", 
+        title: "Record Purged", 
+        description: "Application has been removed from the hiring stream." 
+      });
+    }
   };
 
   const saveHiringUpdate = (newStatus: string) => {
@@ -222,6 +235,14 @@ export default function AdminJobApplicationsPage() {
                       className="h-12 rounded-2xl bg-primary text-white hover:scale-105 text-[9px] font-black uppercase tracking-widest transition-all px-6 w-full justify-between shadow-xl shadow-primary/10"
                     >
                       Update Pipeline <Zap className="w-4 h-4" />
+                    </Button>
+
+                    <Button 
+                      onClick={() => handleDeleteApplication(app.id)}
+                      variant="outline"
+                      className="h-12 rounded-2xl border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-6 w-full justify-between"
+                    >
+                      Purge Application <Trash2 className="w-4 h-4" />
                     </Button>
 
                     <div className="mt-auto p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 text-center">
