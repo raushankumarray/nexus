@@ -15,7 +15,8 @@ import {
   Calendar,
   Search,
   Trash2,
-  Zap
+  Zap,
+  ArrowRight
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +41,7 @@ export default function AdminEnquiriesPage() {
     updateDocumentNonBlocking(enquiryRef, { status: newStatus });
     toast({
       title: "Status Synchronized",
-      description: `Lead status updated to ${newStatus.toUpperCase()}.`
+      description: `Lead status updated to ${newStatus === 'solved' ? 'COMPLETED' : newStatus.toUpperCase()}.`
     });
   };
 
@@ -64,9 +65,9 @@ export default function AdminEnquiriesPage() {
   }
 
   const stats = {
-    new: enquiries?.filter(e => e.status === 'new').length || 0,
+    new: enquiries?.filter(e => e.status === 'new' || !e.status).length || 0,
     pending: enquiries?.filter(e => e.status === 'pending').length || 0,
-    solved: enquiries?.filter(e => e.status === 'solved').length || 0,
+    completed: enquiries?.filter(e => e.status === 'solved').length || 0,
     total: enquiries?.length || 0
   };
 
@@ -109,7 +110,7 @@ export default function AdminEnquiriesPage() {
               <Clock className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">In Process</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Pending Status</p>
               <h4 className="text-4xl font-headline font-black text-white">{stats.pending}</h4>
             </div>
           </CardContent>
@@ -121,8 +122,8 @@ export default function AdminEnquiriesPage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Solved Leads</p>
-              <h4 className="text-4xl font-headline font-black text-white">{stats.solved}</h4>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Completed Leads</p>
+              <h4 className="text-4xl font-headline font-black text-white">{stats.completed}</h4>
             </div>
           </CardContent>
         </Card>
@@ -132,7 +133,7 @@ export default function AdminEnquiriesPage() {
       <div className="space-y-6">
         <div className="flex items-center gap-2 mb-2">
           <MessageSquare className="w-4 h-4 text-primary" />
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Lead Registry Stream ({stats.total})</h3>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Registry Data Stream ({stats.total})</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
@@ -152,10 +153,10 @@ export default function AdminEnquiriesPage() {
                             <h4 className="text-xl font-headline font-black italic text-white">{enquiry.fullName}</h4>
                             <Badge className={cn(
                               "text-[8px] font-black uppercase tracking-widest border-none px-3",
-                              enquiry.status === 'new' ? "bg-primary text-white" :
+                              (!enquiry.status || enquiry.status === 'new') ? "bg-primary text-white" :
                               enquiry.status === 'pending' ? "bg-blue-600 text-white" : "bg-emerald-600 text-white"
                             )}>
-                              {enquiry.status || 'new'}
+                              {enquiry.status === 'solved' ? 'completed' : (enquiry.status || 'new')}
                             </Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-4 text-slate-500 font-bold text-[10px] uppercase tracking-widest">
@@ -174,7 +175,7 @@ export default function AdminEnquiriesPage() {
 
                     {/* Right: Actions */}
                     <div className="flex flex-row lg:flex-col gap-3 shrink-0 justify-end lg:justify-start">
-                      {enquiry.status === 'new' && (
+                      {(!enquiry.status || enquiry.status === 'new') && (
                         <Button 
                           onClick={() => handleUpdateStatus(enquiry.id, 'pending')}
                           variant="outline" 
@@ -184,13 +185,13 @@ export default function AdminEnquiriesPage() {
                         </Button>
                       )}
                       
-                      {enquiry.status !== 'solved' && (
+                      {(enquiry.status !== 'solved') && (
                         <Button 
                           onClick={() => handleUpdateStatus(enquiry.id, 'solved')}
                           variant="outline" 
                           className="h-10 rounded-xl border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Mark Solved
+                          <CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Mark Completed
                         </Button>
                       )}
 
@@ -199,7 +200,7 @@ export default function AdminEnquiriesPage() {
                         variant="outline" 
                         className="h-10 rounded-xl border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
                       >
-                        <Trash2 className="w-3.5 h-3.5 mr-2" /> Purge Record
+                        <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete Record
                       </Button>
 
                       <div className="mt-auto p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 text-center">
