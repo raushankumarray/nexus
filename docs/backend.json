@@ -58,15 +58,18 @@
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
-        "category": { "type": "string" },
-        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "requirements": { "type": "string" },
+        "salary": { "type": "string" },
+        "location": { "type": "string" },
         "experience": { "type": "string" },
         "technologies": { "type": "string" },
-        "qualification": { "type": "string" },
-        "description": { "type": "string" },
-        "location": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "closed"] },
-        "closeDate": { "type": "string" }
+        "education": { "type": "string" },
+        "batchPassout": { "type": "string" },
+        "lastDate": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "closed"] }
       },
       "required": ["id", "title", "status"]
     },
@@ -79,22 +82,21 @@
         "userId": { "type": "string" },
         "jobId": { "type": "string" },
         "jobTitle": { "type": "string" },
-        "experience": { "type": "string" },
-        "status": { "type": "string", "enum": ["pending", "review", "screening", "shortlisted", "test_scheduled", "interview", "document_verification", "onboarding", "rejected"] },
+        "status": { "type": "string", "enum": ["applied", "review", "shortlisting", "scheduled_test", "scheduled_interview", "decision", "document_verification", "selected", "onboarding"] },
+        "appliedAt": { "type": "string", "format": "date-time" },
         "applicantSnapshot": { "type": "object" },
         "hiringContext": {
           "type": "object",
           "properties": {
-            "examLink": { "type": "string" },
-            "examDate": { "type": "string" },
+            "testLink": { "type": "string" },
+            "testDate": { "type": "string" },
+            "testTime": { "type": "string" },
             "interviewLink": { "type": "string" },
             "interviewDate": { "type": "string" },
-            "verificationFormLink": { "type": "string" },
-            "deadline": { "type": "string" },
-            "rejectionReason": { "type": "string" }
+            "interviewTime": { "type": "string" },
+            "decision": { "type": "string", "enum": ["qualified", "failed", "pending"] }
           }
-        },
-        "appliedAt": { "type": "string", "format": "date-time" }
+        }
       }
     },
     "Inquiry": {
@@ -130,30 +132,6 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["fullName", "email", "date", "timeSlot"]
-    },
-    "Cart": {
-      "title": "Cart",
-      "type": "object",
-      "description": "User shopping cart.",
-      "properties": {
-        "userId": { "type": "string" },
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "productId": { "type": "string" },
-              "title": { "type": "string" },
-              "price": { "type": "number" },
-              "quantity": { "type": "number" },
-              "category": { "type": "string" },
-              "description": { "type": "string" }
-            }
-          }
-        },
-        "totalAmount": { "type": "number" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      }
     }
   },
   "auth": {
@@ -179,10 +157,6 @@
     "/meetings/{meetingId}": {
       "schema": { "$ref": "#/entities/MeetingRequest" },
       "description": "Scheduled meeting requests."
-    },
-    "/carts/{userId}": {
-      "schema": { "$ref": "#/entities/Cart" },
-      "description": "User shopping carts."
     }
   }
 }

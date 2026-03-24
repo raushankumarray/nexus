@@ -23,7 +23,10 @@ import {
   ShieldCheck,
   Calendar,
   Phone,
-  FileText
+  FileText,
+  DollarSign,
+  Search,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -93,13 +96,23 @@ export default function OpportunitiesPage() {
       return;
     }
 
+    if (!userProfile?.fullName || !userProfile?.resumeURL) {
+      toast({ 
+        variant: "destructive", 
+        title: "Profile Incomplete", 
+        description: "Please complete your professional profile including resume and photo before applying." 
+      });
+      router.push("/profile/edit");
+      return;
+    }
+
     setSelectedJob(job);
     setIsAppModalOpen(true);
   };
 
   const submitApplication = () => {
     if (!experience.trim()) {
-      toast({ variant: "destructive", title: "Missing Information", description: "Please provide your relevant experience." });
+      toast({ variant: "destructive", title: "Missing Information", description: "Please provide a brief professional summary." });
       return;
     }
 
@@ -112,16 +125,20 @@ export default function OpportunitiesPage() {
       jobId: selectedJob.id,
       jobTitle: selectedJob.title,
       experience: experience,
-      status: "pending",
+      status: "applied",
       appliedAt: new Date().toISOString(),
       applicantSnapshot: {
         fullName: userProfile?.fullName || user?.displayName || "Applicant",
         email: userProfile?.email || user?.email,
         mobile: userProfile?.mobile || "Not Provided",
-        fathersName: userProfile?.fathersName || "Not Provided",
-        dob: userProfile?.dob || "Not Provided",
+        photoURL: userProfile?.photoURL || "",
         resumeURL: userProfile?.resumeURL || "",
-        address: userProfile?.fullAddress || "Not Provided"
+        address: userProfile?.fullAddress || "Not Provided",
+        education: userProfile?.education || [],
+        experienceYears: userProfile?.experience || "N/A"
+      },
+      hiringContext: {
+        decision: "pending"
       }
     }, { merge: true });
 
@@ -129,7 +146,7 @@ export default function OpportunitiesPage() {
       setIsSubmitting(false);
       setIsAppModalOpen(false);
       setExperience("");
-      toast({ title: "Application Sent!", description: "Your profile has been forwarded to the hiring team." });
+      toast({ title: "Application Sent!", description: "Your global profile has been forwarded to the hiring team." });
     }, 800);
   };
 
@@ -169,28 +186,27 @@ export default function OpportunitiesPage() {
           </h3>
           
           <div className="flex flex-wrap items-center gap-4 text-muted-foreground font-bold text-xs">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-primary" />
-              {role.location || 'Remote'}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <History className="w-3.5 h-3.5 text-primary" />
-              {role.experience || 'Entry Level'}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <GraduationCap className="w-3.5 h-3.5 text-primary" />
-              {role.qualification || 'Degree'}
-            </div>
+            <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-primary" /> {role.location}</div>
+            <div className="flex items-center gap-1.5"><History className="w-3.5 h-3.5 text-primary" /> {role.experience} Exp.</div>
+            <div className="flex items-center gap-1.5"><GraduationCap className="w-3.5 h-3.5 text-primary" /> {role.education}</div>
+            <div className="flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5 text-primary" /> {role.salary || 'Competitive'}</div>
           </div>
 
           <p className="text-muted-foreground leading-relaxed font-semibold text-sm line-clamp-3">
             {role.description}
           </p>
 
+          <div className="space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Batch Passout</p>
+            <Badge variant="secondary" className="rounded-lg bg-slate-50 text-slate-600 font-black uppercase text-[9px] tracking-widest border border-slate-100">
+              {role.batchPassout || 'Any'}
+            </Badge>
+          </div>
+
           {role.technologies && (
             <div className="flex flex-wrap gap-2 pt-2">
               {role.technologies.split(',').map((tech: string, i: number) => (
-                <Badge key={i} variant="secondary" className="bg-slate-50 text-slate-500 font-black uppercase text-[8px] tracking-widest border border-slate-100">
+                <Badge key={i} variant="secondary" className="bg-primary/5 text-primary font-black uppercase text-[8px] tracking-widest border border-primary/10">
                   {tech.trim()}
                 </Badge>
               ))}
@@ -213,7 +229,7 @@ export default function OpportunitiesPage() {
               onClick={() => handleApplyClick(role)}
               className="w-full rounded-full h-12 text-xs font-black uppercase tracking-widest text-white border-none group/btn shadow-lg bg-primary"
             >
-              Apply Now <ArrowUpRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
+              Express Interest <ArrowUpRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1" />
             </Button>
           )}
         </div>
@@ -233,11 +249,15 @@ export default function OpportunitiesPage() {
               <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               Back to Careers
             </Link>
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/20 border-2 border-white/30 text-white text-sm font-black uppercase tracking-widest shadow-xl backdrop-blur-md">
+              <Sparkles className="w-5 h-5 text-yellow-300" />
+              Join the Tech Lab
+            </div>
             <h1 className="text-5xl md:text-8xl font-headline font-black leading-[0.9] tracking-tighter drop-shadow-2xl">
-              Career <span className="italic text-yellow-300">Media</span>
+              Career <span className="italic text-yellow-300">Hub</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-bold border-l-4 border-yellow-300 pl-6">
-              Your professional journey starts here. Explore live opportunities and track your growth within the Media ecosystem.
+              Your professional journey within the global digital ecosystem starts here. Explore tailored roles and track your application status in real-time.
             </p>
           </div>
         </div>
@@ -247,22 +267,22 @@ export default function OpportunitiesPage() {
         <div className="max-w-7xl mx-auto px-6">
           <Tabs defaultValue="active" className="space-y-8 md:space-y-12">
             <div className="flex justify-center">
-              <TabsList className="bg-slate-100 p-1 md:p-1.5 h-auto rounded-full border-2 border-slate-200 w-full grid grid-cols-3 max-w-xl mx-auto overflow-hidden">
-                <TabsTrigger value="active" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase tracking-tight">
-                  Active
+              <TabsList className="bg-slate-100 p-1.5 h-auto rounded-full border-2 border-slate-200 w-full grid grid-cols-3 max-w-xl mx-auto overflow-hidden shadow-lg">
+                <TabsTrigger value="active" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white transition-all uppercase tracking-widest">
+                  Live Openings
                 </TabsTrigger>
-                <TabsTrigger value="closed" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-lg data-[state=active]:bg-slate-800 data-[state=active]:text-white transition-all uppercase tracking-tight">
-                  Closed
+                <TabsTrigger value="closed" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-sm data-[state=active]:bg-slate-800 data-[state=active]:text-white transition-all uppercase tracking-widest">
+                  Archived
                 </TabsTrigger>
-                <TabsTrigger value="applied" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-lg data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all uppercase tracking-tight">
-                  Applied ({appliedJobIds.length})
+                <TabsTrigger value="applied" className="rounded-full px-1 py-3 md:py-4 font-headline font-black text-[10px] md:text-sm data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all uppercase tracking-widest">
+                  My Pipeline ({appliedJobIds.length})
                 </TabsTrigger>
               </TabsList>
             </div>
 
             <TabsContent value="active" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {activeRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {activeRoles.map((role) => (
                     <RoleCard key={role.id} role={role} />
                   ))}
@@ -272,29 +292,29 @@ export default function OpportunitiesPage() {
                   <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
                     <Zap className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h3 className="text-3xl font-headline font-black italic">No active roles found</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto font-medium">Check back soon or explore our other tabs for your status.</p>
+                  <h3 className="text-3xl font-headline font-black italic">No live openings at this moment</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto font-medium">Please check back later or explore your current application pipeline.</p>
                 </div>
               )}
             </TabsContent>
 
             <TabsContent value="closed" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {closedRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 grayscale opacity-80">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 grayscale opacity-80">
                   {closedRoles.map((role) => (
                     <RoleCard key={role.id} role={role} isClosed />
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20 space-y-6">
-                  <h3 className="text-3xl font-headline font-black italic">No archived roles</h3>
+                <div className="text-center py-20 space-y-6 text-slate-400">
+                  <h3 className="text-3xl font-headline font-black italic">No recently archived roles</h3>
                 </div>
               )}
             </TabsContent>
 
             <TabsContent value="applied" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {userAppliedRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {userAppliedRoles.map((role) => (
                     <RoleCard key={role.id} role={role} isApplied />
                   ))}
@@ -304,8 +324,8 @@ export default function OpportunitiesPage() {
                   <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                   </div>
-                  <h3 className="text-3xl font-headline font-black italic">No applications found</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto font-medium">Start your journey by applying to our active openings.</p>
+                  <h3 className="text-3xl font-headline font-black italic">Your pipeline is empty</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto font-medium">Start your professional journey by applying to our active openings today.</p>
                 </div>
               )}
             </TabsContent>
@@ -317,47 +337,51 @@ export default function OpportunitiesPage() {
       <Dialog open={isAppModalOpen} onOpenChange={setIsAppModalOpen}>
         <DialogContent className="max-w-2xl rounded-[3rem] p-0 overflow-hidden border-none shadow-2xl">
           <div className="vibrant-gradient p-10 text-white space-y-2">
-            <DialogTitle className="text-3xl font-headline font-black italic">Job Application</DialogTitle>
-            <DialogDescription className="text-white/80 font-medium">Applying for: <span className="text-yellow-300 font-bold">{selectedJob?.title}</span></DialogDescription>
+            <DialogTitle className="text-3xl font-headline font-black italic">Confirm Application</DialogTitle>
+            <DialogDescription className="text-white/80 font-medium">Provisioning role for: <span className="text-yellow-300 font-bold">{selectedJob?.title}</span></DialogDescription>
           </div>
-          <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto">
+          <div className="p-10 space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Full Name</Label>
-                <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <User className="w-4 h-4" /> {userProfile?.fullName || user?.displayName || 'Auth User'}
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Verified Name</Label>
+                <div className="h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
+                  <User className="w-4 h-4 text-primary" /> {userProfile?.fullName}
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Email</Label>
-                <div className="h-12 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
-                  <ShieldCheck className="w-4 h-4" /> {userProfile?.email || user?.email}
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Portal Email</Label>
+                <div className="h-14 bg-slate-50 border-2 border-slate-100 rounded-2xl px-4 flex items-center text-sm font-bold text-slate-500 gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> {userProfile?.email}
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Your Experience & Summary*</Label>
-              <Input 
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Professional Summary & Intent*</Label>
+              <Textarea 
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
-                placeholder="e.g. 3 Years in React development, previously at..."
-                className="h-14 rounded-xl border-2 border-slate-100 focus:border-primary px-4 font-medium"
+                placeholder="Briefly describe your experience and why you are interested in this role..."
+                className="min-h-[120px] rounded-2xl border-2 border-slate-100 focus:border-primary px-4 py-4 font-medium resize-none"
               />
             </div>
             
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
-              <p className="text-[10px] font-bold text-blue-600 leading-relaxed uppercase tracking-wider">Note: Your contact details and professional summary provided during registration will be attached to this application automatically.</p>
+            <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem] flex items-start gap-4">
+              <FileText className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Protocol Sync</p>
+                <p className="text-[11px] font-medium text-blue-800 leading-relaxed">Your professional resume and profile credentials will be automatically attached to this application from your Media profile.</p>
+              </div>
             </div>
           </div>
-          <DialogFooter className="p-8 bg-slate-50 flex flex-row items-center justify-between">
+          <DialogFooter className="p-8 bg-slate-50 border-t border-slate-100 flex flex-row items-center justify-between">
             <Button variant="ghost" onClick={() => setIsAppModalOpen(false)} className="rounded-full font-black uppercase tracking-widest text-[10px]">Cancel</Button>
             <Button 
               onClick={submitApplication}
               disabled={isSubmitting}
-              className="rounded-full px-10 h-12 bg-primary text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20"
+              className="rounded-full px-10 h-14 bg-primary text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" /> : "Confirm & Submit"}
+              {isSubmitting ? <Loader2 className="animate-spin" /> : "Confirm Initialization"}
             </Button>
           </DialogFooter>
         </DialogContent>
