@@ -2,8 +2,8 @@
 "use client";
 
 import React from "react";
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection, query, orderBy } from "firebase/firestore";
+import { useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
+import { collection, query, orderBy, doc } from "firebase/firestore";
 import { 
   Loader2, 
   Mail, 
@@ -13,14 +13,19 @@ import {
   AlertCircle,
   Phone,
   Calendar,
-  Search
+  Search,
+  Trash2,
+  Zap
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminEnquiriesPage() {
   const db = useFirestore();
+  const { toast } = useToast();
 
   const enquiriesQuery = useMemoFirebase(() => {
     if (!db) return null;
@@ -28,6 +33,27 @@ export default function AdminEnquiriesPage() {
   }, [db]);
 
   const { data: enquiries, isLoading } = useCollection(enquiriesQuery);
+
+  const handleUpdateStatus = (id: string, newStatus: 'pending' | 'solved') => {
+    if (!db) return;
+    const enquiryRef = doc(db, "inquiries", id);
+    updateDocumentNonBlocking(enquiryRef, { status: newStatus });
+    toast({
+      title: "Status Synchronized",
+      description: `Lead status updated to ${newStatus.toUpperCase()}.`
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    if (!db) return;
+    const enquiryRef = doc(db, "inquiries", id);
+    deleteDocumentNonBlocking(enquiryRef);
+    toast({
+      variant: "destructive",
+      title: "Record Purged",
+      description: "Inquiry has been permanently removed from the database."
+    });
+  };
 
   if (isLoading) {
     return (
@@ -58,7 +84,7 @@ export default function AdminEnquiriesPage() {
         <div className="flex items-center gap-4">
           <div className="px-6 py-3 bg-slate-900 border border-slate-800 rounded-2xl flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Sync Active</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Database Sync Active</span>
           </div>
         </div>
       </div>
@@ -83,7 +109,7 @@ export default function AdminEnquiriesPage() {
               <Clock className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Pending Sync</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">In Process</p>
               <h4 className="text-4xl font-headline font-black text-white">{stats.pending}</h4>
             </div>
           </CardContent>
@@ -95,7 +121,7 @@ export default function AdminEnquiriesPage() {
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Solved Tickets</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Solved Leads</p>
               <h4 className="text-4xl font-headline font-black text-white">{stats.solved}</h4>
             </div>
           </CardContent>
@@ -106,7 +132,7 @@ export default function AdminEnquiriesPage() {
       <div className="space-y-6">
         <div className="flex items-center gap-2 mb-2">
           <MessageSquare className="w-4 h-4 text-primary" />
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Master Lead Stream ({stats.total})</h3>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Lead Registry Stream ({stats.total})</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
@@ -141,14 +167,42 @@ export default function AdminEnquiriesPage() {
                       </div>
 
                       <div className="p-6 bg-slate-950/50 rounded-2xl border border-slate-800/50">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Message Subject: {enquiry.subject || 'General Inquiry'}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Subject: {enquiry.subject || 'General Inquiry'}</p>
                         <p className="text-slate-300 text-sm leading-relaxed font-medium">"{enquiry.message}"</p>
                       </div>
                     </div>
 
-                    {/* Right: Actions (Placeholder for now) */}
+                    {/* Right: Actions */}
                     <div className="flex flex-row lg:flex-col gap-3 shrink-0 justify-end lg:justify-start">
-                      <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 text-center">
+                      {enquiry.status === 'new' && (
+                        <Button 
+                          onClick={() => handleUpdateStatus(enquiry.id, 'pending')}
+                          variant="outline" 
+                          className="h-10 rounded-xl border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
+                          <Clock className="w-3.5 h-3.5 mr-2" /> Mark Pending
+                        </Button>
+                      )}
+                      
+                      {enquiry.status !== 'solved' && (
+                        <Button 
+                          onClick={() => handleUpdateStatus(enquiry.id, 'solved')}
+                          variant="outline" 
+                          className="h-10 rounded-xl border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Mark Solved
+                        </Button>
+                      )}
+
+                      <Button 
+                        onClick={() => handleDelete(enquiry.id)}
+                        variant="outline" 
+                        className="h-10 rounded-xl border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-2" /> Purge Record
+                      </Button>
+
+                      <div className="mt-auto p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 text-center">
                         <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Registry ID</p>
                         <p className="text-[10px] font-mono text-slate-400">#INQ-{enquiry.id.slice(0, 8).toUpperCase()}</p>
                       </div>
@@ -162,8 +216,8 @@ export default function AdminEnquiriesPage() {
               <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mx-auto">
                 <Clock className="w-10 h-10 text-slate-700" />
               </div>
-              <h3 className="text-2xl font-headline font-black italic text-slate-600 uppercase tracking-tighter">Lead Stream Empty</h3>
-              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">No incoming inquiries detected in local buffer</p>
+              <h3 className="text-2xl font-headline font-black italic text-slate-600 uppercase tracking-tighter">Database Stream Empty</h3>
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">No incoming inquiries detected in cloud buffer</p>
             </div>
           )}
         </div>
