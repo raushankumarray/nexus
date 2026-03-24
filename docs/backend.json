@@ -118,12 +118,15 @@
       "type": "object",
       "description": "Virtual consultation requests.",
       "properties": {
+        "id": { "type": "string" },
         "fullName": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "phone": { "type": "string" },
         "date": { "type": "string" },
         "timeSlot": { "type": "string" },
         "subject": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "progress", "discussion", "completed", "canceled"] },
+        "meetingLink": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["fullName", "email", "date", "timeSlot"]

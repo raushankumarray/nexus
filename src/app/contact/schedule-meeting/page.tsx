@@ -83,6 +83,8 @@ export default function ScheduleMeetingPage() {
     
     addDocumentNonBlocking(collection(db, "meetings"), {
       ...formData,
+      status: "new",
+      meetingLink: "",
       createdAt: new Date().toISOString()
     }).then(() => {
       setIsSubmitting(false);
