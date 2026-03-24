@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/ui/Logo";
 import Link from "next/link";
-import { LogIn, UserPlus, Loader2 } from "lucide-react";
+import { LogIn, UserPlus, Loader2, ShieldAlert } from "lucide-react";
 import { useAuth, useUser } from "@/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -103,9 +103,15 @@ export default function LoginPage() {
               
               <div className="text-center space-y-4">
                 <div className="grid grid-cols-1 gap-3 pt-2">
+                  <Link href="/admin/login">
+                    <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-foreground hover:bg-foreground hover:text-white font-black uppercase tracking-widest text-[10px] group transition-all">
+                      <ShieldAlert className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+                      Internal Access
+                    </Button>
+                  </Link>
                   <Link href="/signup">
-                    <Button variant="outline" className="w-full h-14 rounded-2xl border-2 border-slate-100 hover:border-primary hover:bg-primary/5 font-black uppercase tracking-widest text-xs group">
-                      <UserPlus className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <Button variant="ghost" className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-[10px] text-muted-foreground hover:text-primary transition-all">
+                      <UserPlus className="mr-2 w-4 h-4" />
                       Create New Account
                     </Button>
                   </Link>
