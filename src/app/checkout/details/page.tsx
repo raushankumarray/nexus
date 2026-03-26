@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   Loader2,
-  Sparkles
+  Sparkles,
+  Globe
 } from "lucide-react";
 import Link from "next/link";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
@@ -47,7 +48,7 @@ export default function CheckoutDetailsPage() {
       <main className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6">
         <ShieldCheck className="w-16 h-16 text-primary" />
         <h1 className="text-3xl font-headline font-black italic">Identity Verification Required</h1>
-        <p className="text-muted-foreground max-w-xs mx-auto">Please sign in to your secure portal to continue with the checkout process.</p>
+        <p className="text-muted-foreground max-xs mx-auto">Please sign in to your secure portal to continue with the checkout process.</p>
         <Link href="/login">
           <Button size="lg" className="rounded-full px-10 h-14 bg-primary text-white">Sign In Now</Button>
         </Link>
