@@ -25,11 +25,13 @@ import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocki
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const cartRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -200,9 +202,11 @@ export default function CartPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <Button size="lg" className="w-full h-20 rounded-[2rem] text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-2xl group active:scale-95 border-none">
-                        Checkout Now <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-4" />
-                      </Button>
+                      <Link href="/checkout/details">
+                        <Button size="lg" className="w-full h-20 rounded-[2rem] text-xl font-headline bg-primary text-white hover:bg-foreground transition-all duration-500 shadow-2xl group active:scale-95 border-none">
+                          Checkout Now <ArrowRight className="ml-3 w-6 h-6 transition-transform group-hover:translate-x-4" />
+                        </Button>
+                      </Link>
                       <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                         <ShieldCheck className="w-4 h-4 text-emerald-500" /> Secure AES-256 Encrypted Gateway
                       </div>

@@ -172,9 +172,10 @@ export default function ProductsPage() {
     setTimeout(() => {
       setLoadingId(null);
       toast({
-        title: "Module Provisioned",
-        description: `${product.title} has been added to your media cart.`,
+        title: "Added to Cart",
+        description: `${product.title} has been staged for checkout.`,
       });
+      router.push("/cart");
     }, 600);
   };
 
@@ -242,7 +243,7 @@ export default function ProductsPage() {
                   product.color
                 )}>
                   <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <product.icon className="w-16 h-16 mb-2 transition-all duration-700 group-hover:scale-110 group-hover:rotate-12 relative z-10" />
+                  <product.icon className="w-16 h-16 mb-2 transition-all duration-700 group-hover:scale-75 group-hover:rotate-12 relative z-10" />
                   <div className="absolute top-6 right-6">
                     <Zap className="w-5 h-5 text-white/40 group-hover:text-yellow-300 transition-colors" />
                   </div>
@@ -284,7 +285,7 @@ export default function ProductsPage() {
                         <Loader2 className="w-5 h-5 animate-spin" />
                       ) : (
                         <>
-                          Provision Module <ShoppingCart className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                          Add to Cart <ShoppingCart className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                         </>
                       )}
                     </Button>
