@@ -1,89 +1,111 @@
+
 {
   "entities": {
     "Product": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Product",
       "type": "object",
-      "description": "Represents a service offered by NPB Media, structured for display as a product card on the website. This entity stores details such as service name, descriptions, market value, and features, and aligns with the interactive services showcase and AI-assisted content summarizer.",
+      "description": "Represents a software module or service offered in the marketplace.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Product entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The official name of the service or product offered by NPB Media (e.g., 'Custom Software Development', 'UI/UX Design')."
-        },
-        "description": {
-          "type": "string",
-          "description": "A comprehensive and detailed description of the service, providing in-depth information. This field serves as the source text for the AI-Assisted Content Summarizer."
-        },
-        "summary": {
-          "type": "string",
-          "description": "A concise, AI-generated summary of the service's description, optimized for quick overviews on product cards and interactive showcases."
-        },
-        "marketValueINR": {
-          "type": "number",
-          "description": "The estimated market value or price of the service in Indian Rupees (INR), providing financial context for potential clients."
-        },
-        "features": {
-          "type": "array",
-          "description": "A list of key features, benefits, or deliverables included with the service, presented as bullet points on the product card.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "An optional URL pointing to an image or icon that visually represents the service, enhancing the attractiveness of the product card.",
-          "format": "uri"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the product record was initially created in the system.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp indicating the last time the product record was updated or modified.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "marketValue": { "type": "number" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "color": { "type": "string" }
       },
-      "required": [
-        "id",
-        "name",
-        "description",
-        "summary",
-        "marketValueINR",
-        "features"
-      ]
+      "required": ["id", "title", "marketValue"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Extended user information for professional and billing purposes.",
+      "properties": {
+        "fullName": { "type": "string" },
+        "fathersName": { "type": "string" },
+        "mobile": { "type": "string" },
+        "dob": { "type": "string" },
+        "fullAddress": { "type": "string" },
+        "resumeURL": { "type": "string" },
+        "photoURL": { "type": "string" }
+      }
+    },
+    "Cart": {
+      "title": "Cart",
+      "type": "object",
+      "description": "User's shopping cart for software module provisioning.",
+      "properties": {
+        "userId": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "type": "object",
+      "description": "Lead captured from the contact form.",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "pending", "solved"] }
+      }
+    },
+    "Meeting": {
+      "title": "Meeting",
+      "type": "object",
+      "description": "A scheduled virtual consultation.",
+      "properties": {
+        "fullName": { "type": "string" },
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "status": { "type": "string" },
+        "meetingLink": { "type": "string" }
+      }
+    },
+    "JobApplication": {
+      "title": "JobApplication",
+      "type": "object",
+      "description": "A candidate's application for a career opening.",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobId": { "type": "string" },
+        "status": { "type": "string" },
+        "applicantSnapshot": { "type": "object" }
+      }
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "anonymous"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/products/{productId}",
-        "definition": {
-          "entityName": "Product",
-          "schema": {
-            "$ref": "#/backend/entities/Product"
-          },
-          "description": "Stores details for each service offered by NPB Media, intended for public display on product cards and the interactive services showcase. Each document represents a single service (e.g., 'Custom Software Development'). This collection is designed for public read access.",
-          "params": [
-            {
-              "name": "productId",
-              "description": "The unique identifier for a specific product or service offering."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The recommended Firestore structure for NPB Media's product offerings is a single top-level collection: `/products`. Each document within this collection will represent a 'Product' entity, detailing a specific service such as 'Custom Software Development' or 'UI/UX Design'. This design adheres strictly to the core principles for a secure, scalable, and debuggable Firestore structure.\n\n**Authorization Independence:** This structure inherently achieves Authorization Independence. `Product` documents are designed to be public-facing, self-contained entities. Their access does not depend on data in parent documents or other collections (e.g., no `get()` calls are needed in security rules to determine if a user can view a product). If, in the future, administrative write access is implemented, it would be based on an independent check (e.g., `request.auth.uid` being present in an `/roles_admin/{uid}` collection), not on any attributes within the product document itself or its parent.\n\n**QAPs (Rules are not Filters):** This design fully supports Queryable Access Patterns (QAPs) for list operations. Since all documents in the `/products` collection are intended for public display (as implied by the 'Interactive Services Showcase' and product card requirements), a `list` query on `/products` will return all documents in the collection without requiring complex rule-based filtering. The security posture is homogeneous: all products are publicly readable. There is no mix of public and private/draft products within this collection, thus eliminating the need for security rules to act as data filters, which aligns perfectly with the QAP principle."
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Public catalog of software modules."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User professional profiles."
+    },
+    "/carts/{userId}": {
+      "schema": "Cart",
+      "description": "User shopping carts."
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Incoming lead requests."
+    },
+    "/meetings/{meetingId}": {
+      "schema": "Meeting",
+      "description": "Scheduled consultation sessions."
+    },
+    "/jobApplications/{appId}": {
+      "schema": "JobApplication",
+      "description": "Candidate job applications."
+    },
+    "/careers/{jobId}": {
+      "schema": "object",
+      "description": "Job opening details."
+    }
   }
 }

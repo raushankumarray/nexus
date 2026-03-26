@@ -1,59 +1,57 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * NPB Media Firestore Security Rules
-     * 
-     * Core Philosophy:
-     * This ruleset implements a public-read model for product offerings while strictly 
-     * protecting write operations. The data is organized into a top-level '/products' 
-     * collection intended for consumption by the interactive services showcase.
-     * 
-     * Data Structure:
-     * - /products/{productId}: Contains details about services (e.g., UI/UX Design, 
-     *   Cloud & DevOps).
-     * 
-     * Key Security Decisions:
-     * - Public Read Access: Product documents are publicly readable to allow potential 
-     *   clients to view service offerings without authentication.
-     * - Write Protection: Currently, write operations (create, update, delete) are 
-     *   locked. While the user intent suggests saving product details, the current 
-     *   data schema lacks an 'ownerId' or 'adminId' field required to securely 
-     *   authorize these writes at the document level.
-     * - Prototyping Flexibility: Logic focuses on authorization and relational 
-     *   integrity rather than strict schema validation to allow for rapid frontend 
-     *   iteration.
+     * NPB Media Core Security Logic
      */
-
-    // The functions `isSignedIn` and `isExistingOwner` were removed because they
-    // were identified as unused and contained invalid variable references (`request`, `resource`)
-    // when not passed as arguments. As the write operations are currently set to `if false`
-    // due to missing schema fields for owner-based writes, these functions are not
-    // presently required. They can be reintroduced and correctly implemented once
-    // the application schema supports the necessary ownership fields and write
-    // operations are enabled.
-
-    /**
-     * @description Rules for the 'Product' collection.
-     * @path /products/{productId}
-     * @allow Public 'get' and 'list' requests to view service cards.
-     * @deny Any 'create', 'update', or 'delete' requests by unauthorized users.
-     * @principle Public read-only access for catalog data.
-     */
-    match /products/{productId} {
-      allow get, list: if true;
-
-      // CRITICAL: Cannot implement owner-only writes. 
-      // The 'Product' entity schema provided in the IR is missing an 'ownerId' or 'authorId' field.
-      // To enable secure writes, add a field (e.g., creatorId) to the Product entity 
-      // and validate it here (e.g., request.resource.data.creatorId == request.auth.uid).
-      allow create: if false; // TODO: Add owner validation once schema includes ownership field.
-      
-      allow update, delete: if false; // TODO: Restrict to existing owners or admins.
+    
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Default deny for any unmatched paths
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Profiles & Carts: Restricted to the individual owner
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /carts/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Job Applications: Candidate can manage their own, Admin access managed via dashboard
+    match /jobApplications/{appId} {
+      allow read, write: if isSignedIn() && appId.startsWith(request.auth.uid);
+    }
+
+    // Public Data: Everyone can view products and job openings
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false; // Admin only
+    }
+
+    match /careers/{jobId} {
+      allow read: if true;
+      allow write: if false; // Admin only
+    }
+
+    // Public Submissions: Anyone can submit inquiries or meetings
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if false; // Admin only
+    }
+
+    match /meetings/{meetingId} {
+      allow create: if true;
+      allow read, update, delete: if false; // Admin only
+    }
+
+    // Default deny
     match /{path=**} {
       allow read, write: if false;
     }
