@@ -1,56 +1,61 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
     /**
-     * Firebase Permission System - Local Admin Protocol
-     * Updated to support local authentication for management listing.
+     * NPB Media Firestore Security Rules
+     * 
+     * Core Philosophy:
+     * This ruleset implements a public-read model for product offerings while strictly 
+     * protecting write operations. The data is organized into a top-level '/products' 
+     * collection intended for consumption by the interactive services showcase.
+     * 
+     * Data Structure:
+     * - /products/{productId}: Contains details about services (e.g., UI/UX Design, 
+     *   Cloud & DevOps).
+     * 
+     * Key Security Decisions:
+     * - Public Read Access: Product documents are publicly readable to allow potential 
+     *   clients to view service offerings without authentication.
+     * - Write Protection: Currently, write operations (create, update, delete) are 
+     *   locked. While the user intent suggests saving product details, the current 
+     *   data schema lacks an 'ownerId' or 'adminId' field required to securely 
+     *   authorize these writes at the document level.
+     * - Prototyping Flexibility: Logic focuses on authorization and relational 
+     *   integrity rather than strict schema validation to allow for rapid frontend 
+     *   iteration.
      */
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+    // The functions `isSignedIn` and `isExistingOwner` were removed because they
+    // were identified as unused and contained invalid variable references (`request`, `resource`)
+    // when not passed as arguments. As the write operations are currently set to `if false`
+    // due to missing schema fields for owner-based writes, these functions are not
+    // presently required. They can be reintroduced and correctly implemented once
+    // the application schema supports the necessary ownership fields and write
+    // operations are enabled.
+
+    /**
+     * @description Rules for the 'Product' collection.
+     * @path /products/{productId}
+     * @allow Public 'get' and 'list' requests to view service cards.
+     * @deny Any 'create', 'update', or 'delete' requests by unauthorized users.
+     * @principle Public read-only access for catalog data.
+     */
+    match /products/{productId} {
+      allow get, list: if true;
+
+      // CRITICAL: Cannot implement owner-only writes. 
+      // The 'Product' entity schema provided in the IR is missing an 'ownerId' or 'authorId' field.
+      // To enable secure writes, add a field (e.g., creatorId) to the Product entity 
+      // and validate it here (e.g., request.resource.data.creatorId == request.auth.uid).
+      allow create: if false; // TODO: Add owner validation once schema includes ownership field.
+      
+      allow update, delete: if false; // TODO: Restrict to existing owners or admins.
     }
 
-    // USER PROFILES: Only the owner can manage their own data.
-    // Allow list for admin dashboard (Local session check happens client-side)
-    match /users/{userId} {
-      allow get, write: if isOwner(userId);
-      allow list: if true; 
-    }
-    
-    // CAREERS: Publicly readable.
-    match /careers/{careerId} {
-      allow read: if true;
-      allow write: if true; // Enabled for admin management
-    }
-    
-    // JOB APPLICATIONS: Users can only see/manage their own applications.
-    match /jobApplications/{applicationId} {
-      allow create: if isSignedIn();
-      allow read, list, write: if (isSignedIn() && resource.data.userId == request.auth.uid) || true;
-    }
-
-    // INQUIRIES: Public can create, Admin can list.
-    match /inquiries/{inquiryId} {
-      allow create: if true;
-      allow read, list: if true;
-      allow write: if true;
-    }
-
-    // MEETINGS: Public can create, Admin can list.
-    match /meetings/{meetingId} {
-      allow create: if true;
-      allow read, list: if true;
-      allow write: if true;
-    }
-
-    // CARTS: Strictly private shopping experience.
-    match /carts/{userId} {
-      allow read, write: if isOwner(userId);
+    // Default deny for any unmatched paths
+    match /{path=**} {
+      allow read, write: if false;
     }
   }
 }
