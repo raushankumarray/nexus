@@ -18,97 +18,14 @@ import {
   Globe,
   ShoppingCart,
   CheckCircle2,
-  Code2,
-  Layout,
-  Smartphone,
-  Building2,
-  Cloud,
-  Network,
-  Palette,
-  Server,
   Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking, setDocumentNonBlocking, useCollection } from "@/firebase";
+import { doc, collection, query, orderBy } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-const PRODUCT_CATALOG = [
-  {
-    id: "custom-software",
-    title: "Custom Software Development",
-    description: "Bespoke engineering for complex business logic and high-performance workflows.",
-    marketValue: 150000,
-    icon: Code2,
-    color: "bg-orange-500",
-    features: ["Bespoke Architecture", "Scalable Engine", "Enterprise Security"]
-  },
-  {
-    id: "web-app",
-    title: "Web Application Development",
-    description: "Modern, reactive web platforms built with Next.js and high-speed data sync.",
-    marketValue: 85000,
-    icon: Layout,
-    color: "bg-blue-600",
-    features: ["SEO Optimized", "Responsive UI", "Admin Dashboard"]
-  },
-  {
-    id: "mobile-app",
-    title: "Mobile Application Development",
-    description: "High-performance iOS and Android apps with native-feel interactions.",
-    marketValue: 120000,
-    icon: Smartphone,
-    color: "bg-emerald-600",
-    features: ["Cross-platform", "Real-time Sync", "App Store Ready"]
-  },
-  {
-    id: "enterprise-solutions",
-    title: "Enterprise Solutions",
-    description: "Robust ERP, CRM, and internal automation tools for large-scale operations.",
-    marketValue: 250000,
-    icon: Building2,
-    color: "bg-indigo-600",
-    features: ["Workflow Automation", "Centralized Data", "Custom Reports"]
-  },
-  {
-    id: "cloud-devops",
-    title: "Cloud & DevOps Services",
-    description: "Automated deployment, containerization, and infrastructure as code.",
-    marketValue: 60000,
-    icon: Cloud,
-    color: "bg-purple-600",
-    features: ["99.9% Uptime", "CI/CD Pipeline", "AWS/Azure/GCP"]
-  },
-  {
-    id: "api-integration",
-    title: "API Development & Integration",
-    description: "Secure bridges between your systems and third-party SaaS environments.",
-    marketValue: 45000,
-    icon: Network,
-    color: "bg-pink-600",
-    features: ["REST/GraphQL", "Legacy Sync", "Secure Gateway"]
-  },
-  {
-    id: "ui-ux-design",
-    title: "UI/UX Experience Design",
-    description: "Stunning, user-centric interfaces designed to maximize retention.",
-    marketValue: 35000,
-    icon: Palette,
-    color: "bg-rose-600",
-    features: ["Interactive Prototypes", "Design System", "User Research"]
-  },
-  {
-    id: "web-hosting",
-    title: "Enterprise Web Hosting",
-    description: "High-speed, managed hosting solutions with 24/7 technical monitoring.",
-    marketValue: 12000,
-    icon: Server,
-    color: "bg-cyan-600",
-    features: ["SSL Protection", "Daily Backups", "Edge Delivery"]
-  }
-];
 
 export default function ProductsPage() {
   const { user } = useUser();
@@ -117,6 +34,13 @@ export default function ProductsPage() {
   const router = useRouter();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
+  // Fetch live products from Firestore
+  const productsQuery = useMemoFirebase(() => {
+    if (!db) return null;
+    return query(collection(db, "products"), orderBy("title", "asc"));
+  }, [db]);
+  const { data: liveProducts, isLoading: isProductsLoading } = useCollection(productsQuery);
+
   // Fetch current cart
   const cartRef = useMemoFirebase(() => {
     if (!user || !db) return null;
@@ -124,11 +48,11 @@ export default function ProductsPage() {
   }, [user, db]);
   const { data: cartData } = useDoc(cartRef);
 
-  const handleAddToCart = (product: typeof PRODUCT_CATALOG[0]) => {
+  const handleAddToCart = (product: any) => {
     if (!user) {
       toast({ 
         title: "Auth Protocol Required", 
-        description: "Please sign in to provision modules to your secure cart." 
+        description: "Please sign in to add modules to your cart." 
       });
       router.push("/login");
       return;
@@ -178,6 +102,14 @@ export default function ProductsPage() {
       router.push("/cart");
     }, 600);
   };
+
+  if (isProductsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background flex flex-col relative overflow-hidden">
@@ -233,66 +165,72 @@ export default function ProductsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {PRODUCT_CATALOG.map((product) => (
-              <Card 
-                key={product.id} 
-                className="group border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden hover:-translate-y-2 transition-all duration-500 flex flex-col h-full"
-              >
-                <div className={cn(
-                  "h-48 flex flex-col items-center justify-center text-white relative transition-all duration-700",
-                  product.color
-                )}>
-                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <product.icon className="w-16 h-16 mb-2 transition-all duration-700 group-hover:scale-75 group-hover:rotate-12 relative z-10" />
-                  <div className="absolute top-6 right-6">
-                    <Zap className="w-5 h-5 text-white/40 group-hover:text-yellow-300 transition-colors" />
-                  </div>
-                </div>
-
-                <CardContent className="flex-1 p-8 flex flex-col justify-between space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-headline font-black italic leading-tight group-hover:text-primary transition-colors">
-                      {product.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm font-semibold leading-relaxed">
-                      {product.description}
-                    </p>
-                    <div className="space-y-2">
-                      {product.features.map((feature, i) => (
-                        <div key={i} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                          {feature}
-                        </div>
-                      ))}
+            {liveProducts && liveProducts.length > 0 ? (
+              liveProducts.map((product) => (
+                <Card 
+                  key={product.id} 
+                  className="group border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden hover:-translate-y-2 transition-all duration-500 flex flex-col h-full"
+                >
+                  <div className={cn(
+                    "h-48 flex flex-col items-center justify-center text-white relative transition-all duration-700",
+                    product.color || "bg-orange-500"
+                  )}>
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Package className="w-16 h-16 mb-2 transition-all duration-700 group-hover:scale-75 group-hover:rotate-12 relative z-10" />
+                    <div className="absolute top-6 right-6">
+                      <Zap className="w-5 h-5 text-white/40 group-hover:text-yellow-300 transition-colors" />
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
-                    <div className="flex justify-between items-end">
-                      <div className="space-y-0.5">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Market Value</p>
-                        <p className="text-2xl font-headline font-black text-primary">₹{product.marketValue.toLocaleString()}</p>
+                  <CardContent className="flex-1 p-8 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-2xl font-headline font-black italic leading-tight group-hover:text-primary transition-colors">
+                        {product.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm font-semibold leading-relaxed line-clamp-3">
+                        {product.description}
+                      </p>
+                      <div className="space-y-2">
+                        {product.features?.map((feature: string, i: number) => (
+                          <div key={i} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                            {feature}
+                          </div>
+                        ))}
                       </div>
-                      <Badge variant="secondary" className="bg-slate-50 text-slate-500 font-black text-[8px] uppercase tracking-widest px-3 py-1">Verified</Badge>
                     </div>
 
-                    <Button 
-                      onClick={() => handleAddToCart(product)}
-                      disabled={loadingId === product.id}
-                      className="w-full rounded-2xl h-14 bg-primary text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all group/btn"
-                    >
-                      {loadingId === product.id ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <>
-                          Add to Cart <ShoppingCart className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
+                      <div className="flex justify-between items-end">
+                        <div className="space-y-0.5">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Market Value</p>
+                          <p className="text-2xl font-headline font-black text-primary">₹{product.marketValue?.toLocaleString()}</p>
+                        </div>
+                        <Badge variant="secondary" className="bg-slate-50 text-slate-500 font-black text-[8px] uppercase tracking-widest px-3 py-1">Verified</Badge>
+                      </div>
+
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        disabled={loadingId === product.id}
+                        className="w-full rounded-2xl h-14 bg-primary text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all group/btn border-none"
+                      >
+                        {loadingId === product.id ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <>
+                            Add to Cart <ShoppingCart className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20">
+                <p className="text-muted-foreground font-black uppercase tracking-widest text-sm italic">Catalog synchronizing...</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
