@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * NPB Media Security Protocol v4.6
+     * NPB Media Security Protocol v4.8
      */
     
     function isSignedIn() {
@@ -53,9 +53,14 @@ service cloud.firestore {
       allow read, update, delete: if true; // Admin Command Center access
     }
 
-    // System Notifications
+    // System Notifications & Global Settings
     match /notifications/{notificationId} {
       allow read, write: if true; // Admin Command Center management
+    }
+
+    match /settings/system {
+      allow read: if true;
+      allow write: if true; // Managed by Admin Command Center
     }
 
     // Default deny

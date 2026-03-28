@@ -1,8 +1,8 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
+import React, { useState, useEffect } from "react";
+import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { 
   Bell, 
@@ -19,7 +19,12 @@ import {
   Filter,
   Send,
   Layout,
-  BellRing
+  BellRing,
+  ShieldAlert,
+  Settings,
+  MonitorOff,
+  AlertOctagon,
+  Timer
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { 
   Select,
   SelectContent,
@@ -64,6 +70,10 @@ export default function AdminNotificationsPage() {
     type: "info"
   });
 
+  // System Settings Refs
+  const systemRef = useMemoFirebase(() => doc(db, "settings", "system"), [db]);
+  const { data: systemSettings } = useDoc(systemRef);
+
   const notificationsQuery = useMemoFirebase(() => {
     if (!db) return null;
     return query(collection(db, "notifications"), orderBy("createdAt", "desc"));
@@ -77,6 +87,40 @@ export default function AdminNotificationsPage() {
     const matchesType = typeFilter === "all" || n.type === typeFilter;
     return matchesSearch && matchesType;
   }) || [];
+
+  const handleMaintenanceToggle = (active: boolean) => {
+    if (!db) return;
+    updateDocumentNonBlocking(systemRef, {
+      "maintenance.isActive": active,
+      "maintenance.restoreTime": systemSettings?.maintenance?.restoreTime || "60 Minutes",
+      "maintenance.message": "Site is currently undergoing scheduled infrastructure upgrades."
+    });
+    toast({ 
+      title: active ? "Dark Protocol Active" : "Systems Restored", 
+      description: active ? "Site maintenance mode initiated." : "Site is now publicly accessible." 
+    });
+  };
+
+  const handleRestoreTimeChange = (time: string) => {
+    if (!db) return;
+    updateDocumentNonBlocking(systemRef, { "maintenance.restoreTime": time });
+  };
+
+  const toggleGlobalPopup = (active: boolean) => {
+    if (!db) return;
+    updateDocumentNonBlocking(systemRef, {
+      "popup.isActive": active,
+      "popup.title": systemSettings?.popup?.title || "System Announcement",
+      "popup.message": systemSettings?.popup?.message || "Please take note of this important update.",
+      "popup.type": systemSettings?.popup?.type || "info"
+    });
+    toast({ title: active ? "Broadcast Live" : "Broadcast Terminated", description: active ? "Global popup pushed to all users." : "Global popup removed." });
+  };
+
+  const updatePopupContent = (field: string, value: string) => {
+    if (!db) return;
+    updateDocumentNonBlocking(systemRef, { [`popup.${field}`]: value });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +189,111 @@ export default function AdminNotificationsPage() {
         </div>
       </div>
 
+      {/* System Control Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Maintenance Controls */}
+        <Card className="bg-slate-900 border-slate-800 rounded-[2.5rem] overflow-hidden group border-2">
+          <CardContent className="p-8 space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 group-hover:rotate-12 transition-transform">
+                  <MonitorOff className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-headline font-black italic uppercase text-white">Maintenance Mode</h3>
+                  <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">Protocol: Dark Shutdown</p>
+                </div>
+              </div>
+              <Switch 
+                checked={systemSettings?.maintenance?.isActive || false} 
+                onCheckedChange={handleMaintenanceToggle}
+                className="data-[state=checked]:bg-rose-600"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Restore Timing (Display only)</Label>
+                <div className="relative">
+                  <Timer className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                  <Input 
+                    value={systemSettings?.maintenance?.restoreTime || ""} 
+                    onChange={e => handleRestoreTimeChange(e.target.value)}
+                    placeholder="e.g. 2 Hours, Tomorrow 10AM" 
+                    className="h-12 bg-slate-950 border-slate-800 pl-12 text-sm text-white rounded-xl focus:border-rose-500"
+                  />
+                </div>
+              </div>
+              <div className={cn(
+                "p-4 rounded-2xl border-2 transition-all duration-500",
+                systemSettings?.maintenance?.isActive ? "bg-rose-500/10 border-rose-500/20" : "bg-slate-950 border-slate-800"
+              )}>
+                <p className="text-[9px] font-black uppercase text-rose-500 mb-1">Status Indicator</p>
+                <p className="text-xs font-bold text-slate-400">
+                  {systemSettings?.maintenance?.isActive 
+                    ? "Warning: Public website is locked. Maintenance page is live." 
+                    : "System fully operational. Public gateway is open."}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Global Popup Controls */}
+        <Card className="bg-slate-900 border-slate-800 rounded-[2.5rem] overflow-hidden group border-2">
+          <CardContent className="p-8 space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:rotate-12 transition-transform">
+                  <AlertOctagon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-headline font-black italic uppercase text-white">Global Popup</h3>
+                  <p className="text-[9px] font-black uppercase text-slate-500 tracking-widest">Protocol: Direct Interrupt</p>
+                </div>
+              </div>
+              <Switch 
+                checked={systemSettings?.popup?.isActive || false} 
+                onCheckedChange={toggleGlobalPopup}
+                className="data-[state=checked]:bg-blue-600"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Popup Title</Label>
+                <Input 
+                  value={systemSettings?.popup?.title || ""} 
+                  onChange={e => updatePopupContent("title", e.target.value)}
+                  className="h-12 bg-slate-950 border-slate-800 text-sm text-white rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Display Level</Label>
+                <Select value={systemSettings?.popup?.type || "info"} onValueChange={v => updatePopupContent("type", v)}>
+                  <SelectTrigger className="h-12 bg-slate-950 border-slate-800 text-white rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-950 border-slate-800 text-white">
+                    <SelectItem value="info">Information</SelectItem>
+                    <SelectItem value="warning">Critical Warning</SelectItem>
+                    <SelectItem value="success">Feature Launch</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-full space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-2">Broadcast Message</Label>
+                <Textarea 
+                  value={systemSettings?.popup?.message || ""} 
+                  onChange={e => updatePopupContent("message", e.target.value)}
+                  className="bg-slate-950 border-slate-800 text-sm text-white rounded-xl min-h-[80px] resize-none"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-slate-900 border-slate-800 rounded-[2rem] group hover:border-primary transition-all duration-500">
@@ -182,23 +331,6 @@ export default function AdminNotificationsPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Type Filter Tabs */}
-      <div className="flex gap-2 p-1.5 bg-slate-900/50 border border-slate-800 rounded-2xl w-fit">
-        {['all', 'info', 'success', 'warning', 'error'].map(type => (
-          <Button 
-            key={type}
-            variant="ghost"
-            onClick={() => setTypeFilter(type)}
-            className={cn(
-              "h-10 px-6 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
-              typeFilter === type ? "bg-slate-800 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"
-            )}
-          >
-            {type}
-          </Button>
-        ))}
       </div>
 
       {/* Main List */}

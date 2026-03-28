@@ -86,6 +86,30 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "message", "type"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "type": "object",
+      "description": "Global application flags like maintenance mode and active popups.",
+      "properties": {
+        "maintenance": {
+          "type": "object",
+          "properties": {
+            "isActive": { "type": "boolean" },
+            "restoreTime": { "type": "string" },
+            "message": { "type": "string" }
+          }
+        },
+        "popup": {
+          "type": "object",
+          "properties": {
+            "isActive": { "type": "boolean" },
+            "title": { "type": "string" },
+            "message": { "type": "string" },
+            "type": { "type": "string" }
+          }
+        }
+      }
     }
   },
   "auth": {
@@ -123,6 +147,10 @@
     "/notifications/{notificationId}": {
       "schema": "Notification",
       "description": "System-wide alerts and messages."
+    },
+    "/settings/system": {
+      "schema": "SystemSettings",
+      "description": "Global system status flags."
     }
   }
 }
