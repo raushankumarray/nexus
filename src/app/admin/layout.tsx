@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Loader2, LogOut, Menu, X } from "lucide-react";
+import { Loader2, LogOut, Menu, X, Bell } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -62,6 +62,7 @@ export default function AdminLayout({
     { label: "Schedule Meetings", href: "/admin/meetings" },
     { label: "Career", href: "/admin/careers" },
     { label: "Products", href: "/admin/products" },
+    { label: "Notification", href: "/admin/notifications" },
   ];
 
   const NavButtons = ({ mobile = false }: { mobile?: boolean }) => (

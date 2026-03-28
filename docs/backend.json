@@ -73,6 +73,19 @@
         "status": { "type": "string" },
         "applicantSnapshot": { "type": "object" }
       }
+    },
+    "Notification": {
+      "title": "Notification",
+      "type": "object",
+      "description": "System alert or broadcast message for users or administrators.",
+      "properties": {
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] },
+        "status": { "type": "string", "enum": ["unread", "read"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "message", "type"]
     }
   },
   "auth": {
@@ -106,6 +119,10 @@
     "/careers/{jobId}": {
       "schema": "object",
       "description": "Job opening details."
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "System-wide alerts and messages."
     }
   }
 }
