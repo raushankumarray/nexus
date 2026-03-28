@@ -139,6 +139,23 @@ export default function AdminNotificationsPage() {
     });
   };
 
+  // Immediate sync for Popup Toggle (Deactivation only)
+  const handlePopupToggle = (active: boolean) => {
+    setPopupForm(prev => ({ ...prev, isActive: active }));
+    
+    // If clicking OFF, save data immediately to stop the broadcast globally
+    if (!active && systemRef) {
+      setDocumentNonBlocking(systemRef, {
+        popup: { ...popupForm, isActive: false }
+      }, { merge: true });
+      
+      toast({ 
+        title: "Broadcast Terminated", 
+        description: "Global popup has been removed from the ecosystem." 
+      });
+    }
+  };
+
   const savePopupBroadcast = () => {
     if (!db || !systemRef) return;
     setDocumentNonBlocking(systemRef, {
@@ -328,7 +345,7 @@ export default function AdminNotificationsPage() {
             </div>
             <Switch 
               checked={popupForm.isActive} 
-              onCheckedChange={(v) => setPopupForm({...popupForm, isActive: v})}
+              onCheckedChange={handlePopupToggle}
               className="data-[state=checked]:bg-blue-600 scale-125"
             />
           </div>
