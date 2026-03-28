@@ -105,6 +105,7 @@
       "type": "object",
       "description": "Historical record of maintenance activation.",
       "properties": {
+        "isActive": { "type": "boolean" },
         "startTime": { "type": "string", "format": "date-time" },
         "endTime": { "type": "string", "format": "date-time" },
         "message": { "type": "string" },
