@@ -78,6 +78,35 @@ export default function AdminNotificationsPage() {
     }
   }, [systemSettings]);
 
+  // Auto-off logic for expired maintenance
+  useEffect(() => {
+    if (maintenanceForm.isActive && maintenanceForm.endTime) {
+      const checkExpiry = () => {
+        const end = new Date(maintenanceForm.endTime);
+        if (!isNaN(end.getTime()) && new Date() > end) {
+          // Maintenance has expired, auto-deactivate
+          const updatedForm = { ...maintenanceForm, isActive: false };
+          setMaintenanceForm(updatedForm);
+          
+          if (systemRef) {
+            setDocumentNonBlocking(systemRef, {
+              maintenance: updatedForm
+            }, { merge: true });
+            
+            toast({ 
+              title: "Protocol Restored", 
+              description: "Restoration time completed. System auto-restored." 
+            });
+          }
+        }
+      };
+
+      checkExpiry(); // Initial check
+      const timer = setInterval(checkExpiry, 30000); // Check every 30 seconds
+      return () => clearInterval(timer);
+    }
+  }, [maintenanceForm.isActive, maintenanceForm.endTime, systemRef, toast]);
+
   const saveMaintenanceSchedule = () => {
     if (!db || !systemRef) return;
     setDocumentNonBlocking(systemRef, {
