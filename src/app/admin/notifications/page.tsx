@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase";
+import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { 
   Bell, 
@@ -89,12 +89,15 @@ export default function AdminNotificationsPage() {
   }) || [];
 
   const handleMaintenanceToggle = (active: boolean) => {
-    if (!db) return;
-    updateDocumentNonBlocking(systemRef, {
-      "maintenance.isActive": active,
-      "maintenance.restoreTime": systemSettings?.maintenance?.restoreTime || "60 Minutes",
-      "maintenance.message": "Site is currently undergoing scheduled infrastructure upgrades."
-    });
+    if (!db || !systemRef) return;
+    setDocumentNonBlocking(systemRef, {
+      maintenance: {
+        isActive: active,
+        restoreTime: systemSettings?.maintenance?.restoreTime || "60 Minutes",
+        message: systemSettings?.maintenance?.message || "Site is currently undergoing scheduled infrastructure upgrades."
+      }
+    }, { merge: true });
+    
     toast({ 
       title: active ? "Dark Protocol Active" : "Systems Restored", 
       description: active ? "Site maintenance mode initiated." : "Site is now publicly accessible." 
@@ -102,24 +105,36 @@ export default function AdminNotificationsPage() {
   };
 
   const handleRestoreTimeChange = (time: string) => {
-    if (!db) return;
-    updateDocumentNonBlocking(systemRef, { "maintenance.restoreTime": time });
+    if (!db || !systemRef) return;
+    setDocumentNonBlocking(systemRef, { 
+      maintenance: { 
+        ...systemSettings?.maintenance,
+        restoreTime: time 
+      } 
+    }, { merge: true });
   };
 
   const toggleGlobalPopup = (active: boolean) => {
-    if (!db) return;
-    updateDocumentNonBlocking(systemRef, {
-      "popup.isActive": active,
-      "popup.title": systemSettings?.popup?.title || "System Announcement",
-      "popup.message": systemSettings?.popup?.message || "Please take note of this important update.",
-      "popup.type": systemSettings?.popup?.type || "info"
-    });
+    if (!db || !systemRef) return;
+    setDocumentNonBlocking(systemRef, {
+      popup: {
+        isActive: active,
+        title: systemSettings?.popup?.title || "System Announcement",
+        message: systemSettings?.popup?.message || "Please take note of this important update.",
+        type: systemSettings?.popup?.type || "info"
+      }
+    }, { merge: true });
     toast({ title: active ? "Broadcast Live" : "Broadcast Terminated", description: active ? "Global popup pushed to all users." : "Global popup removed." });
   };
 
   const updatePopupContent = (field: string, value: string) => {
-    if (!db) return;
-    updateDocumentNonBlocking(systemRef, { [`popup.${field}`]: value });
+    if (!db || !systemRef) return;
+    setDocumentNonBlocking(systemRef, { 
+      popup: { 
+        ...systemSettings?.popup,
+        [field]: value 
+      } 
+    }, { merge: true });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -139,7 +154,8 @@ export default function AdminNotificationsPage() {
 
   const handleMarkRead = (id: string) => {
     if (!db) return;
-    updateDocumentNonBlocking(doc(db, "notifications", id), { status: "read" });
+    const notifRef = doc(db, "notifications", id);
+    setDocumentNonBlocking(notifRef, { status: "read" }, { merge: true });
     toast({ title: "Registry Updated", description: "Notification marked as read." });
   };
 

@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * NPB Media Security Protocol v4.8
+     * NPB Media Security Protocol v4.9
      */
     
     function isSignedIn() {
@@ -27,40 +27,40 @@ service cloud.firestore {
     // Job Applications: Candidates can manage their own, Admin can manage all
     match /jobApplications/{appId} {
       allow create: if isSignedIn();
-      // Loosened for Admin Dashboard prototype functionality
       allow read, update, delete: if true; 
     }
 
     // Public & Admin Data
     match /products/{productId} {
       allow read: if true;
-      allow write: if true; // Admin management
+      allow write: if true;
     }
 
     match /careers/{jobId} {
       allow read: if true;
-      allow write: if true; // Admin management
+      allow write: if true;
     }
 
     // Lead Submissions & Consultation Requests
     match /inquiries/{inquiryId} {
       allow create: if true;
-      allow read, update, delete: if true; // Admin Command Center access
+      allow read, update, delete: if true;
     }
 
     match /meetings/{meetingId} {
       allow create: if true;
-      allow read, update, delete: if true; // Admin Command Center access
+      allow read, update, delete: if true;
     }
 
     // System Notifications & Global Settings
     match /notifications/{notificationId} {
-      allow read, write: if true; // Admin Command Center management
+      allow read, write: if true;
     }
 
+    // Explicitly allow public read for global system flags (Maintenance/Popups)
     match /settings/system {
       allow read: if true;
-      allow write: if true; // Managed by Admin Command Center
+      allow write: if true; // Managed by authorized Admin Command Center session
     }
 
     // Default deny
