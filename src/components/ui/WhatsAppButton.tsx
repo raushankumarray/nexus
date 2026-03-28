@@ -1,16 +1,39 @@
 
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export function WhatsAppButton() {
+  const pathname = usePathname();
+  const [isVisible, setIsVisible] = useState(true);
+
   const phoneNumber = "918877300114";
   const message = "Hello NPB Media, I would like to discuss a project.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
+  useEffect(() => {
+    // Timer to hide the button after 10 seconds on the website
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Requirement: Permanently removed whatsapp icon from admin pages
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
+  // Requirement: Auto hide after 10 sec on website
+  if (!isVisible) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-8 right-8 z-[100] group">
+    <div className="fixed bottom-8 right-8 z-[100] group animate-in fade-in duration-700">
       {/* Tooltip */}
       <div className="absolute right-full mr-4 top-1/2 -translate-y-1/2 px-4 py-2 bg-white rounded-xl shadow-2xl border border-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap">
         <p className="text-xs font-black uppercase tracking-widest text-primary italic">Chat with Experts</p>
