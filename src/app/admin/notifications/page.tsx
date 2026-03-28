@@ -1,8 +1,7 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase";
+import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase";
 import { collection, query, orderBy, doc } from "firebase/firestore";
 import { 
   Bell, 
@@ -24,7 +23,8 @@ import {
   Settings,
   MonitorOff,
   AlertOctagon,
-  Timer
+  Timer,
+  Edit3
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -63,6 +63,7 @@ export default function AdminNotificationsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [editingNotification, setEditingNotification] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -141,15 +142,39 @@ export default function AdminNotificationsPage() {
     e.preventDefault();
     if (!db) return;
 
-    addDocumentNonBlocking(collection(db, "notifications"), {
-      ...formData,
-      status: "unread",
-      createdAt: new Date().toISOString()
-    });
+    if (editingNotification) {
+      const notifRef = doc(db, "notifications", editingNotification.id);
+      updateDocumentNonBlocking(notifRef, {
+        ...formData,
+        updatedAt: new Date().toISOString()
+      });
+      toast({ title: "Protocol Updated", description: "Notification payload has been synchronized." });
+    } else {
+      addDocumentNonBlocking(collection(db, "notifications"), {
+        ...formData,
+        status: "unread",
+        createdAt: new Date().toISOString()
+      });
+      toast({ title: "Dispatch Success", description: "Notification broadcasted to ecosystem." });
+    }
 
-    toast({ title: "Dispatch Success", description: "Notification broadcasted to ecosystem." });
     setIsModalOpen(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setFormData({ title: "", message: "", type: "info" });
+    setEditingNotification(null);
+  };
+
+  const handleEdit = (notif: any) => {
+    setEditingNotification(notif);
+    setFormData({
+      title: notif.title || "",
+      message: notif.message || "",
+      type: notif.type || "info"
+    });
+    setIsModalOpen(true);
   };
 
   const handleMarkRead = (id: string) => {
@@ -197,7 +222,7 @@ export default function AdminNotificationsPage() {
             />
           </div>
           <Button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => { resetForm(); setIsModalOpen(true); }}
             className="h-12 px-8 rounded-xl bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-xl shadow-primary/10"
           >
             <Plus className="w-4 h-4 mr-2" /> Dispatch Alert
@@ -247,7 +272,7 @@ export default function AdminNotificationsPage() {
                 <p className="text-[9px] font-black uppercase text-rose-500 mb-1">Status Indicator</p>
                 <p className="text-xs font-bold text-slate-400">
                   {systemSettings?.maintenance?.isActive 
-                    ? "Warning: Public website is locked. Maintenance page is live." 
+                    ? "Warning: Public website is locked. Maintenance page is live. (Admin access remains open)" 
                     : "System fully operational. Public gateway is open."}
                 </p>
               </div>
@@ -391,6 +416,13 @@ export default function AdminNotificationsPage() {
                         </Button>
                       )}
                       <Button 
+                        onClick={() => handleEdit(notif)}
+                        variant="outline"
+                        className="h-12 rounded-xl border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-6"
+                      >
+                        <Edit3 className="w-4 h-4 mr-2" /> Edit Protocol
+                      </Button>
+                      <Button 
                         onClick={() => handleDelete(notif.id)}
                         variant="outline"
                         className="h-12 rounded-xl border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-6"
@@ -416,12 +448,12 @@ export default function AdminNotificationsPage() {
         )}
       </div>
 
-      {/* Dispatch Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      {/* Dispatch / Edit Modal */}
+      <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) resetForm(); setIsModalOpen(open); }}>
         <DialogContent className="max-w-2xl bg-slate-950 border-slate-800 text-white rounded-[3rem] p-0 overflow-hidden">
           <div className="bg-slate-900 p-8 border-b border-slate-800">
             <DialogTitle className="text-3xl font-headline font-black italic uppercase tracking-tighter">
-              Initialize <span className="text-primary">Dispatch</span>
+              {editingNotification ? "Update" : "Initialize"} <span className="text-primary">Dispatch</span>
             </DialogTitle>
             <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">System Broadcast Protocol</p>
           </div>
@@ -460,8 +492,8 @@ export default function AdminNotificationsPage() {
             <div className="p-6 bg-primary/5 border border-primary/10 rounded-2xl flex items-start gap-4">
               <Zap className="w-6 h-6 text-primary shrink-0 mt-1" />
               <div className="space-y-1">
-                <p className="text-[10px] font-black text-primary uppercase tracking-widest">Broadcast Warning</p>
-                <p className="text-xs font-medium text-slate-400 leading-relaxed italic">Dispatched alerts are immediately written to the global registry and prioritized based on level.</p>
+                <p className="text-[10px] font-black text-primary uppercase tracking-widest">Protocol Sync</p>
+                <p className="text-xs font-medium text-slate-400 leading-relaxed italic">Changes are instantly synchronized across the global registry once confirmed.</p>
               </div>
             </div>
           </form>
@@ -469,7 +501,7 @@ export default function AdminNotificationsPage() {
           <DialogFooter className="p-8 bg-slate-900 border-t border-slate-800">
             <Button variant="ghost" onClick={() => setIsModalOpen(false)} className="rounded-full text-[10px] font-black uppercase tracking-widest">Abort</Button>
             <Button onClick={handleSubmit} className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">
-              Launch Broadcast <Send className="ml-2 w-4 h-4" />
+              {editingNotification ? "Confirm Update" : "Launch Broadcast"} <Send className="ml-2 w-4 h-4" />
             </Button>
           </DialogFooter>
         </DialogContent>

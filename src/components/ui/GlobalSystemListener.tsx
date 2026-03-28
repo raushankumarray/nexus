@@ -1,9 +1,9 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
+import { usePathname } from "next/navigation";
 import { 
   Dialog, 
   DialogContent, 
@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 
 export function GlobalSystemListener() {
   const db = useFirestore();
+  const pathname = usePathname();
   const systemRef = useMemoFirebase(() => doc(db, "settings", "system"), [db]);
   const { data: settings } = useDoc(systemRef);
   
@@ -39,8 +40,10 @@ export function GlobalSystemListener() {
     }
   }, [settings?.popup?.isActive, settings?.popup?.message]);
 
-  // 1. Maintenance Mode Overlay
-  if (settings?.maintenance?.isActive) {
+  // 1. Maintenance Mode Overlay (Excluded for Admin pages)
+  const isAdminPage = pathname.startsWith('/admin');
+  
+  if (settings?.maintenance?.isActive && !isAdminPage) {
     return (
       <div className="fixed inset-0 z-[9999] bg-slate-950 flex items-center justify-center p-6 overflow-hidden">
         <div className="absolute inset-0 grid-bg opacity-10" />
