@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -11,7 +10,7 @@ import {
   CheckCircle2, 
   Clock, 
   Calendar,
-  ArrowRight,
+  ArrowRight, 
   ShieldAlert,
   Loader2,
   Users
@@ -19,6 +18,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function AdminDashboard() {
   const db = useFirestore();
