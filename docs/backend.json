@@ -99,6 +99,17 @@
           }
         }
       }
+    },
+    "MaintenanceLog": {
+      "title": "MaintenanceLog",
+      "type": "object",
+      "description": "Historical record of maintenance activation.",
+      "properties": {
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -136,6 +147,10 @@
     "/settings/system": {
       "schema": "SystemSettings",
       "description": "Global system status flags."
+    },
+    "/maintenanceLogs/{logId}": {
+      "schema": "MaintenanceLog",
+      "description": "Historical system downtime records."
     }
   }
 }
