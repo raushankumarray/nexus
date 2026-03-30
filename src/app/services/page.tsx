@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -203,9 +202,11 @@ export default function ServicesPage() {
                   </div>
                   
                   <div className="pt-8 border-t border-muted mt-8 flex items-center justify-between">
-                    <Button variant="ghost" className="p-0 h-auto font-black text-xs uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors group/btn">
-                      Request Consultation <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
-                    </Button>
+                    <Link href="/contact">
+                      <Button variant="ghost" className="p-0 h-auto font-black text-xs uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors group/btn">
+                        Request Consultation <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
+                      </Button>
+                    </Link>
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all group-hover:rotate-[360deg] duration-700">
                       <Zap className="w-5 h-5" />
                     </div>

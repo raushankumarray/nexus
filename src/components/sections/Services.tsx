@@ -5,6 +5,7 @@ import { Code2, Globe, Smartphone, Building2, Cloud, Network, ArrowRight, Zap, S
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const services = [
   {
@@ -78,7 +79,7 @@ export function Services() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-16">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/20 border-2 border-primary/30 text-primary text-sm font-black uppercase tracking-widest shadow-md">
+            <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/10 border-2 border-primary/30 text-primary text-sm font-black uppercase tracking-widest shadow-md">
               <Sparkles className="w-5 h-5" />
               Our Expertise
             </div>
@@ -128,13 +129,15 @@ export function Services() {
                     {service.description}
                   </p>
                   
-                  <Button 
-                    variant="outline" 
-                    className="rounded-full px-8 py-5 h-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-foreground transition-all duration-300 font-black uppercase tracking-widest text-xs flex items-center gap-2 group/btn mx-auto"
-                  >
-                    Explore Service 
-                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
-                  </Button>
+                  <Link href="/services">
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full px-8 py-5 h-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-foreground transition-all duration-300 font-black uppercase tracking-widest text-xs flex items-center gap-2 group/btn mx-auto"
+                    >
+                      Explore Service 
+                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-2 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>
