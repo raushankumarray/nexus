@@ -1,4 +1,4 @@
-import { Code2, Cloud, Shield, Zap, Layout, BarChart3 } from "lucide-react";
+import { Code2, Cloud, Shield, Zap, Layout } from "lucide-react";
 
 export const SERVICES_DATA = [
   {
@@ -35,12 +35,5 @@ export const SERVICES_DATA = [
     icon: Layout,
     color: "bg-secondary",
     accent: "border-secondary/20",
-  },
-  {
-    title: "Data Analytics & AI",
-    description: "Turning raw data into actionable insights with advanced machine learning and data engineering.",
-    icon: BarChart3,
-    color: "bg-foreground",
-    accent: "border-foreground/20",
   },
 ];

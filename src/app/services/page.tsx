@@ -89,16 +89,6 @@ const detailedServices = [
     shadow: "shadow-pink-600/20"
   },
   {
-    title: "AI & Data Analytics",
-    description: "Turning raw data into actionable insights. We integrate advanced machine learning and predictive models to give you a decision-making advantage.",
-    details: "Our data engineers build pipelines that process and visualize large datasets in real-time. We implement NLP for chatbots, computer vision for image analysis, and recommendation engines to personalize user experiences.",
-    icon: BarChart3,
-    features: ["Predictive Models", "NLP / Chatbots", "Data Visualization", "ML Integration"],
-    color: "bg-cyan-600",
-    hover: "hover:skew-y-2 hover:scale-105",
-    shadow: "shadow-cyan-600/20"
-  },
-  {
     title: "UI/UX Experience Design",
     description: "User-centric design that balances aesthetics with functionality. We create interfaces that are beautiful, intuitive, and conversion-focused.",
     details: "Great software starts with understanding the user. We perform user research, wireframing, and high-fidelity prototyping to ensure the final product is both stunning and easy to navigate, reducing friction and increasing satisfaction.",
@@ -142,9 +132,6 @@ export default function ServicesPage() {
               </div>
               <div className="flex items-center gap-3 text-white/80 font-black uppercase tracking-widest text-xs">
                 <Rocket className="w-5 h-5 text-blue-400" /> Rapid Deployment
-              </div>
-              <div className="flex items-center gap-3 text-white/80 font-black uppercase tracking-widest text-xs">
-                <Cpu className="w-5 h-5 text-purple-400" /> AI-Driven Lab
               </div>
             </div>
           </div>
@@ -204,7 +191,7 @@ export default function ServicesPage() {
                   <div className="pt-8 border-t border-muted mt-8 flex items-center justify-between">
                     <Link href="/contact">
                       <Button variant="ghost" className="p-0 h-auto font-black text-xs uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors group/btn">
-                        Request Consultation <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
+                        Request Consultation <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:btn:translate-x-2" />
                       </Button>
                     </Link>
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all group-hover:rotate-[360deg] duration-700">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -214,10 +213,6 @@ export default function CareerPage() {
             <div className="flex items-center gap-3">
               <Globe className="w-10 h-10 text-blue-600" />
               <span className="text-2xl font-headline font-black italic">Begusarai Tech Hub</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <BrainCircuit className="w-10 h-10 text-orange-500" />
-              <span className="text-2xl font-headline font-black italic">AI Lab Bihar</span>
             </div>
             <div className="flex items-center gap-3">
               <Target className="w-10 h-10 text-emerald-600" />

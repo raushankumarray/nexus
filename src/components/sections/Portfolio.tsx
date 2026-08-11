@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/app/lib/placeholder-images";
 import { ExternalLink, Plus, Sparkles } from "lucide-react";
 
-const categories = ["All", "Software", "Fintech", "AI", "Cloud"];
+const categories = ["All", "Software", "Fintech", "Cloud"];
 
 export function Portfolio() {
   const [activeTab, setActiveTab] = useState("All");
@@ -20,13 +19,6 @@ export function Portfolio() {
       category: "Fintech",
       image: PlaceHolderImages?.find(p => p.id === "portfolio-fintech"),
       tags: ["Mobile App", "Security", "Real-time"],
-    },
-    {
-      id: 2,
-      title: "OmniSight AI Engine",
-      category: "AI",
-      image: PlaceHolderImages?.find(p => p.id === "portfolio-ai"),
-      tags: ["Data Viz", "Neural Nets", "SaaS"],
     },
     {
       id: 3,

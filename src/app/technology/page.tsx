@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -19,8 +18,7 @@ import {
   ArrowRight,
   Monitor,
   Globe,
-  Infinity,
-  BrainCircuit
+  Infinity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -104,22 +102,6 @@ const techStacks = [
       { name: "Kotlin", color: "bg-purple-600" },
       { name: "Expo", color: "bg-slate-900" }
     ]
-  },
-  {
-    category: "AI & Intelligence",
-    description: "Integrating advanced machine learning models and Generative AI to automate workflows and drive insights.",
-    icon: BrainCircuit,
-    color: "bg-cyan-600",
-    hoverColor: "group-hover:bg-cyan-600",
-    shadow: "shadow-cyan-600/20",
-    hover: "hover:-rotate-2 hover:scale-105",
-    items: [
-      { name: "TensorFlow", color: "bg-orange-400" },
-      { name: "OpenAI API", color: "bg-emerald-700" },
-      { name: "Genkit", color: "bg-blue-600" },
-      { name: "PyTorch", color: "bg-rose-500" },
-      { name: "LangChain", color: "bg-teal-600" }
-    ]
   }
 ];
 
@@ -201,7 +183,7 @@ export default function TechnologyPage() {
                   </div>
                   <h3 className="text-3xl font-headline font-black italic">Cutting-Edge Lab</h3>
                   <p className="text-white/80 text-lg leading-relaxed font-semibold">
-                    Mastering serverless edge computing, AI-driven automation, and real-time distributed systems for global scalability.
+                    Mastering serverless edge computing and real-time distributed systems for global scalability.
                   </p>
                   <div className="pt-6 grid grid-cols-2 gap-4">
                     <div className="p-4 rounded-2xl bg-white/10 border border-white/20 text-center backdrop-blur-sm">
@@ -312,4 +294,3 @@ export default function TechnologyPage() {
     </main>
   );
 }
-

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -6,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  BrainCircuit, 
   ArrowRight, 
   Activity, 
   Globe, 
@@ -19,7 +17,6 @@ import { cn } from "@/lib/utils";
 
 const UPTIME_PROJECTS = [
   { name: "MediaPay Gateway", uptime: "99.99%", status: "online" },
-  { name: "OmniSight AI", uptime: "99.95%", status: "online" },
   { name: "CloudScale ERP", uptime: "100%", status: "online" },
   { name: "SafeSync Vault", uptime: "99.98%", status: "maintenance" },
 ];
@@ -45,7 +42,7 @@ export function MainOverview() {
                 Empowering the <span className="text-primary italic">Digital Ecosystem</span>
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed max-w-xl font-semibold">
-                NPB Media provides an integrated overview of your digital assets, leveraging proprietary AI to monitor uptime, optimize performance, and secure your future.
+                NPB Media provides an integrated overview of your digital assets, leveraging advanced analytical tools to monitor uptime, optimize performance, and secure your future.
               </p>
             </div>
 
@@ -73,7 +70,7 @@ export function MainOverview() {
                 <p className="text-xs text-muted-foreground font-black uppercase tracking-widest">System Reliability</p>
               </div>
               <div className="space-y-1 hidden sm:block">
-                <p className="text-3xl font-black text-accent">AI-Driven</p>
+                <p className="text-3xl font-black text-accent">Real-time</p>
                 <p className="text-xs text-muted-foreground font-black uppercase tracking-widest">Decision Matrix</p>
               </div>
             </div>
@@ -122,11 +119,11 @@ export function MainOverview() {
                   ))}
                 </div>
 
-                {/* AI Feature Teaser */}
+                {/* Feature Teaser */}
                 <div className="p-8 bg-foreground text-white">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                      <BrainCircuit className="w-6 h-6" />
+                      <Zap className="w-6 h-6" />
                     </div>
                     <div>
                       <h4 className="font-headline font-black text-lg italic">NPB Media Lab</h4>
