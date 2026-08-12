@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -28,7 +29,8 @@ import {
   Search,
   Sparkles,
   Users,
-  ImageIcon
+  ImageIcon,
+  CreditCard
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -99,11 +101,11 @@ export default function OpportunitiesPage() {
       return;
     }
 
-    if (!userProfile?.fullName || !userProfile?.resumeURL) {
+    if (!userProfile?.fullName || !userProfile?.resumeURL || !userProfile?.idCardURL) {
       toast({ 
         variant: "destructive", 
         title: "Profile Incomplete", 
-        description: "Please complete your professional profile including resume and photo before applying." 
+        description: "Please complete your professional profile including resume, photo, and ID Proof before applying." 
       });
       router.push("/profile/edit");
       return;
@@ -122,6 +124,7 @@ export default function OpportunitiesPage() {
     setIsSubmitting(true);
     const appId = `${user!.uid}_${selectedJob.id}`;
     
+    // Complete Snapshot includes ALL profile details and documents
     setDocumentNonBlocking(doc(db, "jobApplications", appId), {
       id: appId,
       userId: user!.uid,
@@ -135,8 +138,11 @@ export default function OpportunitiesPage() {
         fathersName: userProfile?.fathersName || "Not Provided",
         email: userProfile?.email || user?.email,
         mobile: userProfile?.mobile || "Not Provided",
+        dob: userProfile?.dob || "Not Provided",
         photoURL: userProfile?.photoURL || "",
         resumeURL: userProfile?.resumeURL || "",
+        idCardURL: userProfile?.idCardURL || "",
+        idCardType: userProfile?.idCardType || "Identity Proof",
         address: userProfile?.fullAddress || "Not Provided",
         education: userProfile?.education || [],
         experienceYears: userProfile?.experience || "N/A"
@@ -364,14 +370,15 @@ export default function OpportunitiesPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-4 border-t border-slate-200/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200/50">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-emerald-500" />
+                  <FileText className="w-4 h-4 text-blue-500" />
                   <span className="text-[10px] font-black uppercase text-slate-500">Resume Attached</span>
                 </div>
-                {userProfile?.resumeURL && (
-                  <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest border-emerald-200 bg-emerald-50 text-emerald-600">Encrypted Source Sync</Badge>
-                )}
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-emerald-500" />
+                  <span className="text-[10px] font-black uppercase text-slate-500">{userProfile?.idCardType || 'ID Proof'} Attached</span>
+                </div>
               </div>
             </div>
 
@@ -389,7 +396,7 @@ export default function OpportunitiesPage() {
               <Zap className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Protocol Sync</p>
-                <p className="text-sm font-medium text-blue-800 leading-relaxed">Your professional resume and profile credentials will be automatically attached to this application from your Media profile.</p>
+                <p className="text-sm font-medium text-blue-800 leading-relaxed">Your professional resume, ID proof, and profile credentials will be automatically attached to this application from your verified Media profile.</p>
               </div>
             </div>
           </div>

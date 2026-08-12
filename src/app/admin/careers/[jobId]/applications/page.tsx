@@ -25,7 +25,10 @@ import {
   Layout,
   Briefcase,
   Trash2,
-  Users
+  Users,
+  MapPin,
+  CreditCard,
+  ImageIcon
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -127,9 +130,32 @@ export default function AdminJobApplicationsPage() {
     setIsUpdateModalOpen(false);
   };
 
-  const openResume = (url: string) => {
-    if (!url) return;
-    window.open(url, '_blank');
+  const viewDocument = (url: string) => {
+    if (!url) {
+      toast({ variant: "destructive", title: "Document Missing", description: "This file was not provided by the candidate." });
+      return;
+    }
+    // Handle data URI viewing
+    try {
+      if (url.startsWith('data:')) {
+        const parts = url.split(';');
+        const mimeType = parts[0].split(':')[1];
+        const base64Data = parts[1].split(',')[1];
+        const binaryString = atob(base64Data);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, '_blank');
+      } else {
+        window.open(url, '_blank');
+      }
+    } catch (e) {
+      window.open(url, '_blank');
+    }
   };
 
   if (isLoading) {
@@ -196,13 +222,24 @@ export default function AdminJobApplicationsPage() {
                       ) : (
                         <User className="w-12 h-12 text-slate-600 m-auto absolute inset-0" />
                       )}
+                      <Button 
+                        size="icon" 
+                        onClick={() => viewDocument(app.applicantSnapshot?.photoURL)}
+                        className="absolute bottom-2 right-2 w-8 h-8 rounded-lg bg-black/40 backdrop-blur-md opacity-0 group-hover/avatar:opacity-100 transition-opacity"
+                      >
+                        <ImageIcon className="w-4 h-4 text-white" />
+                      </Button>
                     </div>
                     
                     <div className="space-y-4 flex-1">
                       <div className="flex flex-wrap items-center gap-4">
                         <div className="space-y-1">
                           <h4 className="text-3xl font-headline font-black italic text-white leading-none">{app.applicantSnapshot?.fullName}</h4>
-                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">S/o: {app.applicantSnapshot?.fathersName || 'N/A'}</p>
+                          <div className="flex items-center gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            <span>S/o: {app.applicantSnapshot?.fathersName || 'N/A'}</span>
+                            <span className="text-primary">|</span>
+                            <span>DOB: {app.applicantSnapshot?.dob || 'N/A'}</span>
+                          </div>
                         </div>
                         <Badge className={cn(
                           "text-[8px] font-black uppercase tracking-widest border-none px-3 py-1",
@@ -218,21 +255,38 @@ export default function AdminJobApplicationsPage() {
                         <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-primary" /> Applied: {new Date(app.appliedAt).toLocaleDateString()}</div>
                       </div>
 
-                      <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50">
-                        <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-2">Professional Summary</p>
-                        <p className="text-slate-300 text-xs font-medium leading-relaxed italic line-clamp-2">"{app.experience}"</p>
+                      <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800/50 space-y-4">
+                        <div className="space-y-1">
+                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
+                            <MapPin className="w-3 h-3" /> Candidate Location
+                          </p>
+                          <p className="text-slate-400 text-xs font-medium leading-relaxed italic">{app.applicantSnapshot?.address || 'Address not logged'}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-2">Intent Summary</p>
+                          <p className="text-slate-300 text-xs font-medium leading-relaxed italic line-clamp-2">"{app.experience}"</p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-row lg:flex-col gap-3 shrink-0 justify-end lg:w-64">
-                    <Button 
-                      onClick={() => openResume(app.applicantSnapshot?.resumeURL)}
-                      variant="outline" 
-                      className="h-12 rounded-2xl border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-6 w-full justify-between"
-                    >
-                      View Documents <FileText className="w-4 h-4" />
-                    </Button>
+                  <div className="flex flex-row lg:flex-col gap-3 shrink-0 justify-end lg:w-72">
+                    <div className="grid grid-cols-2 gap-3 w-full">
+                      <Button 
+                        onClick={() => viewDocument(app.applicantSnapshot?.resumeURL)}
+                        variant="outline" 
+                        className="h-12 rounded-xl border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-4 justify-between"
+                      >
+                        Resume <FileText className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button 
+                        onClick={() => viewDocument(app.applicantSnapshot?.idCardURL)}
+                        variant="outline" 
+                        className="h-12 rounded-xl border-slate-800 bg-slate-950 text-slate-400 hover:text-white text-[9px] font-black uppercase tracking-widest transition-all px-4 justify-between"
+                      >
+                        {app.applicantSnapshot?.idCardType?.split(' ')[0] || 'ID Proof'} <CreditCard className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                     
                     <Button 
                       onClick={() => handleUpdateStatus(app)}
